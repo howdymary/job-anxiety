@@ -1,0 +1,93 @@
+services:
+  frontend:
+    image: node:20-alpine
+    working_dir: /workspace/frontend
+    command: sh -lc "if [ -f package.json ]; then npm install && npm run dev; else echo 'frontend workspace not initialized yet'; tail -f /dev/null; fi"
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-replace-me}
+    volumes:
+      - ./:/workspace
+      - frontend-node-modules:/workspace/frontend/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    image: node:20-alpine
+    working_dir: /workspace/backend
+    command: sh -lc "if [ -f package.json ]; then npm install && npm run dev; else echo 'backend workspace not initialized yet'; tail -f /dev/null; fi"
+    ports:
+      - "8080:8080"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: ${DATABASE_URL:-postgresql://reframe:reframe_password@db:5432/reframe}
+      REDIS_URL: ${REDIS_URL:-redis://:reframe_redis_password@redis:6379}
+      API_KEY_SECRET: ${API_KEY_SECRET:-replace-me}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+    volumes:
+      - ./:/workspace
+      - backend-node-modules:/workspace/backend/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  scraper:
+    image: python:3.12-slim
+    working_dir: /workspace/scraper
+    command: sh -lc "if [ -f requirements.txt ]; then pip install -r requirements.txt -e . && python -m reframe_scraper; else echo 'scraper workspace not initialized yet'; tail -f /dev/null; fi"
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://reframe:reframe_password@db:5432/reframe}
+      REDIS_URL: ${REDIS_URL:-redis://:reframe_redis_password@redis:6379}
+      SCRAPER_USER_AGENT: ${SCRAPER_USER_AGENT:-ReframeBot/1.0 (+https://reframe.jobs/bot; jobs@reframe.jobs)}
+      SCRAPER_DELAY_SECONDS: ${SCRAPER_DELAY_SECONDS:-1.0}
+    volumes:
+      - ./:/workspace
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - scraping
+
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: reframe
+      POSTGRES_USER: reframe
+      POSTGRES_PASSWORD: reframe_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reframe -d reframe"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "reframe_redis_password"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "reframe_redis_password", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  frontend-node-modules:
+  backend-node-modules:
+  postgres-data:
+  redis-data:

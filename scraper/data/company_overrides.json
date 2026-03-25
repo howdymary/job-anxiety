@@ -1,0 +1,15 @@
+[
+  {
+    "name": "OpenAI",
+    "domain": "openai.com",
+    "tier": "vc_backed",
+    "enrichment_source": "manual"
+  },
+  {
+    "name": "Anthropic",
+    "domain": "anthropic.com",
+    "tier": "vc_backed",
+    "enrichment_source": "manual"
+  }
+]
+

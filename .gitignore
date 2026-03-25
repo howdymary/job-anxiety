@@ -1,0 +1,46 @@
+.DS_Store
+.env
+.env.local
+.env.*.local
+
+# Node / frontend
+node_modules/
+frontend/.next/
+frontend/.turbo/
+frontend/.vercel/
+frontend/dist/
+frontend/build/
+frontend/.eslintcache
+frontend/tsconfig.tsbuildinfo
+
+# Backend
+backend/node_modules/
+backend/dist/
+backend/.wrangler/
+backend/.migrate/
+backend/tsconfig.tsbuildinfo
+
+# Scraper / Python
+scraper/.venv/
+scraper/venv/
+scraper/__pycache__/
+scraper/.pytest_cache/
+scraper/.mypy_cache/
+scraper/.ruff_cache/
+scraper/.coverage
+scraper/htmlcov/
+
+# Local data and logs
+logs/
+tmp/
+temp/
+
+# Docker and databases
+postgres-data/
+redis-data/
+
+# OS/editor
+.idea/
+.vscode/
+*.swp
+*.swo

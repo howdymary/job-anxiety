@@ -1,0 +1,10 @@
+[
+  {"name": "Google", "rank": 1},
+  {"name": "Microsoft", "rank": 2},
+  {"name": "Amazon", "rank": 3},
+  {"name": "Meta", "rank": 4},
+  {"name": "Apple", "rank": 5},
+  {"name": "NVIDIA", "rank": 10},
+  {"name": "Salesforce", "rank": 50}
+]
+
