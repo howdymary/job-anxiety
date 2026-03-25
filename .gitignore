@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.*.local
+.vercel/
 
 # Node / frontend
 node_modules/
