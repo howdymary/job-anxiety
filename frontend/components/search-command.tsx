@@ -369,7 +369,7 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
               id: `career-note-${item.slug}`,
               href: `/career-notes/${item.slug}`,
               label: item.title,
-              meta: item.growth,
+              meta: "Career guide",
               summary: item.subtitle,
               kind: "guide" as const
             }

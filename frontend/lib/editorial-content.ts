@@ -59,7 +59,7 @@ export const careerNotes: CareerNote[] = [
         id: "what-it-pays",
         title: "What it pays",
         paragraphs: [
-          "Compensation is strongest when the role sits near revenue or platform leverage. Series B and Series C startups often have more room on equity than on base salary, while larger companies usually hold a firmer line on stock bands but can offer clearer scope and steadier support."
+          "Compensation is strongest when the role sits near revenue or core platform work. Series B and Series C startups often have more room on equity than on base salary, while larger companies usually hold a firmer line on stock bands but can offer clearer scope and steadier support."
         ]
       },
       {
@@ -329,27 +329,74 @@ export const careerNotes: CareerNote[] = [
     slug: "ai-product-manager",
     role: "AI Product Manager",
     title: "AI Product Manager: The Complete Guide",
-    subtitle: "The role that decides when AI belongs in the product and when it does not.",
+    subtitle: "A product role for deciding where model behavior improves the workflow and where it simply adds risk and confusion.",
     salaryRange: "$140K – $280K",
     growth: "96% growth",
     updatedAt: "Mar 2026",
     experienceBand: "Mid to Senior",
-    cardDescription: "A product role built around model judgment, evaluation, and responsible product decisions.",
-    mustHave: ["Product discovery", "Model capability literacy", "Evaluation habits"],
-    niceToHave: ["Prompting", "SQL", "Policy intuition"],
+    cardDescription: "A product seat centered on model judgment, rollout discipline, and the economics of shipping AI features responsibly.",
+    mustHave: ["Product discovery and prioritization", "Model capability literacy", "Evaluation and rollout discipline"],
+    niceToHave: ["SQL and experiment design", "Prompt and workflow prototyping", "Risk and policy judgment"],
     hiringByTier: [
       { tier: "Fortune 500", companies: ["Microsoft", "Google", "Salesforce"] },
       { tier: "VC-backed startup", companies: ["OpenAI", "Anthropic", "Perplexity"] },
       { tier: "High-revenue business", companies: ["Stripe", "Notion", "Databricks"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["AI Product Managers sit between model capability and user value. Their real job is deciding what deserves to ship and what should remain a prototype."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["Much of the work is evaluation, roadmap judgment, and explaining limits as clearly as opportunities."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["The role shows up anywhere AI features are core to the product roadmap."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["You need product sense, comfort with ambiguity, and a clear understanding of what models can and cannot do reliably."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Comp tracks strong product management markets, with a premium when the AI layer is strategically important."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["If you already work in product, learn evaluation and model behavior deeply enough to ask better roadmap questions than your peers."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["The strongest AI PMs will become translators between frontier capability and practical user trust."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "The role sits between capability and consequence. An AI Product Manager decides whether a model belongs in the workflow at all, what failure modes are acceptable, and how much uncertainty the user can reasonably absorb.",
+          "That turns abstract strategy into practical product work: scope the feature, define the rubric, choose the fallback, and decide what not to automate."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "The calendar usually mixes roadmap review, evaluation review, and rollout triage. PMs spend time with engineers and designers looking at bad outputs, reading failure cases, and deciding whether the issue is model quality, prompt design, retrieval quality, or a flawed workflow.",
+          "Interview loops often include a product case built around an unreliable assistant or copilot. Expect to be asked how you would measure quality, what you would launch first, and when you would pull the feature back."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "The clearest demand is in companies where AI affects the core product rather than a side experiment. That includes labs, application companies, and larger software firms retrofitting copilots, automation, or search into established products.",
+          "The strongest postings specify the domain, the model touchpoints, and the operating metrics. A weak listing says 'drive AI strategy' and never names a user problem."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "Useful tool fluency usually includes SQL, product analytics, prompt and evaluation tools, and enough technical comfort to read logs or dashboards without turning every question into an engineering meeting.",
+          "What hiring managers really test is judgment. Can the PM tell the difference between an impressive demo and a durable product behavior. Can they explain the tradeoff in plain English."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Compensation tracks strong product-management markets, with a premium when the team owns a strategic AI line rather than a supporting feature. Startups usually have more room on equity; larger companies are often tighter on base but clearer on level."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "The most credible route is from product management, solutions, or operations in a domain where model behavior can be evaluated clearly. A portfolio of shipped AI features, rollout docs, and postmortems gets more attention than opinionated threads about strategy.",
+          "Candidates who stand out usually bring one detailed case study: what shipped, what failed, how the rubric changed, and what the team learned after launch."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "The best AI PMs are becoming translators between frontier capability and product trust. Over time the work is likely to look less like novelty management and more like disciplined operating systems for probabilistic software."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Entry", base: "$140K–$170K", total: "$160K–$200K" },
@@ -362,27 +409,73 @@ export const careerNotes: CareerNote[] = [
     slug: "ml-ops-engineer",
     role: "ML Ops Engineer",
     title: "ML Ops Engineer: The Complete Guide",
-    subtitle: "The DevOps of machine learning, and one of the most quietly valuable roles in the stack.",
+    subtitle: "The platform role that keeps model-serving, monitoring, and retraining from turning into expensive operational theater.",
     salaryRange: "$150K – $300K",
     growth: "118% growth",
     updatedAt: "Mar 2026",
     experienceBand: "Mid to Lead",
-    cardDescription: "The role keeping serving, monitoring, and platform operations from collapsing under AI ambition.",
-    mustHave: ["Infrastructure fluency", "Monitoring discipline", "Platform thinking"],
-    niceToHave: ["Kubeflow", "MLflow", "Cost optimization"],
+    cardDescription: "Infrastructure-heavy work focused on serving, reliability, observability, and the cost of keeping AI systems alive after launch.",
+    mustHave: ["Infrastructure and platform engineering fluency", "Monitoring and incident discipline", "Production-minded systems design"],
+    niceToHave: ["Kubeflow, Argo, or Airflow", "MLflow, Weights & Biases, or Feast", "Latency and cost optimization"],
     hiringByTier: [
       { tier: "High-revenue business", companies: ["Databricks", "Snowflake", "Datadog"] },
       { tier: "VC-backed startup", companies: ["Cohere", "Scale AI", "Runway"] },
       { tier: "Fortune 500", companies: ["NVIDIA", "Amazon", "Meta"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["ML Ops Engineers own the machinery behind shipping models. They are the reason an AI system keeps working after launch."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["Expect serving issues, monitoring, retraining cadence, permissions, pipelines, and too many conversations about cost."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["Infrastructure-heavy AI businesses and large companies with serious ML footprints are the natural buyers."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["Platform engineering habits matter more than flashy model knowledge. Reliability is the point."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Pay is strong because the role carries operational risk. When the platform fails, the product fails."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["If you are already in DevOps, platform engineering, or SRE, move toward model-serving infrastructure and observability."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["More companies will realize they need it before they realize what to call it."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "This is the platform layer behind applied AI. ML Ops engineers make sure model-serving, feature pipelines, permissions, observability, and retraining workflows behave like a dependable production system rather than a chain of brittle scripts."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "The work looks a lot like high-stakes platform engineering: deployment pipelines, rollback plans, model registries, GPU scheduling, cost controls, and blunt conversations about why throughput collapsed after a model change.",
+          "Interview loops usually lean technical fast. Expect debugging exercises around a broken training or inference pipeline, design questions on rollout safety, and pointed questions about tools like MLflow, Kubeflow, Argo, Airflow, KServe, or SageMaker."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "The natural buyers are infrastructure-heavy AI businesses, mature software companies with active ML platforms, and teams that can no longer hide model operations inside an ordinary backend role.",
+          "A good posting names the platform surface. A weak one says 'own MLOps' but never tells you whether the stack is batch training, online inference, feature stores, internal tooling, or customer-facing model delivery."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "Platform habits matter more than model glamour. The strongest candidates come from SRE, DevOps, data platform, or backend infrastructure backgrounds and can explain what happens when traffic, latency, and cost all move in the wrong direction at once.",
+          "The useful toolset is concrete: containers, CI/CD, orchestration, monitoring, model registries, tracing, and enough ML literacy to know when a retraining job should or should not fire."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Compensation is strong because the role owns operational risk. Teams often have more room on level and total package when the job includes on-call burden, platform ownership, or clear responsibility for production incidents."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "The cleanest path is from DevOps, platform engineering, data infrastructure, or SRE. Build a small serving stack, instrument it, add a registry and deployment workflow, then write down what failed and how you fixed it.",
+          "That kind of operational proof beats a notebook full of one-off model demos."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "More companies will realize they need this function before they settle on the title. As model usage matures, the best ML Ops engineers are likely to look increasingly like product-minded infrastructure leads."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Mid", base: "$150K–$190K", total: "$180K–$230K" },
@@ -395,27 +488,73 @@ export const careerNotes: CareerNote[] = [
     slug: "ai-safety-researcher",
     role: "AI Safety Researcher",
     title: "AI Safety Researcher: The Complete Guide",
-    subtitle: "A role growing with regulation, risk, and the cost of getting model behavior wrong.",
+    subtitle: "A research role focused on model behavior, adversarial testing, and the cost of deploying systems that fail in subtle ways.",
     salaryRange: "$160K – $400K",
     growth: "90%+ growth",
     updatedAt: "Mar 2026",
     experienceBand: "Mid to Lead",
-    cardDescription: "A research-and-systems role focused on red teaming, alignment, and practical safety behavior.",
-    mustHave: ["Risk reasoning", "Evaluation design", "Clear writing"],
-    niceToHave: ["RLHF familiarity", "Policy background", "Adversarial testing"],
+    cardDescription: "Technical safety work built around red teaming, evaluation, policy-sensitive decision-making, and failure analysis.",
+    mustHave: ["Risk reasoning under uncertainty", "Evaluation design", "Clear technical writing"],
+    niceToHave: ["Adversarial testing", "RLHF or post-training familiarity", "Policy and governance literacy"],
     hiringByTier: [
       { tier: "VC-backed startup", companies: ["Anthropic", "OpenAI", "Cohere"] },
       { tier: "Fortune 500", companies: ["Microsoft", "Google"] },
       { tier: "High-revenue business", companies: ["Palantir", "Databricks"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["AI Safety Researchers work on the systems and methods that make model behavior safer, more predictable, and easier to evaluate."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["The work ranges from adversarial testing and red teaming to building evaluation suites and writing policy-sensitive guidance."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["Labs are the clearest buyers, but enterprises with regulated or high-risk deployments are hiring too."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["You need rigor, comfort with ambiguity, and the ability to translate risk into actual process."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Compensation is high because the downside of weak safety work is increasingly expensive."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["Start with evaluation, red-team work, or policy-literate engineering. Publish careful thinking, not just opinions."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["The title may widen as more industries bring governance and model behavior into the core product loop."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "AI Safety Researchers study how systems fail, how those failures can be measured, and which mitigations actually hold up outside a carefully staged benchmark. The work ranges from alignment-flavored research to operational safety controls."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "A normal week can include red-team design, failure taxonomy work, evaluation dataset curation, literature review, and writing decision memos for product or policy teams. The glamour is limited; the rigor matters.",
+          "Interview loops often ask candidates to critique a paper, design an evaluation for a risky use case, or reason through a failure mode where the metrics look acceptable but the system is still unsafe."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "Labs remain the clearest buyers, but the role is spreading into high-stakes enterprise deployments, government-adjacent work, and companies facing regulatory or reputational risk from model failures.",
+          "The good postings are specific about whether the role is empirical research, product-facing evaluation, policy-sensitive governance, or adversarial testing. If a company says 'safety' but cannot define the threat model, treat that as a warning."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "The best candidates can move between research detail and operational consequence. They can design an evaluation, read a paper critically, write clearly about limitations, and explain why a mitigation is or is not enough.",
+          "Tooling varies, but familiarity with evaluation harnesses, benchmark design, annotation quality, and incident-review style writing shows up repeatedly."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Compensation is high because the cost of weak safety work is no longer theoretical. Frontier labs and high-risk deployments tend to pay the strongest packages, especially when the role blends research depth with product influence."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "A believable path runs through evaluation engineering, security research, adversarial testing, interpretability work, or policy-literate engineering. Publish careful, defensible analysis rather than broad takes about alignment.",
+          "Hiring managers pay attention to thoughtfulness under uncertainty. A precise write-up of one narrow failure mode is usually more convincing than a long manifesto."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "The title is likely to widen as more industries bring governance, model monitoring, and failure analysis into the core operating loop. The work will probably look less niche in a few years than it does now."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Mid", base: "$160K–$220K", total: "$190K–$270K" },
@@ -428,27 +567,73 @@ export const careerNotes: CareerNote[] = [
     slug: "forward-deployed-engineer",
     role: "Forward Deployed Engineer",
     title: "Forward Deployed Engineer: The Complete Guide",
-    subtitle: "A field role built for shipping custom systems where the real constraints live.",
+    subtitle: "A customer-embedded engineering role built around shipping systems where procurement, data reality, and organizational politics actually live.",
     salaryRange: "$175K – $360K",
     growth: "89% growth",
     updatedAt: "Mar 2026",
     experienceBand: "Mid to Lead",
-    cardDescription: "The customer-embedded engineering model pioneered by Palantir and spreading into AI.",
-    mustHave: ["Customer empathy", "Systems thinking", "Fast implementation"],
-    niceToHave: ["Travel tolerance", "Security awareness", "Procurement patience"],
+    cardDescription: "Customer-facing technical delivery work for teams that need engineers in the room when messy deployments become real.",
+    mustHave: ["Customer empathy under pressure", "Systems thinking", "Fast implementation and debugging"],
+    niceToHave: ["Security and compliance awareness", "Travel tolerance", "Comfort with procurement and enterprise process"],
     hiringByTier: [
       { tier: "High-revenue business", companies: ["Palantir", "Databricks"] },
       { tier: "VC-backed startup", companies: ["Harvey", "Anduril"] },
       { tier: "Fortune 500", companies: ["Microsoft"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["Forward Deployed Engineers embed with customers and build solutions where the messy details actually live."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["You are in the field, translating vague operational pain into working systems. The job is highly contextual and usually high pressure."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["The title is still most associated with Palantir, but the pattern is spreading anywhere AI deployments require deep customer integration."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["You need technical depth, speed, and a temperament suited to customers who are stressed and specific."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Comp reflects travel, complexity, and the reality that the job often sits close to important accounts."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["This is a good next move for engineers who like product work, customer contact, and ambiguity more than pure platform depth."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["As AI moves into harder industries, more companies will need engineers willing to ship in the field."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "Forward Deployed Engineers sit with the customer, learn how the work actually gets done, and then build the software or integration layer that closes the gap. In AI companies, that often means taking a general product and making it survive inside a specific enterprise process."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "The work is deeply contextual. One week can include stakeholder discovery, data access fights, workflow mapping, integration work, and blunt conversations about what the model can and cannot do in production.",
+          "Interview loops usually test for ambiguity tolerance. Expect a case where a customer problem is only half-specified and the real test is whether you can ask the right operational questions before proposing a build."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "Palantir made the title famous, but the pattern is spreading anywhere AI products need deep implementation work: defense-tech, legal-tech, data platform companies, and enterprise workflow vendors.",
+          "The strongest postings describe the customer environment, security constraints, and travel expectation. A vague listing often hides a role that is equal parts consultant, firefighter, and implementation lead."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "The role rewards engineers who can code, debug, present, and stay calm in a room full of people who need the deployment to work this quarter. Product instinct helps because many customer requests are really symptoms, not requirements.",
+          "Useful tools vary by company, but SQL, API integration, workflow mapping, dashboard fluency, and security-conscious engineering show up repeatedly."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Compensation reflects travel, complexity, and customer proximity. When the role sits near strategic accounts, there is often more flexibility on total package than on title."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "This is a natural move for engineers who like product work, customer contact, and ambiguous problem-solving more than pure platform depth. Implementation engineering, solutions engineering, consulting, and product-minded backend work are common on-ramps.",
+          "A portfolio is less important here than a track record of messy delivery. Teams want examples where requirements were vague, stakeholders disagreed, and the system still shipped."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "As AI moves into regulated and operationally hard industries, more companies will need engineers willing to ship in the field rather than stay one layer removed from the customer."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Mid", base: "$175K–$220K", total: "$210K–$280K" },
@@ -461,27 +646,73 @@ export const careerNotes: CareerNote[] = [
     slug: "ai-ux-designer",
     role: "AI UX Designer",
     title: "AI UX Designer: The Complete Guide",
-    subtitle: "The role that decides how uncertainty, trust, and automation should feel in a real interface.",
+    subtitle: "A design role focused on confidence, fallback states, latency, and the awkward human moments that AI features expose in the interface.",
     salaryRange: "$120K – $212K",
     growth: "3x higher adoption",
     updatedAt: "Mar 2026",
     experienceBand: "Mid to Senior",
-    cardDescription: "A design role focused on confidence, trust, fallback states, and AI behavior in the interface.",
-    mustHave: ["Interaction design", "UX writing instinct", "Systems thinking"],
-    niceToHave: ["Research background", "Prompt literacy", "Frontend fluency"],
+    cardDescription: "Interaction design for AI products where trust, ambiguity, and model error have to be made legible to real users.",
+    mustHave: ["Interaction design", "UX writing judgment", "Systems thinking under uncertainty"],
+    niceToHave: ["User research", "Prompt or evaluation literacy", "Basic frontend fluency"],
     hiringByTier: [
       { tier: "Fortune 500", companies: ["Microsoft", "Google", "Adobe"] },
       { tier: "VC-backed startup", companies: ["Perplexity", "Anthropic"] },
       { tier: "High-revenue business", companies: ["Notion", "Figma"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["AI UX Designers work on the interface layer where AI either feels useful or feels untrustworthy."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["The work spans flows, interface language, confidence cues, empty states, and the problem of showing uncertainty without making the product feel broken."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["Product companies with serious AI features are the obvious market."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["You need classic UX discipline plus a feel for model limitations and latency."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Comp is strong where the role sits inside strategic product teams rather than innovation theater."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["Strong case studies matter more than theory. Show interfaces that solve the trust problem, not just the aesthetic problem."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["As AI product experiences mature, this role is likely to become standard rather than novel."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "AI UX Designers work on the layer where model behavior becomes either usable or unsettling. The job is less about ornament and more about helping a person understand what the system knows, what it is guessing, and what happens if they trust it too much."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "The work spans interaction patterns, UX copy, confidence cues, citation or provenance treatments, empty states, and the problem of showing uncertainty without making the product feel broken.",
+          "Expect portfolio reviews and practical exercises in the interview loop. Hiring teams often ask candidates to redesign an AI workflow with latency, ambiguity, and failure states in mind, usually in Figma with a written rationale."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "Product companies with serious AI features are the obvious buyers, but the role is especially valuable where trust is expensive to lose: productivity software, legal tools, support automation, and research products.",
+          "The best postings mention real workflows, not abstract design systems. If the company talks about 'reinventing AI UX' without naming the core user task, expect a lot of branding and not much product rigor."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "Classic UX discipline still matters most: journey mapping, usability research, hierarchy, and interaction design. The AI layer adds a need to think clearly about confidence, transparency, escalation paths, and when the system should admit uncertainty.",
+          "Useful tools are the usual design stack plus enough product and technical fluency to review prompts, logs, or evaluation findings alongside engineers and PMs."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Compensation is strongest when the role sits in a strategic product team with real shipping authority. It drops quickly when the company treats AI UX as a decorative layer instead of a product-quality function."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "Strong case studies matter more than theory. Show a flow where an AI system can be wrong, then document how the design handles doubt, correction, and fallback.",
+          "The work that gets noticed is not a shiny mockup. It is a careful explanation of how trust is earned and preserved."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "As AI product experiences mature, this specialization is likely to become standard. The teams that treat it seriously now will probably look less strange in hindsight than the ones that tried to ship around the trust problem."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Mid", base: "$120K–$150K", total: "$135K–$175K" },
@@ -494,27 +725,73 @@ export const careerNotes: CareerNote[] = [
     slug: "context-engineer",
     role: "Context Engineer",
     title: "Context Engineer: The Complete Guide",
-    subtitle: "The new role devoted to memory, retrieval, and what an agent should remember next.",
+    subtitle: "A systems role devoted to memory, retrieval, ranking, and the question of what an agent should know at the moment it needs to act.",
     salaryRange: "$165K – $310K",
     growth: "New in 2026",
     updatedAt: "Mar 2026",
     experienceBand: "Mid to Senior",
-    cardDescription: "A new systems role focused on agent memory, retrieval, and context strategy.",
-    mustHave: ["Retrieval thinking", "Systems design", "Prompt and summarization literacy"],
-    niceToHave: ["Vector databases", "MLOps", "Knowledge management"],
+    cardDescription: "A retrieval-and-memory specialization for teams building agents or long-running AI systems that fail when context is thin or stale.",
+    mustHave: ["Retrieval and ranking intuition", "Systems design", "Prompt and summarization literacy"],
+    niceToHave: ["Vector or hybrid search systems", "MLOps or platform depth", "Knowledge management and information architecture"],
     hiringByTier: [
       { tier: "VC-backed startup", companies: ["OpenAI", "Anthropic", "Cursor"] },
       { tier: "High-revenue business", companies: ["Databricks", "Notion"] },
       { tier: "Fortune 500", companies: ["Microsoft"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["Context Engineers think about what an agent should know, what it should fetch, and what it should forget."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["The work spans retrieval, memory summaries, context compression, state management, and quality tradeoffs across long-running systems."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["Mostly AI-native companies building agents or systems that need to persist useful state across more than one turn."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["You need systems judgment, comfort with ambiguity, and a strong sense for information design under constraint."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Comp reflects the strategic value of making agents feel coherent rather than forgetful."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["This role is a natural adjacency for AI Engineers, MLOps engineers, and search or platform engineers willing to specialize."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["If agent products keep growing, context engineering may become a standard specialization rather than a novel title."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "Context Engineers decide what an agent should fetch, retain, compress, summarize, or drop. In practice that means retrieval design, ranking logic, memory policies, context-window budgeting, and the edge cases where the system remembers the wrong thing with complete confidence."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "The work spans hybrid search, reranking, context assembly, long-term memory design, summarization quality, and evaluation of whether the retrieved context actually improves the answer. The job is part search relevance, part application engineering, part information architecture.",
+          "Interview loops often include a system-design problem around agent memory or RAG quality. Expect questions about stale context, truncation, retrieval latency, and how you would test whether a memory layer helps rather than confuses."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "The role appears mostly in AI-native companies building agents, coding tools, copilots, and research products that need useful state across more than one turn. Plenty of companies need the skill before they have a clean title for it.",
+          "Good postings mention retrieval, memory, ranking, or context assembly explicitly. Weak ones simply say 'agent engineer' and leave the information problem undefined."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "The strongest candidates usually come from search, backend systems, data infrastructure, or applied AI. They can think clearly about information hierarchy, latency, evaluation, and what happens when the wrong snippet outranks the right one.",
+          "Useful tooling often includes Postgres or another datastore, vector search, rerankers, tracing, evaluation harnesses, and enough product sense to know which context is actually worth paying for."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Compensation reflects the strategic value of making agents feel coherent rather than forgetful. Startups tend to pay a premium when the role sits close to product differentiation, while larger companies usually absorb it into broader engineering ladders."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "This is a natural adjacency for AI Engineers, MLOps engineers, search engineers, and knowledge-systems builders. A good portfolio project shows retrieval quality, memory policy, evaluation, and a written explanation of where the system still fails.",
+          "The candidates who stand out can explain not just what they retrieved, but why that information deserved to be in context at all."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "If agent products keep growing, context engineering is likely to become a standard specialization. The underlying problem is durable even if the title changes."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Mid", base: "$165K–$210K", total: "$190K–$250K" },
@@ -527,27 +804,72 @@ export const careerNotes: CareerNote[] = [
     slug: "ai-solutions-engineer",
     role: "AI Solutions Engineer",
     title: "AI Solutions Engineer: The Complete Guide",
-    subtitle: "The customer-facing technical role that closes the last mile between product and adoption.",
+    subtitle: "A customer-facing technical role that closes the gap between an impressive demo and a deployment a buyer will actually trust.",
     salaryRange: "$140K – $260K",
     growth: "82% growth",
     updatedAt: "Mar 2026",
     experienceBand: "Mid to Senior",
-    cardDescription: "The technical translator between AI products and customer reality.",
-    mustHave: ["Customer communication", "Integration fluency", "Implementation taste"],
-    niceToHave: ["Sales engineering", "Prompt literacy", "Project management"],
+    cardDescription: "Technical translation work spanning discovery, demos, proofs of concept, integrations, and the early moments of customer adoption.",
+    mustHave: ["Customer communication", "API and integration fluency", "Implementation judgment"],
+    niceToHave: ["Sales engineering experience", "Prompt or workflow literacy", "Project management discipline"],
     hiringByTier: [
       { tier: "VC-backed startup", companies: ["Scale AI", "Harvey", "Glean"] },
       { tier: "High-revenue business", companies: ["Databricks", "Stripe"] },
       { tier: "Fortune 500", companies: ["Salesforce", "Microsoft"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["AI Solutions Engineers help customers understand, adopt, and implement AI products in the real world."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["The job is part technical demo, part implementation, and part trust-building."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["Companies with API products, workflow platforms, or enterprise AI sales motions are obvious buyers."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["You need enough engineering to be credible and enough communication skill to keep customers moving."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Comp usually lands between strong engineering pay and strong sales-engineering pay."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["This is a strong move for implementation engineers, sales engineers, and technically strong CSMs."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["As AI buying matures, solutions talent will remain a critical adoption lever."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "AI Solutions Engineers help buyers move from curiosity to implementation. The work includes discovery, solution design, proof-of-concept builds, integration planning, and the practical trust-building required to get a customer from pilot to production."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "A typical week mixes technical demos, security and architecture conversations, sample-app work, prompt or workflow tuning, and the uncomfortable moment when a customer asks whether the product can survive their messiest edge case.",
+          "Interview loops often include live demos, architecture whiteboarding, and customer-handling scenarios. Expect to explain an API integration in plain English and then answer a hard technical follow-up without losing the room."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "The obvious buyers are API companies, enterprise workflow vendors, and AI application businesses with a consultative sales motion. The role gets stronger as the product gets more powerful and less self-explanatory.",
+          "The best postings make the split clear between pre-sales, post-sales, and implementation ownership. If the listing promises all three without support, expect a role that can turn into nonstop context switching."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "You need enough engineering to be credible with customer technical teams and enough commercial judgment to keep a buying process moving. API literacy, sample-app building, prompt or workflow understanding, and steady written communication all matter.",
+          "Tools vary, but Postman, SDKs, SQL, dashboards, and lightweight integration code show up constantly."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Comp usually sits between strong engineering pay and strong sales-engineering pay. Startups often have more room on equity and variable upside, while larger companies tend to be clearer about banding and quota exposure."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "This is one of the most natural moves for implementation engineers, sales engineers, solutions architects, and technically credible customer-success leaders. The strongest proof is a portfolio of demos, reference implementations, or customer-facing technical writing that actually teaches something."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "As AI buying matures, solutions talent is likely to remain a critical adoption lever. Better products reduce some hand-holding, but they do not eliminate the need for someone who can translate technical possibility into buyer confidence."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Mid", base: "$140K–$180K", total: "$170K–$220K" },
@@ -560,27 +882,71 @@ export const careerNotes: CareerNote[] = [
     slug: "data-annotation-specialist",
     role: "Data Annotation Specialist",
     title: "Data Annotation Specialist: The Complete Guide",
-    subtitle: "The most accessible entry point into AI, and still one of the most quietly important.",
+    subtitle: "A practical entry point into AI work built around labeling quality, evaluation rigor, and careful judgment rather than raw speed.",
     salaryRange: "$50K – $120K",
     growth: "High demand",
     updatedAt: "Mar 2026",
     experienceBand: "Entry to Mid",
-    cardDescription: "The entry point role closest to evaluation, labeling, and model quality.",
-    mustHave: ["Attention to detail", "Consistency", "Written clarity"],
-    niceToHave: ["Domain knowledge", "Quality assurance habits", "Spreadsheet fluency"],
+    cardDescription: "Entry-level AI operations work centered on labeling, quality control, rubric interpretation, and model-evaluation support.",
+    mustHave: ["Attention to detail", "Consistency under repetitive work", "Clear written reasoning"],
+    niceToHave: ["Domain knowledge", "Quality assurance habits", "Spreadsheet or annotation-tool fluency"],
     hiringByTier: [
       { tier: "VC-backed startup", companies: ["Scale AI", "Labelbox"] },
       { tier: "High-revenue business", companies: ["Databricks"] },
       { tier: "Fortune 500", companies: ["Large consulting and outsourcing firms"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["Data Annotation Specialists label, review, and evaluate data used to train or audit AI systems."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["The work can be repetitive, but the valuable version of it rewards careful judgment, not speed alone."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["Labs, vendors, and data-platform businesses all need this work, especially around evaluation and RLHF."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["You need consistency, attention, and the ability to follow complex labeling criteria."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Comp is lower than engineering tracks, but the barrier to entry is lower as well."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["For career changers, this is a practical way into the AI labor market. Strong performers can move toward evaluation, QA, or operations roles."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["As models get more capable, the need for better evaluation quality, not just more data, is rising."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "Data Annotation Specialists label, review, and evaluate the examples used to train or audit AI systems. The role is often dismissed as rote work, but the valuable version depends on judgment, consistency, and the ability to follow a rubric without quietly drifting away from it."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "The work can be repetitive, but the best teams are not measuring pure throughput. They care about rubric adherence, edge-case handling, inter-rater consistency, and whether the annotator can explain why a difficult item should be labeled one way rather than another.",
+          "Interview loops are usually simple but revealing: short labeling tasks, rubric comprehension tests, attention checks, and writing samples that show whether the candidate can justify a tricky decision clearly."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "Labs, data-platform businesses, model-evaluation vendors, and outsourcing firms all need this work. The strongest opportunities usually sit in teams that value quality-control paths, domain specialization, or movement into QA and operations."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "Consistency matters more than speed at the high end of the role. The strongest annotators can follow a complex guideline, flag ambiguity instead of guessing, and improve rubric quality by spotting where the instructions break down.",
+          "Useful tools often include Labelbox-style annotation software, spreadsheets, review dashboards, and ticketing systems for adjudication."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Comp is lower than engineering tracks, but the barrier to entry is lower as well. The better opportunities usually come with a quality-control path, domain premium, or exposure to evaluation operations rather than commodity piecework."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "For career changers, this is a practical way into AI operations. The best entry strategy is to show reliability, careful written reasoning, and comfort with detailed instructions, then move toward QA, evaluation, trust-and-safety operations, or domain-specific review work."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "As models improve, the work is shifting from raw volume toward harder evaluation and adjudication. Better data still matters, but better judgment about edge cases matters more."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Entry", base: "$50K–$70K", total: "$50K–$75K" },
@@ -603,7 +969,7 @@ export const insightArticles: InsightArticle[] = [
     sections: [
       { id: "fear", title: "The fear is real. The lazy conclusion is not.", paragraphs: ["It is reasonable to worry about AI and work. What is less reasonable is to treat the market as if it only subtracts. That is not how major tool shifts usually work. They compress some tasks, eliminate some roles, and create new role categories around the work that remains hard, contextual, or newly valuable.", "The current AI market already shows this pattern. Routine work is under pressure. But category creation is happening at the same time. GTM Engineer was not a common job title three years ago. Context Engineer barely existed as a phrase. AI UX Designer is moving from novelty to necessity."] },
       { id: "data", title: "What the market data suggests", paragraphs: ["The more useful question is not whether AI takes jobs in the abstract. It does. The better question is which kinds of jobs become more valuable as AI gets folded into products, services, and internal operations.", "The answer, increasingly, is work that combines judgment with systems. People who can evaluate, integrate, steer, deploy, or explain AI are seeing demand rise. People whose job is mostly formatting, repeating, or relaying the same pattern are more exposed."] },
-      { id: "transitions", title: "Transitions are the real story", paragraphs: ["The most practical pattern is transition, not replacement. A software engineer becomes an AI Engineer. An SDR becomes a GTM Engineer. A support operator becomes an AI operations specialist or evaluator. That does not mean the transition is automatic. It means the labor market is reorganizing around a new set of leverage points.", "The people who do best in that shift are usually the ones who stop arguing with the direction of travel early and start learning the adjacent systems around it."] },
+      { id: "transitions", title: "Transitions are the real story", paragraphs: ["The most practical pattern is transition, not replacement. A software engineer becomes an AI Engineer. An SDR becomes a GTM Engineer. A support operator becomes an AI operations specialist or evaluator. That does not mean the transition is automatic. It means the labor market is reorganizing around a new set of bottlenecks and adjacent roles.", "The people who do best in that shift are usually the ones who stop arguing with the direction of travel early and start learning the adjacent systems around it."] },
       { id: "what-to-do", title: "What to do with that information", paragraphs: ["Do not try to predict the whole market. Pick the next believable move. If you already have technical depth, study AI systems and evaluation. If you sit near revenue, learn automation and signal tools. If you need an accessible starting point, move closer to data quality, annotation, or solutions work.", "Fear is not useless if it pushes you toward a real skill acquisition plan. It becomes useless when it turns into doomscrolling."] }
     ]
   }),
@@ -638,7 +1004,7 @@ export const insightArticles: InsightArticle[] = [
   article({
     slug: "how-to-become-gtm-engineer",
     title: "How to Become a GTM Engineer (With No Engineering Background)",
-    description: "The most plausible AI career transition for commercial operators who want leverage.",
+    description: "A practical AI career transition for commercial operators who want a more scalable role.",
     publishedAt: "2026-03-25",
     readTime: "10 min",
     targetKeyword: "how to become a GTM engineer",

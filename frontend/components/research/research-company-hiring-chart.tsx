@@ -24,26 +24,28 @@ export function ResearchCompanyHiringChart({ data, source }: ResearchCompanyHiri
       methodologyLabel="Methodology v1.1"
       legend={[{ label: "Open roles", tone: "teal", style: "solid" }]}
     >
-      <div className="h-[24rem]" role="img" aria-label="Bar chart showing current open roles by tracked company board.">
+      <div className="h-[24rem]">
         {hasData ? (
-          <ResponsiveContainer width="100%" height="100%" debounce={150}>
-            <BarChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 32 }}>
-              <CartesianGrid vertical={false} stroke="rgba(74, 80, 96, 0.12)" />
-              <XAxis
-                dataKey="company"
-                tickLine={false}
-                axisLine={false}
-                interval={0}
-                angle={-24}
-                textAnchor="end"
-                height={64}
-                tick={{ fill: "#4A5060", fontSize: 12 }}
-              />
-              <YAxis tickLine={false} axisLine={false} width={56} tick={{ fill: "#6B7280", fontSize: 12 }} />
-              <Tooltip formatter={(value: number) => `${value} openings`} />
-              <Bar dataKey="openings" fill="var(--ja-teal)" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div role="img" aria-label="Bar chart showing current open roles by tracked company board." className="h-full">
+            <ResponsiveContainer width="100%" height="100%" debounce={150}>
+              <BarChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 32 }}>
+                <CartesianGrid vertical={false} stroke="rgba(74, 80, 96, 0.12)" />
+                <XAxis
+                  dataKey="company"
+                  tickLine={false}
+                  axisLine={false}
+                  interval={0}
+                  angle={-24}
+                  textAnchor="end"
+                  height={64}
+                  tick={{ fill: "#4A5060", fontSize: 12 }}
+                />
+                <YAxis tickLine={false} axisLine={false} width={56} tick={{ fill: "#6B7280", fontSize: 12 }} />
+                <Tooltip formatter={(value: number) => `${value} openings`} />
+                <Bar dataKey="openings" fill="var(--ja-teal)" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         ) : (
           <div className="flex h-full items-center justify-center rounded-[var(--ja-radius-md)] border border-dashed border-[var(--ja-fog)] bg-[var(--ja-cloud)] px-6 text-center">
             <div className="max-w-md">

@@ -28,13 +28,13 @@ export default async function TrendsPage() {
       <SectionHeading
         eyebrow="Trends"
         title="Live job-market signals from tracked company boards"
-        description="This page now publishes only source-backed ATS aggregates. Layoff ratios, modeled displacement series, and inferred posting trends stay off the public surface until their provenance is fully auditable."
+        description="This page publishes source-backed ATS aggregates from tracked public company boards. Modeled displacement series and inferred posting trends remain off the page until their provenance is fully auditable."
       />
 
       <section className="editorial-card p-6">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
           <div>
-            <p className="eyebrow">Current publication scope</p>
+            <p className="eyebrow">Scope</p>
             <p className="body-copy mt-4">
               These charts are computed from live public company boards. They show open-role inventory, posting recency,
               company concentration, and role-family mix. They do not infer layoffs, applications, or demand beyond what the
@@ -62,7 +62,7 @@ export default async function TrendsPage() {
         <StatCard label="Open roles" value={analytics.stats.totalOpenRoles.toLocaleString("en-US")} note="Current inventory across tracked boards" />
         <StatCard label="Posted in 7 days" value={analytics.stats.postedLast7Days.toLocaleString("en-US")} note="Recent additions to the live board set" />
         <StatCard label="Companies hiring" value={analytics.stats.companiesHiring.toLocaleString("en-US")} note="Distinct companies with active roles" />
-        <StatCard label="Live boards" value={`${analytics.stats.liveBoards}/${analytics.stats.totalBoards}`} note="Board fetches succeeding this cycle" />
+        <StatCard label="Live boards" value={`${analytics.stats.liveBoards}/${analytics.stats.totalBoards}`} note="Board fetches succeeding in this refresh" />
         <StatCard label="Salary coverage" value={`${analytics.stats.salaryCoveragePct}%`} note="Listings exposing salary ranges" />
       </section>
 
@@ -112,7 +112,7 @@ export default async function TrendsPage() {
       </section>
 
       <section className="editorial-card p-6">
-        <p className="eyebrow">What is withheld</p>
+        <p className="eyebrow">Outside scope</p>
         <p className="body-copy mt-4 max-w-[48rem]">
           Layoff ratios, occupation-level displacement estimates, and model-generated trend series are not published on
           this page until the underlying pipeline is source-audited. If you need official-source layoff disclosures, use the

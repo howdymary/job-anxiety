@@ -42,7 +42,7 @@ export function ResearchChartFrame({
   children
 }: ResearchChartFrameProps) {
   return (
-    <article className="editorial-card min-w-0 overflow-hidden p-6">
+    <article className="editorial-card min-w-0 p-6">
       <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
         <div className="max-w-[44rem]">
           <p className="eyebrow">{eyebrow}</p>

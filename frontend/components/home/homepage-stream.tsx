@@ -26,7 +26,7 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
   const intentCards = [
     {
       title: "I got laid off",
-      description: "Current hiring signals, official-source layoff disclosures, and a next step that does not waste your time.",
+      description: "Current hiring signals, official-source layoff disclosures, and a practical starting point for the next search.",
       accent: "var(--ja-coral)",
       links: [
         { href: "/layoffs", label: "Official-source layoff log" },
@@ -36,7 +36,7 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
     },
     {
       title: "I want to pivot into AI",
-      description: "Skills that transfer, roles that are active, and field guides for making a practical transition.",
+      description: "Transferable skills, active roles, and field guides for making a practical transition.",
       accent: "var(--ja-teal)",
       links: [
         { href: "/career-notes/ai-career-paths", label: "Career transition roadmap" },
@@ -46,7 +46,7 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
     },
     {
       title: "I'm tracking the market",
-      description: "Tracked live signals, a weekly market brief, and clear paths into methodology and source notes.",
+      description: "Tracked live signals, a weekly market brief, and direct access to methodology and source notes.",
       accent: "var(--ja-chart-2)",
       links: [
         { href: "/trends", label: "Trends dashboard" },
@@ -69,10 +69,9 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
 
             <div className="mt-[var(--ja-space-5)] grid gap-[var(--ja-space-5)] lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.78fr)]">
               <div className="max-w-[40rem]">
-                <h1 className="display-title">AI is changing work. Know where you stand.</h1>
+                <h1 className="display-title">Public hiring signals for an AI-shaped job market</h1>
                 <p className="body-copy muted-copy mt-[var(--ja-space-4)] max-w-[34rem] text-[var(--ja-text-lg)] leading-[var(--ja-leading-relaxed)]">
-                  Track AI job openings, monitor official-source layoff disclosures, and find your next move with live
-                  hiring signals, clear sourcing, and honest guidance.
+                  Track public AI job openings, monitor official-source layoff disclosures, and compare them with occupation and market context that can be sourced directly.
                 </p>
 
                 <div className="mt-[var(--ja-space-6)] flex flex-wrap gap-x-[var(--ja-space-5)] gap-y-[var(--ja-space-3)]">
@@ -132,13 +131,13 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
                     {formatWholeNumber(feed.stats.companiesHiring)} companies hiring
                   </p>
                   <p className="fine-print mt-1">
-                    Tracking {feed.stats.liveJobSources} live job boards and {feed.stats.liveNewsSources} current news feeds this cycle.
+                    Tracking {feed.stats.liveJobSources} live job boards and {feed.stats.liveNewsSources} current news sources in this refresh.
                   </p>
                 </div>
               </div>
               <div>
                 <p className="text-[var(--ja-text-sm)] font-semibold text-[var(--ja-ink)]">{feed.stats.trendingRole}</p>
-                <p className="fine-print mt-1">Current role family with the strongest posting velocity across the live feed.</p>
+                <p className="fine-print mt-1">Role family with the strongest recent posting pace in the tracked feed.</p>
               </div>
             </div>
           </SupportPanel>
@@ -175,7 +174,7 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
             {feed.newestJobs.length > 0 ? (
               feed.newestJobs.map((job) => <NewestJobCard key={job.id} job={job} />)
             ) : (
-              <EmptyState message="The live boards did not return recent openings this cycle. When the feed is thin, we show less rather than inventing momentum." />
+              <EmptyState message="The live boards did not return enough recent openings for this refresh. The page shows only what the source boards returned." />
             )}
           </div>
         </div>
@@ -194,8 +193,7 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
               <h2 className="section-title mt-[var(--ja-space-3)]">Roles with fresh posting velocity</h2>
             </div>
             <p className="fine-print max-w-[19rem] text-left md:text-right">
-              Trending is based on repeated recent postings across tracked live company boards. We do not fabricate saves,
-              applies, or clicks.
+              Trending is based on repeated recent postings across tracked live company boards. Engagement counts are not estimated.
             </p>
           </div>
 

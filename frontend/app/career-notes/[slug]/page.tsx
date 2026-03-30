@@ -68,7 +68,7 @@ export default function CareerNotePage({ params }: CareerNotePageProps) {
           <h2>Editorial status</h2>
           <p>
             This role guide is being re-sourced before release. The qualitative framing is useful, but salary bands,
-            growth claims, and hiring lists have been stripped back until they can be tied to a stronger evidence base.
+            growth claims, and employer examples remain provisional until they can be tied to a stronger evidence base.
           </p>
         </section>
 
@@ -104,7 +104,11 @@ export default function CareerNotePage({ params }: CareerNotePageProps) {
         </section>
 
         <section id="hiring">
-          <h2>Who&apos;s hiring</h2>
+          <h2>Where this work tends to appear</h2>
+          <p>
+            These are example employers and company types where adjacent work appears. This section is not a live hiring
+            list. For current openings, use the jobs board.
+          </p>
           <div className="grid gap-5">
             {note.hiringByTier.map((group) => (
               <div key={group.tier}>

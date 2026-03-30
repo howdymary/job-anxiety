@@ -40,11 +40,11 @@ export default async function ResearchPage() {
       <section className="editorial-card p-6">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
           <div>
-            <p className="eyebrow">Publication standard</p>
+            <p className="eyebrow">Scope</p>
             <p className="body-copy mt-4">
-              This page no longer publishes protocol samples, synthetic displacement curves, or placeholder geography
-              layers. What remains is narrower but auditable: BLS occupation outlook, live public hiring boards, and a
-              small confirmed layoff log with direct source links.
+              This brief is limited to what can be sourced directly today: BLS occupation outlook pages, live public
+              hiring boards, and a small confirmed layoff log with direct source links. Broader sector, geography, and
+              displacement models return only after their inputs are auditable end to end.
             </p>
             <div className="mt-6 flex flex-wrap gap-6">
               <Link href="/methodology" className="arrow-link">
@@ -117,11 +117,11 @@ export default async function ResearchPage() {
       </section>
 
       <section className="editorial-card p-6">
-        <p className="eyebrow">Scope note</p>
+        <p className="eyebrow">Research note</p>
         <p className="body-copy mt-4 max-w-[48rem]">
-          This is a public research brief, not a claim of peer-reviewed publication. When the broader displacement,
-          geography, and sector models are rebuilt on audited datasets, they can return here. Until then, this page stays
-          limited to what can be sourced directly today.
+          This is a public research brief built from auditable source material. It is narrower than the full research
+          protocol by design, and it stays that way until the broader displacement, geography, and sector models are
+          rebuilt on verified datasets.
         </p>
       </section>
     </div>
