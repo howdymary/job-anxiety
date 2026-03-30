@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 const navigation = [
@@ -31,18 +30,9 @@ export function SiteFooter() {
       <div className="mx-auto grid w-[min(var(--max-w-page),calc(100vw-2rem))] gap-8 py-[var(--ja-space-16)]">
         <div className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div className="max-w-[22rem]">
-            <div className="flex items-center gap-4">
-              <Image
-                src="/logo/jobanxiety-logo.png"
-                alt="JobAnxiety.ai lighthouse logo"
-                width={56}
-                height={56}
-                className="h-14 w-14"
-              />
-              <p className="font-[var(--ja-font-editorial)] text-[2rem] leading-none tracking-[-0.03em] text-white">
-                JobAnxiety<span className="text-[var(--ja-teal-light)]">.ai</span>
-              </p>
-            </div>
+            <p className="font-[var(--ja-font-editorial)] text-[2rem] leading-none tracking-[-0.03em] text-white">
+              JobAnxiety<span className="text-[var(--ja-teal-light)]">.ai</span>
+            </p>
             <p className="mt-4 text-[var(--ja-text-base)] leading-[1.7] text-white/78">
               Tracking AI job growth, job destruction, and career transitions for people who want clear sourcing, explicit
               caveats, and less spin.
