@@ -1,0 +1,25 @@
+name: Newsletter Draft
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "5 12 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  market-brief-draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Create weekly Market Brief draft
+        run: node scripts/create-market-brief-draft.mjs
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          BUTTONDOWN_EMAIL_STATUS: draft
+          JOBANXIETY_SITE_URL: https://jobanxiety.ai

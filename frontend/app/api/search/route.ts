@@ -20,6 +20,7 @@ const pageEntries: SearchEntry[] = [
   { id: "page-layoffs", href: "/layoffs", label: "Layoffs", meta: "Page", summary: "Confirmed workforce disclosures", kind: "page" },
   { id: "page-trends", href: "/trends", label: "Trends", meta: "Page", summary: "Live hiring signals", kind: "page" },
   { id: "page-research", href: "/research", label: "Research", meta: "Page", summary: "BLS occupation brief", kind: "page" },
+  { id: "page-about", href: "/about", label: "About", meta: "Page", summary: "Mission, newsletter, and contact details", kind: "page" },
   { id: "page-methodology", href: "/methodology", label: "Methodology", meta: "Trust", summary: "Sourcing and limits", kind: "page" },
   { id: "page-corrections", href: "/corrections", label: "Corrections", meta: "Trust", summary: "Public corrections log", kind: "page" },
   { id: "page-press", href: "/press", label: "Press", meta: "Resources", summary: "Embeds and citation formats", kind: "page" },

@@ -85,4 +85,31 @@ For first verification, set both records to `DNS only`. After Render issues the 
 ### Current Production Notes
 
 - The backend is still backed by mock data, so no Postgres or Redis service is required for this first production deploy.
-- Newsletter signup currently returns a pending confirmation response but does not yet send email. The UI handles this gracefully.
+- Newsletter signup syncs to Buttondown when `BUTTONDOWN_API_KEY` is set on `jobanxiety-api`. Without that secret, the UI still falls back to the current pending-confirmation stub.
+
+## Newsletter Automation
+
+The easiest cheap setup for `jobanxiety.ai` is:
+
+1. Use Buttondown for subscriber management and delivery.
+2. Keep the site signup form on `jobanxiety.ai/newsletter`.
+3. Let the backend forward signups to Buttondown.
+4. Use the GitHub Actions workflow at `.github/workflows/newsletter-draft.yml` to create a draft of the weekly Market Brief every Monday.
+5. Review the draft in Buttondown before sending while the published dataset is still intentionally narrower than the full product vision.
+
+### Setup Steps
+
+1. Create a Buttondown newsletter and verify `brief@jobanxiety.ai` as the sending address.
+2. Add `BUTTONDOWN_API_KEY` to the `jobanxiety-api` Render service so new site subscribers are written to Buttondown.
+3. Add the same `BUTTONDOWN_API_KEY` as a GitHub Actions secret in the `howdymary/job-anxiety` repository.
+4. Leave `BUTTONDOWN_EMAIL_STATUS=draft` until you are comfortable automating the final send.
+5. Run the `Newsletter Draft` workflow manually once to confirm the subject line and body format look right in Buttondown.
+
+### Local Preview
+
+To preview the generated issue body without creating anything in Buttondown:
+
+```bash
+cd /Users/maryliu/job-anxiety
+node scripts/create-market-brief-draft.mjs --dry-run
+```

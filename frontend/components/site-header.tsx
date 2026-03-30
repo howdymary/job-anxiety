@@ -12,7 +12,8 @@ const desktopItems = [
   { href: "/layoffs", label: "Layoffs" },
   { href: "/trends", label: "Trends" },
   { href: "/research", label: "Research" },
-  { href: "/career-notes", label: "Career Guides" }
+  { href: "/career-notes", label: "Career Guides" },
+  { href: "/about", label: "About" }
 ];
 
 const mobileItems = [
@@ -26,6 +27,7 @@ const menuItems = [
   { href: "/trends", label: "Trends", icon: TrendsIcon },
   { href: "/career-notes", label: "Career Guides", icon: NotesIcon },
   { href: "/companies", label: "Companies", icon: WorkIcon },
+  { href: "/about", label: "About", icon: NotesIcon },
   { href: "/check-your-occupation", label: "Occupation check", icon: SearchIcon },
   { href: "/newsletter", label: "Newsletter", icon: SearchIcon },
   { href: "/methodology", label: "Methodology", icon: NotesIcon },
@@ -196,8 +198,8 @@ export function SiteHeader() {
             </div>
 
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
-              <MenuGroup title="Navigation" links={menuItems.slice(0, 5)} onNavigate={() => setMenuOpen(false)} />
-              <MenuGroup title="Resources" links={menuItems.slice(5)} onNavigate={() => setMenuOpen(false)} />
+              <MenuGroup title="Navigation" links={menuItems.slice(0, 6)} onNavigate={() => setMenuOpen(false)} />
+              <MenuGroup title="Resources" links={menuItems.slice(6)} onNavigate={() => setMenuOpen(false)} />
             </div>
 
             <div className="mt-6 border-t border-[var(--ja-fog)] pt-4">
