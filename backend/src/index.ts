@@ -65,9 +65,10 @@ const port = Number.parseInt(process.env.PORT ?? "8080", 10);
 serve(
   {
     fetch: app.fetch,
-    port
+    port,
+    hostname: "0.0.0.0"
   },
   () => {
-    console.log(`[job-anxiety-backend] listening on http://localhost:${port}`);
+    console.log(`[job-anxiety-backend] listening on http://0.0.0.0:${port}`);
   }
 );
