@@ -17,7 +17,11 @@ type OccupationSearchApiResponse = {
 };
 
 function getRawApiBaseUrl() {
-  return process.env.JOBANXIETY_API_BASE_URL ?? process.env.JOBANXIETY_API_HOSTPORT ?? "http://localhost:8080";
+  return (
+    process.env.JOBANXIETY_API_BASE_URL ??
+    process.env.JOBANXIETY_API_HOSTPORT ??
+    (process.env.NODE_ENV === "production" ? "https://jobanxiety-api.onrender.com" : "http://localhost:8080")
+  );
 }
 
 function withProtocol(value: string) {

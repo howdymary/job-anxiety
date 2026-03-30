@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const rawApiBaseUrl =
     process.env.JOBANXIETY_API_BASE_URL ??
     process.env.JOBANXIETY_API_HOSTPORT ??
-    "http://localhost:8080";
+    (process.env.NODE_ENV === "production" ? "https://jobanxiety-api.onrender.com" : "http://localhost:8080");
   const apiBaseUrl = /^https?:\/\//i.test(rawApiBaseUrl) ? rawApiBaseUrl : `http://${rawApiBaseUrl}`;
 
   try {
