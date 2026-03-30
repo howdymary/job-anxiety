@@ -1,6 +1,5 @@
 import type {
   ApiEndpointDoc,
-  AuditedLayoffEvent,
   CorrectionEntry,
   MethodologySection,
   PressResource,
@@ -11,68 +10,8 @@ export const methodologyMeta = {
   version: "v1.1",
   updatedAt: "March 30, 2026",
   status:
-    "Public data pages now publish only source-backed BLS values, live ATS board aggregates, and a narrow set of official-source layoff disclosures. Modeled series stay off public pages until the provenance pipeline is fully audited."
+    "Public data pages now publish only source-backed BLS values, live ATS board aggregates, and a monitored official-source layoff feed. Modeled series stay off public pages until the provenance pipeline is fully audited."
 };
-
-export const auditedLayoffEvents: AuditedLayoffEvent[] = [
-  {
-    slug: "workday-restructuring-2025-02",
-    company: "Workday",
-    companySlug: "workday",
-    announcedLabel: "February 5, 2025",
-    affectedCount: 1750,
-    affectedCountLabel: "1,750 positions",
-    affectedPercent: 8.5,
-    confidence: "Confirmed",
-    aiSignal: "Cited",
-    sourceType: "SEC exhibit",
-    sourceLabel: "Workday Exhibit 99.1 filed with the SEC",
-    sourceUrl: "https://www.sec.gov/Archives/edgar/data/1327811/000132781125000030/wday-020525x991.htm",
-    macroContext:
-      "Workday said the cuts were part of reprioritizing investments and reorganizing the business for a new growth phase. The filing explicitly says the company would keep hiring in strategic areas.",
-    aiAttribution:
-      "AI was named in the same filing as a priority investment area alongside platform development."
-  },
-  {
-    slug: "recruit-holdings-hrtech-2025-07",
-    company: "Recruit Holdings (Indeed and Glassdoor segment)",
-    companySlug: "recruit-holdings",
-    announcedLabel: "July 11, 2025",
-    affectedCount: 1300,
-    affectedCountLabel: "Approximately 1,300 employees",
-    affectedPercent: 6,
-    confidence: "Confirmed",
-    aiSignal: "Not cited",
-    sourceType: "Company investor-relations release",
-    sourceLabel: "Recruit Holdings newsroom release",
-    sourceUrl: "https://recruit-holdings.com/en/newsroom/20250711_0001/",
-    macroContext:
-      "Recruit said the financial impact was already reflected in guidance for its HR Technology segment. The company did not cite AI as a reason in the public release, so the event stays out of any AI-cited subtotal.",
-    secondarySources: [
-      "The same release says the reduction covered the HR Technology segment that operates Indeed and Glassdoor."
-    ]
-  },
-  {
-    slug: "forrester-research-rif-2025-01",
-    company: "Forrester Research",
-    companySlug: "forrester-research",
-    announcedLabel: "January 2025",
-    affectedCount: 94,
-    affectedCountLabel: "About 94 positions",
-    affectedPercent: 6,
-    isApproximate: true,
-    confidence: "Confirmed",
-    aiSignal: "Not cited",
-    sourceType: "SEC annual report",
-    sourceLabel: "Forrester 2024 annual report filed with the SEC",
-    sourceUrl: "https://www.sec.gov/Archives/edgar/data/1023313/000095017025048161/forr-ars-2025.pdf",
-    macroContext:
-      "Forrester disclosed a January 2025 reduction in force of approximately 6% of its workforce as part of aligning costs to its 2025 revenue outlook.",
-    secondarySources: [
-      "The same filing says Forrester employed 1,571 people as of December 31, 2024, so a 6% cut implies roughly 94 positions."
-    ]
-  }
-];
 
 export const verifiedOccupationOutlook: VerifiedOccupationOutlook[] = [
   {
@@ -159,13 +98,13 @@ export const methodologySections: MethodologySection[] = [
     bullets: [
       "BLS Occupational Outlook Handbook pages for employment, wage, and projection fields.",
       "Live Greenhouse and Ashby boards for current role counts, company counts, and posting recency.",
-      "Official-source layoff disclosures only, with explicit AI-signal labeling."
+      "Monitored official-source layoff disclosures only, with explicit AI-signal labeling."
     ]
   },
   {
     title: "How layoff confidence works",
     body: [
-      "The live layoff page now publishes only filing-grade or official company disclosures. Those entries are marked Confirmed and remain intentionally narrow while the broader provenance pipeline is being audited.",
+      "The live layoff page now publishes only filing-grade or official company disclosures that can still be fetched from their source URLs. Those entries are marked Confirmed and remain intentionally narrow while the broader provenance pipeline is being audited.",
       "AI context is kept separate from the fact of the workforce reduction. A company may be investing in AI while cutting staff without saying AI caused the event."
     ],
     bullets: [
@@ -218,7 +157,7 @@ export const pressResources: PressResource[] = [
   },
   {
     title: "Layoff disclosure log",
-    description: "Narrow official-source layoff log that publishes only confirmed workforce reductions with direct source links.",
+    description: "Narrow official-source layoff monitor that publishes only confirmed workforce reductions with direct source links.",
     href: "/layoffs",
     format: "Tracker"
   },
@@ -237,6 +176,18 @@ export const pressResources: PressResource[] = [
 ];
 
 export const apiEndpoints: ApiEndpointDoc[] = [
+  {
+    method: "GET",
+    path: "/api/v1/layoffs",
+    description: "Official-source layoff feed with current monitored disclosures and source-health metadata.",
+    auth: "Public"
+  },
+  {
+    method: "GET",
+    path: "/api/v1/layoffs/health",
+    description: "Source-health view for the monitored layoff feed.",
+    auth: "Public"
+  },
   {
     method: "GET",
     path: "/api/v1/occupations/search",

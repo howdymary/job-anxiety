@@ -4,7 +4,7 @@ import Link from "next/link";
 import { SalaryRange } from "@/components/market/salary-range";
 import { TimeAgo } from "@/components/market/time-ago";
 import { SectionHeading } from "@/components/section-heading";
-import { getLiveJobsSnapshot, getLiveJobSlug } from "@/lib/live-homepage";
+import { getLiveJobsSnapshot, getLiveJobSlug, LIVE_JOB_SOURCE_LABEL } from "@/lib/live-homepage";
 
 type JobsPageProps = {
   searchParams?: {
@@ -18,7 +18,7 @@ type JobsPageProps = {
 export const metadata: Metadata = {
   title: "Tracked AI Jobs",
   description:
-    "Browse live AI job postings pulled directly from tracked company ATS boards. Every role card links back to the original source posting."
+    "Browse live AI job postings pulled directly from tracked company ATS boards, including AI-specific roles at larger non-AI employers."
 };
 
 function withinWindow(postedAt: string, posted?: string) {
@@ -68,7 +68,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
       <SectionHeading
         eyebrow="Jobs"
         title="Tracked AI jobs from live company boards"
-        description="This board only shows roles pulled from tracked ATS sources. Every listing below links to the original posting or application page."
+        description="This board only shows roles pulled from tracked ATS sources. AI-native companies are included board-wide; broader software companies appear only when the role title is explicitly AI-related."
       />
 
       <section className="editorial-card p-6">
@@ -80,6 +80,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
               live job boards across {companies.length} hiring companies. When a source board goes quiet, the page gets thinner rather
               than falling back to fabricated inventory.
             </p>
+            <p className="fine-print mt-3">{LIVE_JOB_SOURCE_LABEL}</p>
             {snapshot.errors.length ? (
               <p className="fine-print mt-3">
                 Some tracked boards did not respond in the latest cycle, so counts may understate the full live inventory.

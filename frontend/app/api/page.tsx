@@ -55,8 +55,9 @@ export default function ApiPage() {
             <div>
               <p className="eyebrow">Current state</p>
               <p className="body-copy mt-3">
-                The documented surface is deliberately small. Occupation search, the sourced occupation brief, and subscriber signup are live.
-                Jobs, companies, trends, and layoff APIs are withheld until they are backed by production data rather than placeholders.
+                The documented surface is deliberately small. Occupation search, the sourced occupation brief, the official-source layoff
+                feed, and subscriber signup are live. Jobs, companies, and trends remain undocumented until those APIs are published with
+                the same audit trail.
               </p>
             </div>
           </div>

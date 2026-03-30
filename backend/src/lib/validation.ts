@@ -55,6 +55,11 @@ export const companyQuerySchema = paginationQuerySchema.extend({
   tier: csvList(COMPANY_TIERS)
 });
 
+export const layoffsQuerySchema = z.object({
+  aiSignal: z.enum(["all", "cited", "not_cited"]).default("all"),
+  company: z.string().trim().min(1).max(120).optional()
+});
+
 export const subscriberPreferencesSchema = z.object({
   categories: z.array(z.enum(JOB_CATEGORIES)).default([]),
   tiers: z.array(z.enum(COMPANY_TIERS)).default([]),

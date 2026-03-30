@@ -6,8 +6,10 @@ import { ResearchCompanyHiringChart } from "@/components/research/research-compa
 import { ResearchLiveOpeningsChart } from "@/components/research/research-live-openings-chart";
 import { ResearchRoleFamilyChart } from "@/components/research/research-role-family-chart";
 import { SectionHeading } from "@/components/section-heading";
+import { getPublishedLayoffsFeed } from "@/lib/layoffs-api";
 import { getLiveMarketAnalytics } from "@/lib/live-market-analytics";
-import { auditedLayoffEvents, verifiedOccupationOutlook } from "@/lib/platform-data";
+import { LIVE_JOB_SOURCE_LABEL } from "@/lib/live-homepage";
+import { verifiedOccupationOutlook } from "@/lib/platform-data";
 
 export const metadata: Metadata = {
   title: "Research",
@@ -19,13 +21,10 @@ export const metadata: Metadata = {
   }
 };
 
-const ATS_SOURCE_LABEL =
-  "Tracked public Greenhouse and Ashby boards for OpenAI, Cursor, Perplexity, LangChain, Scale AI, Runway, Figure, and Together AI.";
-
 export default async function ResearchPage() {
-  const analytics = await getLiveMarketAnalytics();
-  const totalPublishedLayoffCount = auditedLayoffEvents.reduce((sum, event) => sum + event.affectedCount, 0);
-  const aiCitedLayoffs = auditedLayoffEvents
+  const [analytics, layoffsFeed] = await Promise.all([getLiveMarketAnalytics(), getPublishedLayoffsFeed()]);
+  const totalPublishedLayoffCount = layoffsFeed.stats.totalAffected;
+  const aiCitedLayoffs = layoffsFeed.events
     .filter((event) => event.aiSignal === "Cited")
     .reduce((sum, event) => sum + event.affectedCount, 0);
 
@@ -43,7 +42,7 @@ export default async function ResearchPage() {
             <p className="eyebrow">Scope</p>
             <p className="body-copy mt-4">
               This brief is limited to what can be sourced directly today: BLS occupation outlook pages, live public
-              hiring boards, and a small confirmed layoff log with direct source links. Broader sector, geography, and
+              hiring boards, and a narrow monitored layoff feed with direct source links. Broader sector, geography, and
               displacement models return only after their inputs are auditable end to end.
             </p>
             <div className="mt-6 flex flex-wrap gap-6">
@@ -82,18 +81,18 @@ export default async function ResearchPage() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="BLS occupations in view" value={verifiedOccupationOutlook.length.toString()} note="Current occupation pages used in the published comparison chart" />
         <StatCard label="Live ATS boards tracked" value={`${analytics.stats.liveBoards}/${analytics.stats.totalBoards}`} note="Successful board fetches in the current cycle" />
-        <StatCard label="Official-source layoffs published" value={auditedLayoffEvents.length.toString()} note="Confirmed disclosures with direct company or SEC links" />
-        <StatCard label="Workers affected in published log" value={`~${totalPublishedLayoffCount.toLocaleString("en-US")}`} note={`${aiCitedLayoffs.toLocaleString("en-US")} in events where AI is cited in the source text`} />
+        <StatCard label="Official-source layoffs published" value={layoffsFeed.stats.confirmedDisclosures.toString()} note="Confirmed disclosures with direct company or SEC links" />
+        <StatCard label="Workers affected in monitored feed" value={`~${totalPublishedLayoffCount.toLocaleString("en-US")}`} note={`${aiCitedLayoffs.toLocaleString("en-US")} in events where AI is cited in the source text`} />
       </section>
 
       <section className="grid gap-6 xl:grid-cols-2">
         <ResearchBlsOutlookChart data={verifiedOccupationOutlook} />
-        <ResearchLiveOpeningsChart data={analytics.weeklyOpenings} source={ATS_SOURCE_LABEL} />
+        <ResearchLiveOpeningsChart data={analytics.weeklyOpenings} source={LIVE_JOB_SOURCE_LABEL} />
       </section>
 
       <section className="grid gap-6 xl:grid-cols-2">
-        <ResearchRoleFamilyChart data={analytics.roleFamilies} source={ATS_SOURCE_LABEL} />
-        <ResearchCompanyHiringChart data={analytics.companies} source={ATS_SOURCE_LABEL} />
+        <ResearchRoleFamilyChart data={analytics.roleFamilies} source={LIVE_JOB_SOURCE_LABEL} />
+        <ResearchCompanyHiringChart data={analytics.companies} source={LIVE_JOB_SOURCE_LABEL} />
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">

@@ -21,6 +21,7 @@ type OccupationSearchResult = {
 
 type LiveFeedJob = {
   id: string;
+  slug: string;
   title: string;
   company: string;
   companySlug: string;
@@ -171,6 +172,7 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
         if (!cancelled) {
           const fallback = jobs.slice(0, 12).map((job) => ({
             id: job.slug,
+            slug: job.slug,
             title: job.title,
             company: job.company,
             companySlug: job.companySlug,
@@ -262,7 +264,24 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
       })
       .map((item) => ({ ...item }));
 
-    const companyMatches = companies
+    const liveCompanies = Array.from(
+      new Map(
+        liveJobs.map((job) => [
+          job.companySlug,
+          {
+            slug: job.companySlug,
+            name: job.company,
+            description: job.title,
+            hiringFocus: job.location,
+            headquarters: job.location
+          }
+        ])
+      ).values()
+    );
+
+    const companyPool = liveCompanies.length > 0 ? liveCompanies : companies;
+
+    const companyMatches = companyPool
       .filter((company) => {
         if (!normalized) {
           return false;
@@ -293,6 +312,7 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
       ? liveJobs
       : jobs.slice(0, 24).map((job) => ({
           id: job.slug,
+          slug: job.slug,
           title: job.title,
           company: job.company,
           companySlug: job.companySlug,
@@ -318,7 +338,7 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
       .slice(0, 8)
       .map((job) => ({
         id: `job-${job.id}`,
-        href: `/jobs/${job.id}`,
+        href: `/jobs/${job.slug}`,
         label: job.title,
         meta: job.company,
         summary: `${job.location} · ${formatSalary(job)}`,

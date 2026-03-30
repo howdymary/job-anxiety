@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { TimeAgo } from "@/components/market/time-ago";
 import { SectionHeading } from "@/components/section-heading";
-import { getLiveJobsSnapshot } from "@/lib/live-homepage";
+import { getLiveJobsSnapshot, LIVE_JOB_SOURCE_LABEL } from "@/lib/live-homepage";
 
 export const metadata: Metadata = {
   title: "Tracked Companies",
@@ -26,6 +26,7 @@ export default async function CompaniesPage() {
           The directory no longer uses hand-written company profiles on public pages. Every company below is present because its live board
           returned current roles in the latest crawl window.
         </p>
+        <p className="fine-print mt-3">{LIVE_JOB_SOURCE_LABEL}</p>
       </section>
 
       <div className="grid gap-4 md:grid-cols-2">

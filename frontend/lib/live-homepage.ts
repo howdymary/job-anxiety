@@ -16,6 +16,8 @@ type JobSource = {
   provider: JobSourceProvider;
   board: string;
   careersUrl: string;
+  scope: "company-wide" | "ai-titled-only";
+  cohort: "ai-native" | "broader-company";
 };
 
 type NewsFeedSpec = {
@@ -157,12 +159,24 @@ type StoredNewsResult = {
 
 const JOB_SOURCES: JobSource[] = [
   {
+    key: "anthropic",
+    company: "Anthropic",
+    companySlug: "anthropic",
+    provider: "greenhouse",
+    board: "anthropic",
+    careersUrl: "https://www.anthropic.com/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
+  },
+  {
     key: "openai",
     company: "OpenAI",
     companySlug: "openai",
     provider: "ashby",
     board: "openai",
-    careersUrl: "https://openai.com/careers"
+    careersUrl: "https://openai.com/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
   },
   {
     key: "cursor",
@@ -170,7 +184,9 @@ const JOB_SOURCES: JobSource[] = [
     companySlug: "cursor",
     provider: "ashby",
     board: "cursor",
-    careersUrl: "https://cursor.com/careers"
+    careersUrl: "https://cursor.com/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
   },
   {
     key: "perplexity",
@@ -178,7 +194,9 @@ const JOB_SOURCES: JobSource[] = [
     companySlug: "perplexity",
     provider: "ashby",
     board: "perplexity",
-    careersUrl: "https://www.perplexity.ai/careers"
+    careersUrl: "https://www.perplexity.ai/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
   },
   {
     key: "langchain",
@@ -186,7 +204,19 @@ const JOB_SOURCES: JobSource[] = [
     companySlug: "langchain",
     provider: "ashby",
     board: "langchain",
-    careersUrl: "https://www.langchain.com/careers"
+    careersUrl: "https://www.langchain.com/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
+  },
+  {
+    key: "cohere",
+    company: "Cohere",
+    companySlug: "cohere",
+    provider: "ashby",
+    board: "cohere",
+    careersUrl: "https://cohere.com/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
   },
   {
     key: "scale-ai",
@@ -194,7 +224,9 @@ const JOB_SOURCES: JobSource[] = [
     companySlug: "scale-ai",
     provider: "greenhouse",
     board: "scaleai",
-    careersUrl: "https://scale.com/careers"
+    careersUrl: "https://scale.com/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
   },
   {
     key: "runway",
@@ -202,7 +234,9 @@ const JOB_SOURCES: JobSource[] = [
     companySlug: "runway",
     provider: "greenhouse",
     board: "runwayml",
-    careersUrl: "https://runwayml.com/careers"
+    careersUrl: "https://runwayml.com/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
   },
   {
     key: "figure",
@@ -210,7 +244,9 @@ const JOB_SOURCES: JobSource[] = [
     companySlug: "figure",
     provider: "greenhouse",
     board: "figureai",
-    careersUrl: "https://www.figure.ai/careers"
+    careersUrl: "https://www.figure.ai/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
   },
   {
     key: "together-ai",
@@ -218,7 +254,79 @@ const JOB_SOURCES: JobSource[] = [
     companySlug: "together-ai",
     provider: "greenhouse",
     board: "togetherai",
-    careersUrl: "https://www.together.ai/careers"
+    careersUrl: "https://www.together.ai/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
+  },
+  {
+    key: "stability-ai",
+    company: "Stability AI",
+    companySlug: "stability-ai",
+    provider: "greenhouse",
+    board: "stabilityai",
+    careersUrl: "https://stability.ai/careers",
+    scope: "company-wide",
+    cohort: "ai-native"
+  },
+  {
+    key: "notion",
+    company: "Notion",
+    companySlug: "notion",
+    provider: "ashby",
+    board: "notion",
+    careersUrl: "https://www.notion.com/careers",
+    scope: "ai-titled-only",
+    cohort: "broader-company"
+  },
+  {
+    key: "ramp",
+    company: "Ramp",
+    companySlug: "ramp",
+    provider: "ashby",
+    board: "ramp",
+    careersUrl: "https://ramp.com/careers",
+    scope: "ai-titled-only",
+    cohort: "broader-company"
+  },
+  {
+    key: "databricks",
+    company: "Databricks",
+    companySlug: "databricks",
+    provider: "greenhouse",
+    board: "databricks",
+    careersUrl: "https://www.databricks.com/company/careers",
+    scope: "ai-titled-only",
+    cohort: "broader-company"
+  },
+  {
+    key: "figma",
+    company: "Figma",
+    companySlug: "figma",
+    provider: "greenhouse",
+    board: "figma",
+    careersUrl: "https://www.figma.com/careers",
+    scope: "ai-titled-only",
+    cohort: "broader-company"
+  },
+  {
+    key: "stripe",
+    company: "Stripe",
+    companySlug: "stripe",
+    provider: "greenhouse",
+    board: "stripe",
+    careersUrl: "https://stripe.com/jobs",
+    scope: "ai-titled-only",
+    cohort: "broader-company"
+  },
+  {
+    key: "mongodb",
+    company: "MongoDB",
+    companySlug: "mongodb",
+    provider: "greenhouse",
+    board: "mongodb",
+    careersUrl: "https://www.mongodb.com/careers",
+    scope: "ai-titled-only",
+    cohort: "broader-company"
   }
 ];
 
@@ -243,8 +351,37 @@ const NEWS_FEEDS: NewsFeedSpec[] = [
 const JOB_WINDOW_DAYS = 45;
 const TREND_WINDOW_DAYS = 21;
 const NEWS_WINDOW_DAYS = 21;
+const SOURCE_EMPTY_CACHE_GRACE_DAYS = 7;
 const HOME_FEED_CACHE_VERSION = 1;
 const HOME_FEED_CACHE_PATH = process.env.JOBANXIETY_HOME_FEED_CACHE_PATH ?? path.join(os.tmpdir(), "jobanxiety-live-homepage-cache.json");
+const AI_TITLED_ROLE_PATTERNS = [
+  /\bai\b/i,
+  /\bml\b/i,
+  /\bmle\b/i,
+  /machine learning/i,
+  /artificial intelligence/i,
+  /generative ai/i,
+  /\bgenai\b/i,
+  /\bllm\b/i,
+  /multimodal/i,
+  /\binference\b/i,
+  /applied ai/i,
+  /agentic/i,
+  /ai platform/i,
+  /ai product/i,
+  /ai models/i,
+  /ai search/i,
+  /ai sdk/i,
+  /ai gateway/i,
+  /mosaic ai/i,
+  /research scientist, ai/i,
+  /research engineer, ai/i,
+  /forward deployed ai/i
+];
+const BROADER_COMPANY_SOURCE_NAMES = JOB_SOURCES.filter((source) => source.cohort === "broader-company").map((source) => source.company);
+const AI_NATIVE_SOURCE_COUNT = JOB_SOURCES.filter((source) => source.cohort === "ai-native").length;
+
+export const LIVE_JOB_SOURCE_LABEL = `Tracked public Greenhouse and Ashby boards across ${AI_NATIVE_SOURCE_COUNT} AI-native companies plus AI-titled roles at ${BROADER_COMPANY_SOURCE_NAMES.join(", ")}.`;
 
 let cachedSnapshotFromDisk: StoredLiveHomepageSnapshot | null | undefined;
 
@@ -478,12 +615,29 @@ function inferWorkplaceLabel(location: string, workplaceType?: string | null, is
 function normalizeRoleFamily(title: string) {
   const normalized = title.toLowerCase();
 
+  if (
+    /\bai\b/.test(normalized) ||
+    /\bml\b/.test(normalized) ||
+    normalized.includes("machine learning") ||
+    normalized.includes("applied ai") ||
+    normalized.includes("artificial intelligence") ||
+    normalized.includes("llm") ||
+    normalized.includes("generative ai") ||
+    normalized.includes("genai") ||
+    normalized.includes("multimodal") ||
+    normalized.includes("mle") ||
+    normalized.includes("inference") ||
+    normalized.includes("mosaic ai")
+  ) {
+    return "Applied AI and ML";
+  }
+
   if (normalized.includes("research scientist") || normalized.includes("research engineer")) {
     return "Research";
   }
 
   if (normalized.includes("recruit") || normalized.includes("sourcer") || normalized.includes("talent")) {
-    return "Talent"
+    return "Talent";
   }
 
   if (normalized.includes("gtm")) {
@@ -526,6 +680,18 @@ function normalizeRoleFamily(title: string) {
     .join(" ");
 
   return fallback || "Generalist";
+}
+
+function isAiTitledRole(title: string) {
+  return AI_TITLED_ROLE_PATTERNS.some((pattern) => pattern.test(title));
+}
+
+function shouldKeepJob(source: JobSource, job: LiveHomepageJob) {
+  if (source.scope === "company-wide") {
+    return true;
+  }
+
+  return isAiTitledRole(job.title);
 }
 
 function normalizeGreenhouseJob(source: JobSource, rawJob: Record<string, unknown>): LiveHomepageJob | null {
@@ -633,6 +799,7 @@ async function loadJobsFromSource(source: JobSource, cachedResult: StoredSourceR
       const jobs = rawJobs
         .map((job) => (source.provider === "greenhouse" ? normalizeGreenhouseJob(source, job) : normalizeAshbyJob(source, job)))
         .filter((job): job is LiveHomepageJob => Boolean(job))
+        .filter((job) => shouldKeepJob(source, job))
         .sort((left, right) => new Date(right.postedAt).getTime() - new Date(left.postedAt).getTime());
 
       return jobs;
@@ -644,10 +811,13 @@ async function loadJobsFromSource(source: JobSource, cachedResult: StoredSourceR
   const liveNewestJobAt = liveJobs[0]?.postedAt ?? null;
   const hasLiveJobs = liveJobs.length > 0;
   const hasCachedJobs = Boolean(cachedResult?.jobs?.length);
-  const shouldUseCache = !response.ok && hasCachedJobs;
-  const jobs = shouldUseCache ? (cachedResult?.jobs ?? []) : liveJobs;
   const cachedHealth = cachedResult?.sourceHealth;
   const cachedLastSuccessAt = cachedHealth?.lastSuccessAt ?? cachedHealth?.newestJobAt ?? null;
+  const cachedIsFresh =
+    cachedLastSuccessAt != null && Date.now() - new Date(cachedLastSuccessAt).getTime() <= SOURCE_EMPTY_CACHE_GRACE_DAYS * 24 * 60 * 60 * 1000;
+  const shouldUseCache = hasCachedJobs && (!response.ok || (!hasLiveJobs && cachedIsFresh));
+  const jobs = shouldUseCache ? (cachedResult?.jobs ?? []) : liveJobs;
+  const cacheReason = !response.ok ? response.error : !hasLiveJobs && cachedIsFresh ? "Source returned no jobs; using the last verified snapshot." : null;
   const sourceHealth: SourceHealth = {
     key: source.key,
     company: source.company,
@@ -657,12 +827,14 @@ async function loadJobsFromSource(source: JobSource, cachedResult: StoredSourceR
     newestJobAt: jobs[0]?.postedAt ?? null,
     lastAttemptAt: attemptedAt,
     lastSuccessAt: hasLiveJobs ? liveNewestJobAt : cachedLastSuccessAt,
-    lastError: response.ok ? null : response.error,
+    lastError: cacheReason,
     usedCache: shouldUseCache
   };
 
   if (!response.ok) {
     console.warn(`[jobanxiety] source fetch failed for ${source.key}: ${response.error}`);
+  } else if (!hasLiveJobs && cachedIsFresh) {
+    console.warn(`[jobanxiety] source ${source.key} returned no jobs; using cached snapshot`);
   } else if (!hasLiveJobs) {
     console.info(`[jobanxiety] source ${source.key} returned no jobs`);
   }
@@ -670,7 +842,7 @@ async function loadJobsFromSource(source: JobSource, cachedResult: StoredSourceR
   return {
     jobs,
     sourceHealth,
-    error: response.ok ? null : `${source.company}: ${response.error}`
+    error: cacheReason ? `${source.company}: ${cacheReason}` : null
   };
 }
 
@@ -932,8 +1104,8 @@ function buildHomepageSummary(
 
   const headline =
     jobsPostedToday > 0
-      ? `${jobsPostedToday} new openings hit tracked AI company boards in the last 24 hours.`
-      : `${jobs.length} recent openings are still live across tracked AI company boards.`;
+      ? `${jobsPostedToday} new openings hit the tracked AI boards and filtered AI-role feeds in the last 24 hours.`
+      : `${jobs.length} recent openings are still live across the tracked AI boards and filtered AI-role feeds.`;
 
   const subheading =
     companiesHiring > 0

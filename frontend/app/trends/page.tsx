@@ -6,6 +6,7 @@ import { ResearchLiveOpeningsChart } from "@/components/research/research-live-o
 import { ResearchRoleFamilyChart } from "@/components/research/research-role-family-chart";
 import { SectionHeading } from "@/components/section-heading";
 import { getLiveMarketAnalytics } from "@/lib/live-market-analytics";
+import { LIVE_JOB_SOURCE_LABEL } from "@/lib/live-homepage";
 
 export const metadata: Metadata = {
   title: "Trends",
@@ -16,9 +17,6 @@ export const metadata: Metadata = {
     follow: true
   }
 };
-
-const ATS_SOURCE_LABEL =
-  "Tracked public Greenhouse and Ashby boards for OpenAI, Cursor, Perplexity, LangChain, Scale AI, Runway, Figure, and Together AI.";
 
 export default async function TrendsPage() {
   const analytics = await getLiveMarketAnalytics();
@@ -53,7 +51,7 @@ export default async function TrendsPage() {
                 timeZoneName: "short"
               })}
             </p>
-            <p className="fine-print mt-3">{ATS_SOURCE_LABEL}</p>
+            <p className="fine-print mt-3">{LIVE_JOB_SOURCE_LABEL}</p>
           </div>
         </div>
       </section>
@@ -66,11 +64,11 @@ export default async function TrendsPage() {
         <StatCard label="Salary coverage" value={`${analytics.stats.salaryCoveragePct}%`} note="Listings exposing salary ranges" />
       </section>
 
-      <ResearchLiveOpeningsChart data={analytics.weeklyOpenings} source={ATS_SOURCE_LABEL} />
+      <ResearchLiveOpeningsChart data={analytics.weeklyOpenings} source={LIVE_JOB_SOURCE_LABEL} />
 
       <section className="grid gap-6 xl:grid-cols-2">
-        <ResearchRoleFamilyChart data={analytics.roleFamilies} source={ATS_SOURCE_LABEL} />
-        <ResearchCompanyHiringChart data={analytics.companies} source={ATS_SOURCE_LABEL} />
+        <ResearchRoleFamilyChart data={analytics.roleFamilies} source={LIVE_JOB_SOURCE_LABEL} />
+        <ResearchCompanyHiringChart data={analytics.companies} source={LIVE_JOB_SOURCE_LABEL} />
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,0.9fr)]">
