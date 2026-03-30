@@ -1,9 +1,13 @@
 import "server-only";
 
+import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
 import { unstable_cache } from "next/cache";
+import os from "node:os";
+import path from "node:path";
 
 type JobSourceProvider = "greenhouse" | "ashby";
 type NewsCategory = "Hiring" | "Layoffs" | "Workplace";
+type FetchState = "live" | "cached" | "empty" | "failed";
 
 type JobSource = {
   key: string;
@@ -22,6 +26,7 @@ type NewsFeedSpec = {
 
 export type LiveHomepageJob = {
   id: string;
+  sourceKey: string;
   title: string;
   company: string;
   companySlug: string;
@@ -71,13 +76,30 @@ export type SourceHealth = {
   key: string;
   company: string;
   provider: JobSourceProvider;
-  status: "live" | "error";
+  status: FetchState;
   jobCount: number;
   newestJobAt: string | null;
+  lastAttemptAt: string;
+  lastSuccessAt: string | null;
+  lastError: string | null;
+  usedCache: boolean;
+};
+
+export type NewsHealth = {
+  key: string;
+  category: NewsCategory;
+  status: FetchState;
+  itemCount: number;
+  newestItemAt: string | null;
+  lastAttemptAt: string;
+  lastSuccessAt: string | null;
+  lastError: string | null;
+  usedCache: boolean;
 };
 
 export type HomepageFeed = {
   generatedAt: string;
+  lastSuccessfulRefreshAt: string | null;
   headline: string;
   subheading: string;
   newestJobs: LiveHomepageJob[];
@@ -87,6 +109,7 @@ export type HomepageFeed = {
   hiringCompanies: LiveHiringCompany[];
   roleMomentum: LiveRoleMomentum[];
   sourceHealth: SourceHealth[];
+  newsHealth: NewsHealth[];
   stats: {
     totalOpenRoles: number;
     jobsPostedToday: number;
@@ -102,10 +125,34 @@ export type HomepageFeed = {
 
 export type LiveJobsSnapshot = {
   generatedAt: string;
+  lastSuccessfulRefreshAt: string | null;
   jobs: LiveHomepageJob[];
   hiringCompanies: LiveHiringCompany[];
   sourceHealth: SourceHealth[];
+  newsHealth: NewsHealth[];
   errors: string[];
+};
+
+type StoredLiveHomepageSnapshot = {
+  version: 1;
+  generatedAt: string;
+  lastSuccessfulRefreshAt: string | null;
+  jobResults: StoredSourceResult[];
+  newsResults: StoredNewsResult[];
+};
+
+type StoredSourceResult = {
+  sourceKey: string;
+  jobs: LiveHomepageJob[];
+  sourceHealth: SourceHealth;
+  error: string | null;
+};
+
+type StoredNewsResult = {
+  specKey: string;
+  items: LiveNewsItem[];
+  newsHealth: NewsHealth;
+  error: string | null;
 };
 
 const JOB_SOURCES: JobSource[] = [
@@ -196,6 +243,10 @@ const NEWS_FEEDS: NewsFeedSpec[] = [
 const JOB_WINDOW_DAYS = 45;
 const TREND_WINDOW_DAYS = 21;
 const NEWS_WINDOW_DAYS = 21;
+const HOME_FEED_CACHE_VERSION = 1;
+const HOME_FEED_CACHE_PATH = process.env.JOBANXIETY_HOME_FEED_CACHE_PATH ?? path.join(os.tmpdir(), "jobanxiety-live-homepage-cache.json");
+
+let cachedSnapshotFromDisk: StoredLiveHomepageSnapshot | null | undefined;
 
 const companyRequestHeaders = {
   "User-Agent": "jobanxiety.ai/1.0 (+https://jobanxiety.ai)"
@@ -227,6 +278,104 @@ function parseDate(value: string | null | undefined) {
 
   const target = new Date(value);
   return Number.isNaN(target.getTime()) ? null : target;
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function normalizeError(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown feed error";
+}
+
+function latestIso(values: Array<string | null | undefined>) {
+  const parsed = values
+    .map((value) => parseDate(value ?? null))
+    .filter((value): value is Date => Boolean(value));
+
+  if (!parsed.length) {
+    return null;
+  }
+
+  return parsed.sort((left, right) => right.getTime() - left.getTime())[0].toISOString();
+}
+
+function mapStoredSourceResults(snapshot: StoredLiveHomepageSnapshot | null) {
+  return new Map((snapshot?.jobResults ?? []).map((result) => [result.sourceKey, result] as const));
+}
+
+function mapStoredNewsResults(snapshot: StoredLiveHomepageSnapshot | null) {
+  return new Map((snapshot?.newsResults ?? []).map((result) => [result.specKey, result] as const));
+}
+
+async function readStoredSnapshot(): Promise<StoredLiveHomepageSnapshot | null> {
+  if (cachedSnapshotFromDisk !== undefined) {
+    return cachedSnapshotFromDisk;
+  }
+
+  try {
+    const raw = await readFile(HOME_FEED_CACHE_PATH, "utf8");
+    const parsed = JSON.parse(raw) as StoredLiveHomepageSnapshot;
+    if (parsed.version !== HOME_FEED_CACHE_VERSION) {
+      cachedSnapshotFromDisk = null;
+      return null;
+    }
+
+    cachedSnapshotFromDisk = parsed;
+    return parsed;
+  } catch {
+    cachedSnapshotFromDisk = null;
+    return null;
+  }
+}
+
+async function persistStoredSnapshot(snapshot: StoredLiveHomepageSnapshot) {
+  try {
+    const directory = path.dirname(HOME_FEED_CACHE_PATH);
+    await mkdir(directory, { recursive: true });
+
+    const tempPath = `${HOME_FEED_CACHE_PATH}.tmp`;
+    await writeFile(tempPath, JSON.stringify(snapshot), "utf8");
+    await rename(tempPath, HOME_FEED_CACHE_PATH);
+    cachedSnapshotFromDisk = snapshot;
+  } catch {
+    // Best effort only. The live feed must still render even if disk writes fail.
+  }
+}
+
+type RetryOutcome<T> =
+  | { ok: true; value: T }
+  | { ok: false; error: string };
+
+async function fetchWithRetries<T>(
+  url: string,
+  parser: (response: Response) => Promise<T>,
+  options: RequestInit = {},
+  attempts = 3
+): Promise<RetryOutcome<T>> {
+  let lastError = "Unknown feed error";
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: AbortSignal.timeout(8_000)
+      });
+
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
+
+      return { ok: true, value: await parser(response) };
+    } catch (error) {
+      lastError = normalizeError(error);
+      if (attempt < attempts) {
+        await sleep(1000 * 2 ** (attempt - 1));
+      }
+    }
+  }
+
+  return { ok: false, error: lastError };
 }
 
 function isWithinDays(value: string | null | undefined, maxDays: number) {
@@ -407,6 +556,7 @@ function normalizeGreenhouseJob(source: JobSource, rawJob: Record<string, unknow
 
   return {
     id: `${source.key}-${String(rawJob.id ?? title)}`,
+    sourceKey: source.key,
     title,
     company: source.company,
     companySlug: source.companySlug,
@@ -455,6 +605,7 @@ function normalizeAshbyJob(source: JobSource, rawJob: Record<string, unknown>): 
 
   return {
     id: `${source.key}-${String(rawJob.id ?? title)}`,
+    sourceKey: source.key,
     title,
     company: source.company,
     companySlug: source.companySlug,
@@ -471,53 +622,56 @@ function normalizeAshbyJob(source: JobSource, rawJob: Record<string, unknown>): 
   };
 }
 
-async function loadJobsFromSource(source: JobSource) {
+async function loadJobsFromSource(source: JobSource, cachedResult: StoredSourceResult | null) {
   const url = buildCompanyUrl(source);
+  const attemptedAt = new Date().toISOString();
+  const response = await fetchWithRetries(
+    url,
+    async (response) => {
+      const payload = (await response.json()) as { jobs?: Record<string, unknown>[] };
+      const rawJobs = Array.isArray(payload.jobs) ? payload.jobs : [];
+      const jobs = rawJobs
+        .map((job) => (source.provider === "greenhouse" ? normalizeGreenhouseJob(source, job) : normalizeAshbyJob(source, job)))
+        .filter((job): job is LiveHomepageJob => Boolean(job))
+        .sort((left, right) => new Date(right.postedAt).getTime() - new Date(left.postedAt).getTime());
 
-  try {
-    const response = await fetch(url, {
-      headers: companyRequestHeaders,
-      next: { revalidate: 600 },
-      signal: AbortSignal.timeout(8_000)
-    });
+      return jobs;
+    },
+    { headers: companyRequestHeaders, next: { revalidate: 600 } }
+  );
 
-    if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`);
-    }
+  const liveJobs = response.ok ? response.value : [];
+  const liveNewestJobAt = liveJobs[0]?.postedAt ?? null;
+  const hasLiveJobs = liveJobs.length > 0;
+  const hasCachedJobs = Boolean(cachedResult?.jobs?.length);
+  const shouldUseCache = !response.ok && hasCachedJobs;
+  const jobs = shouldUseCache ? (cachedResult?.jobs ?? []) : liveJobs;
+  const cachedHealth = cachedResult?.sourceHealth;
+  const cachedLastSuccessAt = cachedHealth?.lastSuccessAt ?? cachedHealth?.newestJobAt ?? null;
+  const sourceHealth: SourceHealth = {
+    key: source.key,
+    company: source.company,
+    provider: source.provider,
+    status: hasLiveJobs ? "live" : shouldUseCache ? "cached" : response.ok ? "empty" : "failed",
+    jobCount: jobs.length,
+    newestJobAt: jobs[0]?.postedAt ?? null,
+    lastAttemptAt: attemptedAt,
+    lastSuccessAt: hasLiveJobs ? liveNewestJobAt : cachedLastSuccessAt,
+    lastError: response.ok ? null : response.error,
+    usedCache: shouldUseCache
+  };
 
-    const payload = (await response.json()) as { jobs?: Record<string, unknown>[] };
-    const rawJobs = Array.isArray(payload.jobs) ? payload.jobs : [];
-    const jobs = rawJobs
-      .map((job) => (source.provider === "greenhouse" ? normalizeGreenhouseJob(source, job) : normalizeAshbyJob(source, job)))
-      .filter((job): job is LiveHomepageJob => Boolean(job))
-      .sort((left, right) => new Date(right.postedAt).getTime() - new Date(left.postedAt).getTime());
-
-    return {
-      jobs,
-      sourceHealth: {
-        key: source.key,
-        company: source.company,
-        provider: source.provider,
-        status: "live" as const,
-        jobCount: jobs.length,
-        newestJobAt: jobs[0]?.postedAt ?? null
-      },
-      error: null
-    };
-  } catch (error) {
-    return {
-      jobs: [] as LiveHomepageJob[],
-      sourceHealth: {
-        key: source.key,
-        company: source.company,
-        provider: source.provider,
-        status: "error" as const,
-        jobCount: 0,
-        newestJobAt: null
-      },
-      error: `${source.company}: ${error instanceof Error ? error.message : "Unknown feed error"}`
-    };
+  if (!response.ok) {
+    console.warn(`[jobanxiety] source fetch failed for ${source.key}: ${response.error}`);
+  } else if (!hasLiveJobs) {
+    console.info(`[jobanxiety] source ${source.key} returned no jobs`);
   }
+
+  return {
+    jobs,
+    sourceHealth,
+    error: response.ok ? null : `${source.company}: ${response.error}`
+  };
 }
 
 function readTag(block: string, tag: string) {
@@ -565,30 +719,44 @@ function parseNewsItems(xml: string, category: NewsCategory) {
   return items;
 }
 
-async function loadNewsFeed(spec: NewsFeedSpec) {
-  try {
-    const response = await fetch(buildNewsUrl(spec.query), {
-      headers: companyRequestHeaders,
-      next: { revalidate: 900 },
-      signal: AbortSignal.timeout(8_000)
-    });
+async function loadNewsFeed(spec: NewsFeedSpec, cachedResult: StoredNewsResult | null) {
+  const attemptedAt = new Date().toISOString();
+  const response = await fetchWithRetries(
+    buildNewsUrl(spec.query),
+    async (response) => parseNewsItems(await response.text(), spec.category),
+    { headers: companyRequestHeaders, next: { revalidate: 900 } }
+  );
 
-    if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`);
-    }
+  const liveItems = response.ok ? response.value : [];
+  const hasLiveItems = liveItems.length > 0;
+  const hasCachedItems = Boolean(cachedResult?.items?.length);
+  const shouldUseCache = !response.ok && hasCachedItems;
+  const items = shouldUseCache ? (cachedResult?.items ?? []) : liveItems;
+  const cachedHealth = cachedResult?.newsHealth;
+  const cachedLastSuccessAt = cachedHealth?.lastSuccessAt ?? cachedHealth?.newestItemAt ?? null;
+  const newsHealth: NewsHealth = {
+    key: spec.key,
+    category: spec.category,
+    status: hasLiveItems ? "live" : shouldUseCache ? "cached" : response.ok ? "empty" : "failed",
+    itemCount: items.length,
+    newestItemAt: items[0]?.publishedAt ?? null,
+    lastAttemptAt: attemptedAt,
+    lastSuccessAt: hasLiveItems ? items[0]?.publishedAt ?? null : cachedLastSuccessAt,
+    lastError: response.ok ? null : response.error,
+    usedCache: shouldUseCache
+  };
 
-    const xml = await response.text();
-
-    return {
-      items: parseNewsItems(xml, spec.category),
-      error: null
-    };
-  } catch (error) {
-    return {
-      items: [] as LiveNewsItem[],
-      error: `News (${spec.category}): ${error instanceof Error ? error.message : "Unknown feed error"}`
-    };
+  if (!response.ok) {
+    console.warn(`[jobanxiety] news feed failed for ${spec.key}: ${response.error}`);
+  } else if (!hasLiveItems) {
+    console.info(`[jobanxiety] news feed ${spec.key} returned no items`);
   }
+
+  return {
+    items,
+    newsHealth,
+    error: response.ok ? null : `News (${spec.category}): ${response.error}`
+  };
 }
 
 function dedupeJobs(jobs: LiveHomepageJob[]) {
@@ -752,13 +920,14 @@ function buildHomepageSummary(
   news: LiveNewsItem[],
   roleMomentum: LiveRoleMomentum[],
   sourceHealth: SourceHealth[],
-  liveNewsSources: number
+  newsHealth: NewsHealth[]
 ) {
   const jobsPostedToday = jobs.filter((job) => isWithinDays(job.postedAt, 1)).length;
   const totalOpenRoles = jobs.length;
   const companiesHiring = new Set(jobs.map((job) => job.company)).size;
   const leadStory = news[0] ?? null;
-  const liveJobSources = sourceHealth.filter((source) => source.status === "live").length;
+  const liveJobSources = sourceHealth.filter((source) => source.status !== "failed").length;
+  const liveNewsSources = newsHealth.filter((item) => item.status !== "failed").length;
   const trendingRole = roleMomentum[0]?.familyLabel ?? "No clear role pulse yet";
 
   const headline =
@@ -790,19 +959,22 @@ function buildHomepageSummary(
 
 async function getHomepageFeedUncached(): Promise<HomepageFeed> {
   const generatedAt = new Date().toISOString();
+  const storedSnapshot = await readStoredSnapshot();
+  const cachedJobResults = mapStoredSourceResults(storedSnapshot);
+  const cachedNewsResults = mapStoredNewsResults(storedSnapshot);
   const [jobResults, newsResults] = await Promise.all([
-    Promise.all(JOB_SOURCES.map((source) => loadJobsFromSource(source))),
-    Promise.all(NEWS_FEEDS.map((spec) => loadNewsFeed(spec)))
+    Promise.all(JOB_SOURCES.map((source) => loadJobsFromSource(source, cachedJobResults.get(source.key) ?? null))),
+    Promise.all(NEWS_FEEDS.map((spec) => loadNewsFeed(spec, cachedNewsResults.get(spec.key) ?? null)))
   ]);
 
   const jobs = dedupeJobs(jobResults.flatMap((result) => result.jobs)).sort(
     (left, right) => new Date(right.postedAt).getTime() - new Date(left.postedAt).getTime()
   );
   const sourceHealth = jobResults.map((result) => result.sourceHealth);
+  const newsHealth = newsResults.map((result) => result.newsHealth);
   const errors = [...jobResults.map((result) => result.error), ...newsResults.map((result) => result.error)].filter(
     (error): error is string => Boolean(error)
   );
-  const liveNewsSources = newsResults.filter((result) => !result.error).length;
   const news = newsResults
     .flatMap((result) => result.items)
     .filter((item, index, items) => items.findIndex((candidate) => candidate.title === item.title) === index)
@@ -811,10 +983,35 @@ async function getHomepageFeedUncached(): Promise<HomepageFeed> {
   const roleMomentum = buildRoleMomentum(jobs).slice(0, 6);
   const trendingJobs = buildTrendingJobs(jobs, roleMomentum).slice(0, 6);
   const hiringCompanies = buildHiringCompanies(jobs).slice(0, 6);
-  const summary = buildHomepageSummary(jobs, news, roleMomentum, sourceHealth, liveNewsSources);
+  const summary = buildHomepageSummary(jobs, news, roleMomentum, sourceHealth, newsHealth);
+  const lastSuccessfulRefreshAt = latestIso([
+    ...jobResults.map((result) => result.sourceHealth.lastSuccessAt),
+    ...newsResults.map((result) => result.newsHealth.lastSuccessAt)
+  ]);
+
+  if (jobs.length > 0 || news.length > 0) {
+    await persistStoredSnapshot({
+      version: HOME_FEED_CACHE_VERSION,
+      generatedAt,
+      lastSuccessfulRefreshAt,
+      jobResults: jobResults.map((result) => ({
+        sourceKey: result.sourceHealth.key,
+        jobs: result.jobs,
+        sourceHealth: result.sourceHealth,
+        error: result.error
+      })),
+      newsResults: newsResults.map((result) => ({
+        specKey: result.newsHealth.key,
+        items: result.items,
+        newsHealth: result.newsHealth,
+        error: result.error
+      }))
+    });
+  }
 
   return {
     generatedAt,
+    lastSuccessfulRefreshAt,
     headline: summary.headline,
     subheading: summary.subheading,
     newestJobs: newestJobs.slice(0, 12),
@@ -824,6 +1021,7 @@ async function getHomepageFeedUncached(): Promise<HomepageFeed> {
     hiringCompanies,
     roleMomentum,
     sourceHealth,
+    newsHealth,
     stats: summary.stats,
     errors
   };
@@ -831,19 +1029,69 @@ async function getHomepageFeedUncached(): Promise<HomepageFeed> {
 
 async function getLiveJobsSnapshotUncached(): Promise<LiveJobsSnapshot> {
   const generatedAt = new Date().toISOString();
-  const jobResults = await Promise.all(JOB_SOURCES.map((source) => loadJobsFromSource(source)));
+  const storedSnapshot = await readStoredSnapshot();
+  const cachedJobResults = mapStoredSourceResults(storedSnapshot);
+  const cachedNewsResults = mapStoredNewsResults(storedSnapshot);
+  const jobResults = await Promise.all(JOB_SOURCES.map((source) => loadJobsFromSource(source, cachedJobResults.get(source.key) ?? null)));
   const jobs = dedupeJobs(jobResults.flatMap((result) => result.jobs)).sort(
     (left, right) => new Date(right.postedAt).getTime() - new Date(left.postedAt).getTime()
   );
   const sourceHealth = jobResults.map((result) => result.sourceHealth);
+  const newsHealth = NEWS_FEEDS.map((spec) => cachedNewsResults.get(spec.key)?.newsHealth ?? null).filter((item): item is NewsHealth => Boolean(item));
   const errors = jobResults.map((result) => result.error).filter((error): error is string => Boolean(error));
   const hiringCompanies = buildHiringCompanies(jobs);
+  const lastSuccessfulRefreshAt = latestIso([
+    ...jobResults.map((result) => result.sourceHealth.lastSuccessAt),
+    ...Array.from(cachedNewsResults.values()).map((result) => result.newsHealth.lastSuccessAt)
+  ]);
+
+  if (jobs.length > 0) {
+    await persistStoredSnapshot({
+      version: HOME_FEED_CACHE_VERSION,
+      generatedAt,
+      lastSuccessfulRefreshAt,
+      jobResults: jobResults.map((result) => ({
+        sourceKey: result.sourceHealth.key,
+        jobs: result.jobs,
+        sourceHealth: result.sourceHealth,
+        error: result.error
+      })),
+      newsResults: NEWS_FEEDS.map((spec) => {
+        const cachedNews = cachedNewsResults.get(spec.key);
+        return cachedNews
+          ? {
+              specKey: spec.key,
+              items: cachedNews.items,
+              newsHealth: cachedNews.newsHealth,
+              error: cachedNews.error
+            }
+          : {
+              specKey: spec.key,
+              items: [],
+              newsHealth: {
+                key: spec.key,
+                category: spec.category,
+                status: "empty",
+                itemCount: 0,
+                newestItemAt: null,
+                lastAttemptAt: generatedAt,
+                lastSuccessAt: null,
+                lastError: null,
+                usedCache: false
+              },
+              error: null
+            };
+      })
+    });
+  }
 
   return {
     generatedAt,
+    lastSuccessfulRefreshAt,
     jobs,
     hiringCompanies,
     sourceHealth,
+    newsHealth,
     errors
   };
 }

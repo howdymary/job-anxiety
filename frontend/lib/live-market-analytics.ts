@@ -25,6 +25,7 @@ export type LiveWorkplaceMixPoint = {
 
 export type LiveMarketAnalytics = {
   generatedAt: string;
+  lastSuccessfulRefreshAt: string | null;
   weeklyOpenings: LiveWeeklyOpeningsPoint[];
   roleFamilies: LiveRoleFamilyPoint[];
   companies: LiveCompanyHiringPoint[];
@@ -145,6 +146,7 @@ export async function getLiveMarketAnalytics(): Promise<LiveMarketAnalytics> {
 
   return {
     generatedAt: snapshot.generatedAt,
+    lastSuccessfulRefreshAt: snapshot.lastSuccessfulRefreshAt,
     weeklyOpenings: buildWeeklyOpenings(snapshot.jobs),
     roleFamilies: buildRoleFamilies(snapshot.jobs),
     companies: snapshot.hiringCompanies.slice(0, 8).map((item) => ({
@@ -156,7 +158,7 @@ export async function getLiveMarketAnalytics(): Promise<LiveMarketAnalytics> {
       totalOpenRoles: snapshot.jobs.length,
       postedLast7Days: snapshot.jobs.filter((job) => Date.now() - new Date(job.postedAt).getTime() <= SEVEN_DAYS_MS).length,
       companiesHiring: snapshot.hiringCompanies.length,
-      liveBoards: snapshot.sourceHealth.filter((item) => item.status === "live").length,
+      liveBoards: snapshot.sourceHealth.filter((item) => item.status !== "failed").length,
       totalBoards: snapshot.sourceHealth.length,
       salaryCoveragePct: snapshot.jobs.length > 0 ? Math.round((salaryCoverageCount / snapshot.jobs.length) * 100) : 0
     },
