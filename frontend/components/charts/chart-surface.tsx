@@ -33,13 +33,32 @@ export function ChartSurface({ children, className, fallback = DEFAULT_FALLBACK 
 
     let frameId = 0;
     let timeoutId = 0;
+    let settleTimeoutId = 0;
+
+    const resolveBounds = () => {
+      let width = Math.max(0, Math.floor(element.getBoundingClientRect().width));
+      let height = Math.max(0, Math.floor(element.getBoundingClientRect().height));
+      let parent = element.parentElement;
+
+      while ((width === 0 || height === 0) && parent) {
+        const parentBounds = parent.getBoundingClientRect();
+
+        if (width === 0 && parentBounds.width > 0) {
+          width = Math.floor(parentBounds.width);
+        }
+
+        if (height === 0 && parentBounds.height > 0) {
+          height = Math.floor(parentBounds.height);
+        }
+
+        parent = parent.parentElement;
+      }
+
+      return { width, height };
+    };
 
     const measure = () => {
-      const bounds = element.getBoundingClientRect();
-      const next = {
-        width: Math.max(0, Math.floor(bounds.width)),
-        height: Math.max(0, Math.floor(bounds.height))
-      };
+      const next = resolveBounds();
 
       setSize((current) => (current.width === next.width && current.height === next.height ? current : next));
     };
@@ -51,6 +70,7 @@ export function ChartSurface({ children, className, fallback = DEFAULT_FALLBACK 
 
     scheduleMeasure();
     timeoutId = window.setTimeout(measure, 120);
+    settleTimeoutId = window.setTimeout(measure, 360);
 
     const resizeObserver = typeof ResizeObserver !== "undefined" ? new ResizeObserver(scheduleMeasure) : null;
     resizeObserver?.observe(element);
@@ -61,6 +81,7 @@ export function ChartSurface({ children, className, fallback = DEFAULT_FALLBACK 
     return () => {
       cancelAnimationFrame(frameId);
       window.clearTimeout(timeoutId);
+      window.clearTimeout(settleTimeoutId);
       resizeObserver?.disconnect();
       window.removeEventListener("resize", scheduleMeasure);
       window.removeEventListener("orientationchange", scheduleMeasure);
