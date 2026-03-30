@@ -23,6 +23,19 @@ subscribersRoutes.post("/", zValidator("json", subscriberCreateSchema), async (c
       ipAddress
     });
 
+    if (result.provider === "stub") {
+      return c.json(
+        {
+          error: {
+            code: "NEWSLETTER_NOT_CONFIGURED",
+            message: "Newsletter signup is not configured on the API yet."
+          },
+          hostedSignupUrl: "https://jobanxiety.beehiiv.com/?modal=signup"
+        },
+        503
+      );
+    }
+
     return c.json(
       {
         accepted: result.accepted,
