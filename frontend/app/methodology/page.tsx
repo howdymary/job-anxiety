@@ -14,7 +14,7 @@ export default function MethodologyPage() {
       <SectionHeading
         eyebrow="Methodology"
         title="How jobanxiety.ai decides what belongs in the numbers"
-        description="The trust model comes before the scale. That means clear source rules, conservative attribution, frozen methodology versions, and a public record of what is still mocked in the current build."
+        description="The trust model comes before the scale. That means clear source rules, conservative attribution, frozen methodology versions, and explicit rules for what stays off the public site."
       />
 
       <section className="editorial-card p-6">
@@ -58,6 +58,37 @@ export default function MethodologyPage() {
 Accessed [date]. https://jobanxiety.ai/[path]
 Methodology: https://jobanxiety.ai/methodology (${methodologyMeta.version}).`}
         </pre>
+      </section>
+
+      <section className="editorial-card p-6">
+        <h2 className="section-title text-[1.5rem]">Occupation page scope</h2>
+        <div className="prose-block mt-5">
+          <p>
+            The public occupation page now publishes only directly sourced BLS fields: employment, wage levels, wage
+            percentiles when available, projected growth, and annual openings. Those numbers come from the Occupational
+            Outlook Handbook and related BLS release tables.
+          </p>
+          <p>
+            Published AI-exposure mappings, task-overlap estimates, posting-direction models, and transition guidance
+            remain out of the public calculator until their provenance, methodology, and reproduction steps can be
+            audited to the same standard as the BLS inputs.
+          </p>
+        </div>
+      </section>
+
+      <section className="editorial-card p-6">
+        <h2 className="section-title text-[1.5rem]">Publication rule</h2>
+        <div className="prose-block mt-5">
+          <p>
+            The public research, trends, and layoff pages now publish only BLS occupation values, live ATS aggregates,
+            and confirmed layoff disclosures from official company or SEC documents. If a series cannot clear that bar
+            yet, it is removed from those public charts instead of published with decorative caveats.
+          </p>
+          <p>
+            The same rule now applies to the occupation page. If a modeled layer cannot be reproduced from audited public
+            inputs, it stays off the public site until that work is complete.
+          </p>
+        </div>
       </section>
     </div>
   );

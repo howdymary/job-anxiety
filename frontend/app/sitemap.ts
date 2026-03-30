@@ -1,48 +1,37 @@
 import type { MetadataRoute } from "next";
 
-import { careerNotes, insightArticles } from "@/lib/editorial-content";
-import { companies, jobs } from "@/lib/market-data";
+import { getLiveJobsSnapshot, getLiveJobSlug } from "@/lib/live-homepage";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://jobanxiety.ai";
   const staticRoutes = [
     "",
     "/jobs",
-    "/layoffs",
+    "/check-your-occupation",
     "/companies",
-    "/career-notes",
-    "/insights",
-    "/trends",
+    "/career-notes/will-ai-replace-software-engineers",
     "/about",
     "/newsletter",
     "/methodology",
-    "/press",
     "/corrections",
     "/privacy",
-    "/terms",
-    "/api"
+    "/terms"
   ];
+
+  const snapshot = await getLiveJobsSnapshot();
 
   return [
     ...staticRoutes.map((path) => ({
       url: `${baseUrl}${path}`,
       lastModified: new Date()
     })),
-    ...jobs.map((job) => ({
-      url: `${baseUrl}/jobs/${job.slug}`,
+    ...snapshot.jobs.map((job) => ({
+      url: `${baseUrl}/jobs/${getLiveJobSlug(job)}`,
       lastModified: new Date(job.postedAt)
     })),
-    ...companies.map((company) => ({
-      url: `${baseUrl}/companies/${company.slug}`,
+    ...snapshot.hiringCompanies.map((company) => ({
+      url: `${baseUrl}/companies/${company.companySlug}`,
       lastModified: new Date()
-    })),
-    ...careerNotes.map((note) => ({
-      url: `${baseUrl}/career-notes/${note.slug}`,
-      lastModified: new Date("2026-03-25")
-    })),
-    ...insightArticles.map((articleItem) => ({
-      url: `${baseUrl}/insights/${articleItem.slug}`,
-      lastModified: new Date(articleItem.publishedAt)
     }))
   ];
 }

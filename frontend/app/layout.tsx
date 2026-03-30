@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s | JobAnxiety.ai"
   },
   description:
-    "Track AI job openings, layoffs, and labor market trends with source-verified data. Updated daily. Career guides for workers navigating AI-era change."
+    "Track live AI job openings, review official-source layoff disclosures, and read source-backed research on how AI is reshaping work."
 };
 
 type RootLayoutProps = {

@@ -6,7 +6,11 @@ import { insightArticles } from "@/lib/editorial-content";
 
 export const metadata: Metadata = {
   title: "Insights",
-  description: "Data-led editorial reporting on AI job formation, pay, and career transitions."
+  description: "Data-led editorial reporting on AI job formation, pay, and career transitions.",
+  robots: {
+    index: false,
+    follow: true
+  }
 };
 
 export default function InsightsPage() {

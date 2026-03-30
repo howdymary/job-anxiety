@@ -100,6 +100,14 @@ export type HomepageFeed = {
   errors: string[];
 };
 
+export type LiveJobsSnapshot = {
+  generatedAt: string;
+  jobs: LiveHomepageJob[];
+  hiringCompanies: LiveHiringCompany[];
+  sourceHealth: SourceHealth[];
+  errors: string[];
+};
+
 const JOB_SOURCES: JobSource[] = [
   {
     key: "openai",
@@ -597,6 +605,20 @@ function dedupeJobs(jobs: LiveHomepageJob[]) {
   });
 }
 
+function slugifySegment(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+export function getLiveJobSlug(job: Pick<LiveHomepageJob, "companySlug" | "title" | "id">) {
+  const titlePart = slugifySegment(job.title) || "role";
+  const idPart = slugifySegment(job.id) || "job";
+  return `${job.companySlug}-${titlePart}-${idPart}`;
+}
+
 function buildNewestJobs(jobs: LiveHomepageJob[]) {
   const seen = new Set<string>();
 
@@ -807,6 +829,34 @@ async function getHomepageFeedUncached(): Promise<HomepageFeed> {
   };
 }
 
+async function getLiveJobsSnapshotUncached(): Promise<LiveJobsSnapshot> {
+  const generatedAt = new Date().toISOString();
+  const jobResults = await Promise.all(JOB_SOURCES.map((source) => loadJobsFromSource(source)));
+  const jobs = dedupeJobs(jobResults.flatMap((result) => result.jobs)).sort(
+    (left, right) => new Date(right.postedAt).getTime() - new Date(left.postedAt).getTime()
+  );
+  const sourceHealth = jobResults.map((result) => result.sourceHealth);
+  const errors = jobResults.map((result) => result.error).filter((error): error is string => Boolean(error));
+  const hiringCompanies = buildHiringCompanies(jobs);
+
+  return {
+    generatedAt,
+    jobs,
+    hiringCompanies,
+    sourceHealth,
+    errors
+  };
+}
+
 export const getHomepageFeed = unstable_cache(getHomepageFeedUncached, ["homepage-feed-v1"], {
   revalidate: 600
 });
+
+export const getLiveJobsSnapshot = unstable_cache(getLiveJobsSnapshotUncached, ["live-jobs-v1"], {
+  revalidate: 600
+});
+
+export async function getLiveJobBySlug(slug: string) {
+  const snapshot = await getLiveJobsSnapshot();
+  return snapshot.jobs.find((job) => getLiveJobSlug(job) === slug) ?? null;
+}

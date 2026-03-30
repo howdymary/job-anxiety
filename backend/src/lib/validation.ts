@@ -39,6 +39,17 @@ export const jobSearchSchema = z.object({
   q: z.string().trim().min(2).max(120)
 });
 
+export const occupationSearchSchema = z.object({
+  q: z.string().trim().min(2).max(100)
+});
+
+export const occupationSocParamsSchema = z.object({
+  soc: z
+    .string()
+    .trim()
+    .regex(/^\d{2}-\d{4}$/, "SOC code must match 00-0000 format")
+});
+
 export const companyQuerySchema = paginationQuerySchema.extend({
   q: z.string().trim().min(1).max(120).optional(),
   tier: csvList(COMPANY_TIERS)

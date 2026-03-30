@@ -11,14 +11,17 @@ type SearchCommandProps = {
 const items = [
   { href: "/jobs", label: "All jobs", meta: "Market" },
   { href: "/layoffs", label: "Layoff tracker", meta: "Market" },
+  { href: "/check-your-occupation", label: "Occupation check", meta: "Tool" },
   { href: "/career-notes", label: "Career Notes", meta: "Guides" },
   { href: "/companies", label: "Companies", meta: "Directory" },
   { href: "/insights", label: "Insights", meta: "Editorial" },
   { href: "/trends", label: "Trends", meta: "Data" },
+  { href: "/research", label: "Research", meta: "Research" },
   { href: "/methodology", label: "Methodology", meta: "Trust" },
   { href: "/press", label: "Press", meta: "Resources" },
   { href: "/api", label: "API docs", meta: "Developers" },
   { href: "/corrections", label: "Corrections", meta: "Trust" },
+  { href: "/career-notes/will-ai-replace-software-engineers", label: "Will AI replace software engineers?", meta: "Analysis" },
   { href: "/career-notes/ai-engineer", label: "AI Engineer guide", meta: "Career note" },
   { href: "/career-notes/gtm-engineer", label: "GTM Engineer guide", meta: "Career note" },
   { href: "/insights/will-ai-take-my-job", label: "Will AI take my job?", meta: "Insight" }

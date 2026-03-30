@@ -11,6 +11,7 @@ const desktopItems = [
   { href: "/jobs", label: "Jobs" },
   { href: "/layoffs", label: "Layoffs" },
   { href: "/trends", label: "Trends" },
+  { href: "/research", label: "Research" },
   { href: "/career-notes", label: "Career Guides" }
 ];
 
@@ -19,6 +20,7 @@ const mobileItems = [
   { href: "/jobs", label: "Jobs", icon: WorkIcon },
   { href: "/layoffs", label: "Layoffs", icon: LayoffIcon },
   { href: "/trends", label: "Trends", icon: TrendsIcon },
+  { href: "/research", label: "Research", icon: SearchIcon },
   { href: "/career-notes", label: "Guides", icon: NotesIcon }
 ];
 
@@ -117,7 +119,7 @@ export function SiteHeader() {
         aria-label="Mobile navigation"
         className="mobile-only fixed inset-x-3 bottom-3 z-50 rounded-[var(--ja-radius-lg)] border border-[var(--ja-fog)] bg-[rgba(250,250,249,0.96)] px-2 py-1.5 shadow-[var(--ja-shadow-lg)] backdrop-blur"
       >
-        <ul className="grid grid-cols-5 gap-1">
+        <ul className="grid grid-cols-6 gap-1">
           {mobileItems.map((item) => {
             const active = matchesPath(pathname, item.href);
             const Icon = item.icon;

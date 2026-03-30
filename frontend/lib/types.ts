@@ -100,10 +100,42 @@ export type LayoffEvent = {
   aiAttribution?: string;
 };
 
+export type AuditedLayoffEvent = {
+  slug: string;
+  company: string;
+  companySlug?: string;
+  announcedLabel: string;
+  affectedCount: number;
+  affectedCountLabel: string;
+  affectedPercent?: number;
+  isApproximate?: boolean;
+  confidence: "Confirmed";
+  aiSignal: LayoffAiSignal;
+  sourceType: string;
+  sourceLabel: string;
+  sourceUrl: string;
+  macroContext: string;
+  aiAttribution?: string;
+  secondarySources?: string[];
+};
+
 export type DisplacementPoint = {
   label: string;
   jobsCreated: number;
   aiLayoffs: number;
+};
+
+export type VerifiedOccupationOutlook = {
+  occupation: string;
+  socCode: string;
+  majorGroup: string;
+  employment2024: number;
+  medianWage2024: number;
+  projectedGrowthPct: number;
+  projectedGrowthAbs: number;
+  annualOpenings?: number;
+  sourceLabel: string;
+  sourceUrl: string;
 };
 
 export type MethodologySection = {

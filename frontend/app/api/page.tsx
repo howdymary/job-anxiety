@@ -5,7 +5,11 @@ import { apiEndpoints } from "@/lib/platform-data";
 
 export const metadata: Metadata = {
   title: "API",
-  description: "Public API documentation for jobs, companies, trends, and newsletter signup."
+  description: "Current public API surface for jobanxiety.ai. Only live, source-backed endpoints are listed here.",
+  robots: {
+    index: false,
+    follow: true
+  }
 };
 
 export default function ApiPage() {
@@ -14,7 +18,7 @@ export default function ApiPage() {
       <SectionHeading
         eyebrow="API"
         title="Public API"
-        description="The current backend exposes a first pass on jobs, companies, trends, and subscriber signup. Layoff and summary endpoints are part of the next backend slice and are shown here as planned surface area."
+        description="Only currently published endpoints are documented here. Mock or withheld data surfaces are intentionally excluded until their backing datasets are audit-ready."
       />
 
       <section className="editorial-card p-6">
@@ -46,15 +50,14 @@ export default function ApiPage() {
           <div className="grid gap-4">
             <div>
               <p className="eyebrow">Auth model</p>
-              <p className="body-copy mt-3">Anonymous requests should stay rate limited and free. Research and newsroom access can move to API keys later, once the layoff and snapshot endpoints ship.</p>
+              <p className="body-copy mt-3">Anonymous requests stay rate limited and read-only. Additional newsroom or research access can be layered in later once those datasets are live and audited.</p>
             </div>
             <div>
-              <p className="eyebrow">Rate-limit headers</p>
-              <pre className="mt-3 overflow-x-auto border border-[var(--color-border)] bg-[var(--color-bg-sunken)] p-4 text-[0.8rem] leading-6 text-[var(--color-text)]">
-{`X-RateLimit-Limit: 100
-X-RateLimit-Remaining: 87
-X-RateLimit-Reset: 1711724400`}
-              </pre>
+              <p className="eyebrow">Current state</p>
+              <p className="body-copy mt-3">
+                The documented surface is deliberately small. Occupation search, the sourced occupation brief, and subscriber signup are live.
+                Jobs, companies, trends, and layoff APIs are withheld until they are backed by production data rather than placeholders.
+              </p>
             </div>
           </div>
         </div>

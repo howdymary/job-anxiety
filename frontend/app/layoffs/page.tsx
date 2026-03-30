@@ -4,45 +4,50 @@ import Link from "next/link";
 import { ContextPanel } from "@/components/context-panel";
 import { LayoffConfidenceBadge } from "@/components/layoff-confidence-badge";
 import { SectionHeading } from "@/components/section-heading";
-import { layoffEvents, marketPulseStats, methodologyMeta } from "@/lib/platform-data";
+import { auditedLayoffEvents, methodologyMeta } from "@/lib/platform-data";
 
 export const metadata: Metadata = {
-  title: "Layoff Tracker",
-  description: "Track recent layoff events with confidence labels, source classes, and plain-language context."
+  title: "Layoff Log",
+  description:
+    "Official-source layoff disclosures tracked by jobanxiety.ai. This page publishes only confirmed company or SEC documents.",
+  robots: {
+    index: false,
+    follow: true
+  }
 };
 
 export default function LayoffsPage() {
+  const totalAffected = auditedLayoffEvents.reduce((sum, event) => sum + event.affectedCount, 0);
+  const aiCitedEvents = auditedLayoffEvents.filter((event) => event.aiSignal === "Cited").length;
+
   return (
     <div className="page-grid-wide grid gap-12">
       <SectionHeading
         eyebrow="Layoffs"
-        title="A layoff tracker built for verification, not spectacle"
-        description="Every event carries a confidence label, a source class, and plain-language context. The public build currently uses curated sample records while the production pipeline is being wired."
+        title="Official-source workforce reductions"
+        description="This public page now publishes only confirmed disclosures from SEC filings, annual reports, or company investor-relations releases. Broader layoff tracking returns only after the provenance pipeline is fully audited."
       />
 
-      <div className="grid gap-4 md:grid-cols-4">
-        {marketPulseStats.map((stat) => (
-          <Link key={stat.label} href={stat.href} className="editorial-card p-5 transition hover:-translate-y-px hover:border-[var(--color-border-hover)]">
-            <p className="eyebrow">{stat.label}</p>
-            <p className="data-copy mt-4 text-[2rem]">{stat.value}</p>
-            <p className="fine-print mt-3">{stat.context}</p>
-          </Link>
-        ))}
-      </div>
+      <section className="grid gap-4 md:grid-cols-3">
+        <SummaryCard label="Confirmed disclosures" value={auditedLayoffEvents.length.toString()} note="Current entries on the public page" />
+        <SummaryCard label="Workers affected" value={totalAffected.toLocaleString("en-US")} note="Includes one approximate figure derived from a disclosed workforce percentage" />
+        <SummaryCard label="AI cited in source text" value={aiCitedEvents.toString()} note="Events where the primary source itself mentions AI in the restructuring context" />
+      </section>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.6fr)]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
         <section className="grid gap-4">
-          {layoffEvents.map((event) => (
+          {auditedLayoffEvents.map((event) => (
             <article key={event.slug} className="editorial-card p-5">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="eyebrow">{event.sourceType}</p>
                   <h2 className="section-title mt-3 text-[1.45rem]">
-                    {event.company} · {event.affectedCount.toLocaleString()} affected
+                    {event.company} · {event.affectedCountLabel}
                   </h2>
                   <p className="fine-print mt-3">
-                    Announced {new Date(event.announcedDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-                    {typeof event.affectedPercent === "number" ? ` · ${event.affectedPercent}% of staff` : ""}
+                    Announced {event.announcedLabel}
+                    {typeof event.affectedPercent === "number" ? ` · ${event.affectedPercent}% of workforce` : ""}
+                    {event.isApproximate ? " · approximate count" : ""}
                   </p>
                 </div>
                 <LayoffConfidenceBadge confidence={event.confidence} />
@@ -51,36 +56,34 @@ export default function LayoffsPage() {
               <div className="mt-5 grid gap-4 md:grid-cols-[minmax(0,1fr)_18rem]">
                 <div className="grid gap-4">
                   <p className="body-copy muted-copy">{event.macroContext}</p>
-                  {event.aiAttribution ? (
-                    <p className="body-copy">
-                      <strong>AI language:</strong> {event.aiAttribution}
-                    </p>
-                  ) : (
-                    <p className="body-copy">
-                      <strong>AI signal:</strong> {event.aiSignal}
-                    </p>
-                  )}
-                  {event.departments?.length ? (
-                    <p className="fine-print">Departments: {event.departments.join(", ")}.</p>
+                  <p className="body-copy">
+                    <strong>AI signal:</strong>{" "}
+                    {event.aiAttribution
+                      ? event.aiAttribution
+                      : event.aiSignal === "Cited"
+                        ? "AI appears in the source text."
+                        : "The primary source does not attribute the cut to AI."}
+                  </p>
+                  {event.secondarySources?.length ? (
+                    <div className="grid gap-2">
+                      {event.secondarySources.map((item) => (
+                        <p key={item} className="fine-print">
+                          {item}
+                        </p>
+                      ))}
+                    </div>
                   ) : null}
                 </div>
 
                 <div className="grid gap-3">
-                  <p className="eyebrow">Sources</p>
+                  <p className="eyebrow">Primary source</p>
                   <a href={event.sourceUrl} target="_blank" rel="noreferrer" className="inline-link body-copy">
                     {event.sourceLabel}
                   </a>
-                  {event.secondarySources?.map((item) => (
-                    <p key={item} className="fine-print">
-                      {item}
-                    </p>
-                  ))}
-                  {event.companySlug ? (
-                    <Link href={`/companies/${event.companySlug}`} className="arrow-link mt-2">
-                      <span>Open company profile</span>
-                      <span>→</span>
-                    </Link>
-                  ) : null}
+                  <Link href="/methodology" className="arrow-link mt-2">
+                    <span>Read the sourcing rules</span>
+                    <span>→</span>
+                  </Link>
                 </div>
               </div>
             </article>
@@ -89,32 +92,42 @@ export default function LayoffsPage() {
 
         <div className="grid gap-4">
           <ContextPanel
-            title="How the confidence labels work"
+            title="How this page is constrained"
             body={
               <>
-                <p>Confirmed means filing-grade or two-source verification. Reported means a single credible source. Rumored stays out of headline totals.</p>
-                <p>AI-related language is handled conservatively. The point is to separate direct attribution from soft context, not blur them together for drama.</p>
+                <p>Only confirmed official-source disclosures are published here right now. If an event depends on a generic roundup, an unattributed report, or a weak source chain, it stays off the page.</p>
+                <p>That makes the log incomplete in the short term, but it keeps the published counts defensible.</p>
               </>
             }
             footer={
               <Link href="/methodology" className="arrow-link">
-                <span>Read the methodology</span>
+                <span>Methodology</span>
                 <span>→</span>
               </Link>
             }
           />
 
           <ContextPanel
-            title="Current build status"
+            title="Current status"
             body={
               <>
                 <p>{methodologyMeta.status}</p>
-                <p>That means this page is useful as a product and editorial prototype, but it is not yet the live, audit-backed tracker described in the production spec.</p>
+                <p>The broader layoff tracker remains intentionally narrower than the product brief until the full provenance pipeline is live.</p>
               </>
             }
           />
         </div>
       </div>
     </div>
+  );
+}
+
+function SummaryCard({ label, value, note }: { label: string; value: string; note: string }) {
+  return (
+    <article className="editorial-card p-5">
+      <p className="eyebrow">{label}</p>
+      <p className="mt-3 font-[var(--ja-font-data)] text-[2rem] leading-tight text-[var(--ja-ink)]">{value}</p>
+      <p className="fine-print mt-3">{note}</p>
+    </article>
   );
 }

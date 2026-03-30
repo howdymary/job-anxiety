@@ -26,12 +26,12 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
   const intentCards = [
     {
       title: "I got laid off",
-      description: "Current hiring signals, layoff context, and a next step that does not waste your time.",
+      description: "Current hiring signals, official-source layoff disclosures, and a next step that does not waste your time.",
       accent: "var(--ja-coral)",
       links: [
-        { href: "/layoffs", label: "Latest layoff tracker" },
+        { href: "/layoffs", label: "Official-source layoff log" },
         { href: "/jobs", label: `Browse ${formatWholeNumber(totalOpenRoles)} live AI roles` },
-        { href: "/career-notes/will-ai-take-my-job", label: "What the data says about role risk" }
+        { href: "/check-your-occupation", label: "Check your occupation" }
       ]
     },
     {
@@ -46,12 +46,12 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
     },
     {
       title: "I'm tracking the market",
-      description: "Source-verified signals, a weekly market brief, and clean paths into the methodology and API.",
+      description: "Tracked live signals, a weekly market brief, and clear paths into methodology and source notes.",
       accent: "var(--ja-chart-2)",
       links: [
         { href: "/trends", label: "Trends dashboard" },
         { href: "/newsletter", label: "Weekly market brief" },
-        { href: "/press", label: "API and embeddable charts" }
+        { href: "/press", label: "Press and API status" }
       ]
     }
   ];
@@ -71,8 +71,8 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
               <div className="max-w-[40rem]">
                 <h1 className="display-title">AI is changing work. Know where you stand.</h1>
                 <p className="body-copy muted-copy mt-[var(--ja-space-4)] max-w-[34rem] text-[var(--ja-text-lg)] leading-[var(--ja-leading-relaxed)]">
-                  Track AI job openings, monitor layoffs, and find your next move with verified data, current hiring signals,
-                  and honest guidance.
+                  Track AI job openings, monitor official-source layoff disclosures, and find your next move with live
+                  hiring signals, clear sourcing, and honest guidance.
                 </p>
 
                 <div className="mt-[var(--ja-space-6)] flex flex-wrap gap-x-[var(--ja-space-5)] gap-y-[var(--ja-space-3)]">
@@ -80,8 +80,12 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
                     <span>Browse live jobs</span>
                     <span>→</span>
                   </Link>
+                  <Link href="/check-your-occupation" className="arrow-link">
+                    <span>Check your occupation</span>
+                    <span>→</span>
+                  </Link>
                   <Link href="/layoffs" className="arrow-link">
-                    <span>Open layoff tracker</span>
+                    <span>Open layoff log</span>
                     <span>→</span>
                   </Link>
                   <Link href="/methodology" className="arrow-link">
@@ -213,7 +217,7 @@ export function HomepageStream({ feed }: HomepageStreamProps) {
               <h2 className="section-title mt-[var(--ja-space-3)]">What is moving hiring, layoffs, wages, and workplace policy</h2>
             </div>
             <p className="fine-print max-w-[18rem] text-left md:text-right">
-              News links point back to the original source. If the feeds go quiet, this desk simply thins out.
+              News links open the reporting item returned by the live Google News feed. If the feeds go quiet, this desk simply thins out.
             </p>
           </div>
 

@@ -22,8 +22,12 @@ export function generateMetadata({ params }: CareerNotePageProps): Metadata {
   }
 
   return {
-    title: `${note.role}: Salary, Skills & How to Get Hired (2026)`,
-    description: `Everything about becoming an ${note.role}. Salary: ${note.salaryRange}. ${note.growth}. Who's hiring and how to break in.`
+    title: `${note.role} Career Guide | JobAnxiety.ai`,
+    description: `Editorial guide to ${note.role}: what the role is, how the work is changing, and what to look for before you pivot.`,
+    robots: {
+      index: false,
+      follow: true
+    }
   };
 }
 
@@ -52,14 +56,22 @@ export default function CareerNotePage({ params }: CareerNotePageProps) {
       <EditorialShell
         eyebrow="Career note"
         title={note.title}
-        subtitle={note.subtitle}
-        metaLine={`${note.salaryRange} · ${note.growth} · ${note.experienceBand} · Updated ${note.updatedAt}`}
+        subtitle={note.cardDescription}
+        metaLine={`${note.experienceBand} · Updated ${note.updatedAt} · Working guide under source review`}
         sections={note.sections}
-        ctaHref={`/jobs?category=${note.slug}`}
+        ctaHref={`/jobs?q=${encodeURIComponent(note.role)}`}
         ctaLabel={`View open ${note.role} roles`}
       />
 
       <div className="page-grid-prose prose-block">
+        <section className="rounded-[var(--ja-radius-lg)] border border-[var(--ja-fog)] bg-[var(--ja-cloud)] p-6">
+          <h2>Editorial status</h2>
+          <p>
+            This role guide is being re-sourced before release. The qualitative framing is useful, but salary bands,
+            growth claims, and hiring lists have been stripped back until they can be tied to a stronger evidence base.
+          </p>
+        </section>
+
         {note.sections.map((section) => (
           <section key={section.id} id={section.id}>
             <h2>{section.title}</h2>
@@ -68,28 +80,6 @@ export default function CareerNotePage({ params }: CareerNotePageProps) {
             ))}
           </section>
         ))}
-
-        <section id="salary-table">
-          <h2>What it pays</h2>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Experience</th>
-                <th>Base</th>
-                <th>Total comp</th>
-              </tr>
-            </thead>
-            <tbody>
-              {note.salaryRows.map((row) => (
-                <tr key={row.experience}>
-                  <td>{row.experience}</td>
-                  <td>{row.base}</td>
-                  <td>{row.total}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
 
         <section id="skills">
           <h2>What you need to know</h2>

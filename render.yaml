@@ -20,6 +20,7 @@ services:
     buildFilter:
       paths:
         - frontend/**
+        - shared/**
         - render.yaml
 
   - type: web

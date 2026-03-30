@@ -23,7 +23,11 @@ export function generateMetadata({ params }: InsightPageProps): Metadata {
 
   return {
     title: article.title,
-    description: article.description
+    description: article.description,
+    robots: {
+      index: false,
+      follow: true
+    }
   };
 }
 

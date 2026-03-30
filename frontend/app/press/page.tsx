@@ -5,7 +5,11 @@ import { pressResources } from "@/lib/platform-data";
 
 export const metadata: Metadata = {
   title: "Press",
-  description: "Press resources, citation guidance, and reusable jobanxiety.ai data assets."
+  description: "Press resources and citation guidance for jobanxiety.ai. Public resources listed here are limited to source-backed pages.",
+  robots: {
+    index: false,
+    follow: true
+  }
 };
 
 export default function PressPage() {
@@ -18,7 +22,11 @@ export default function PressPage() {
       />
 
       <section className="editorial-card p-6">
-        <h2 className="section-title text-[1.5rem]">What you can cite</h2>
+        <h2 className="section-title text-[1.5rem]">What is currently public</h2>
+        <p className="body-copy mt-4">
+          The items below are the source-backed public surfaces we are comfortable pointing reporters to today. Sample
+          charts, provisional datasets, and unaudited model output have been removed from the public pages.
+        </p>
         <div className="mt-5 grid gap-4">
           {pressResources.map((resource) => (
             <a key={resource.title} href={resource.href} className="grid gap-2 border-b border-[var(--color-border)] pb-4 last:border-b-0 last:pb-0">
@@ -32,15 +40,10 @@ export default function PressPage() {
 
       <section className="editorial-card p-6">
         <h2 className="section-title text-[1.5rem]">Embed format</h2>
-        <pre className="mt-5 overflow-x-auto border border-[var(--color-border)] bg-[var(--color-bg-sunken)] p-4 text-[0.84rem] leading-6 text-[var(--color-text)]">
-{`<iframe
-  src="https://jobanxiety.ai/embed/displacement-ratio?period=90d"
-  width="100%"
-  height="420"
-  frameborder="0"
-  title="jobanxiety.ai displacement ratio"
-></iframe>`}
-        </pre>
+        <p className="body-copy mt-5">
+          Public iframe widgets are not live yet. Until they are, reporters should cite the page URL directly and rely on
+          the methodology page for sourcing and version language.
+        </p>
       </section>
 
       <section className="editorial-card p-6">

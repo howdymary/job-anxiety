@@ -79,7 +79,7 @@ export function SlidePanel({ job, similarJobs, onClose }: SlidePanelProps) {
         </div>
 
         <a href={job.applyUrl} target="_blank" rel="noreferrer" className="arrow-link mt-8">
-          <span>Apply on company site</span>
+          <span>Visit company careers page</span>
           <span>→</span>
         </a>
 

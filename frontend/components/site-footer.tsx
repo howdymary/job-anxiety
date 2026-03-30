@@ -9,6 +9,8 @@ const navigation = [
 ];
 
 const resources = [
+  { href: "/check-your-occupation", label: "Occupation check" },
+  { href: "/research", label: "Research" },
   { href: "/newsletter", label: "Newsletter" },
   { href: "/methodology", label: "Methodology" },
   { href: "/press", label: "Press" },
@@ -25,21 +27,14 @@ export function SiteFooter() {
   return (
     <footer className="mt-[var(--ja-space-20)] border-t border-white/10 bg-[var(--ja-charcoal)] text-white">
       <div className="mx-auto grid w-[min(var(--max-w-page),calc(100vw-2rem))] gap-8 py-[var(--ja-space-16)]">
-        <div className="rounded-[var(--ja-radius-lg)] border border-white/10 bg-white/4 px-[var(--ja-space-6)] py-[var(--ja-space-5)]">
-          <p className="text-center text-[var(--ja-text-sm)] leading-[1.7] text-white/78">
-            JobAnxiety.ai is an independent platform. We do not sell recruitment ads or sponsored job placements. Our data
-            methodology is open and versioned. All sources are linked. Corrections are public.
-          </p>
-        </div>
-
         <div className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div className="max-w-[22rem]">
             <p className="font-[var(--ja-font-editorial)] text-[2rem] leading-none tracking-[-0.03em] text-white">
               JobAnxiety<span className="text-[var(--ja-teal-light)]">.ai</span>
             </p>
             <p className="mt-4 text-[var(--ja-text-base)] leading-[1.7] text-white/78">
-              Source-verified reporting on AI jobs, layoffs, and career transitions for people who want the signal, not the
-              spin.
+              Reporting on AI jobs, layoffs, and career transitions for people who want clear sourcing, explicit caveats, and
+              less spin.
             </p>
             <p className="mt-6 text-[var(--ja-text-xs)] uppercase tracking-[0.08em] text-white/52">Updated for workers, researchers, and journalists.</p>
           </div>

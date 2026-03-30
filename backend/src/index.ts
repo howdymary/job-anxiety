@@ -7,6 +7,8 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { companiesRoutes } from "./routes/companies";
 import { jobsRoutes } from "./routes/jobs";
+import { occupationsRoutes } from "./routes/occupations";
+import { riskRoutes } from "./routes/risk";
 import { subscribersRoutes } from "./routes/subscribers";
 import { trendsRoutes } from "./routes/trends";
 import { corsMiddleware } from "./middleware/cors";
@@ -27,6 +29,8 @@ app.get("/health", (c) =>
 
 app.route("/api/v1/jobs", jobsRoutes);
 app.route("/api/v1/companies", companiesRoutes);
+app.route("/api/v1/occupations", occupationsRoutes);
+app.route("/api/v1/risk", riskRoutes);
 app.route("/api/v1/trends", trendsRoutes);
 app.route("/api/v1/subscribers", subscribersRoutes);
 

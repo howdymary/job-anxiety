@@ -8,7 +8,7 @@ export const revalidate = 600;
 export const metadata: Metadata = {
   title: "JobAnxiety.ai — AI Job Market & Layoff Tracker",
   description:
-    "Track AI job openings, layoffs, and labor market trends with source-verified data. Updated daily. Career guides for workers navigating AI-era change."
+    "Track live AI job openings, read official-source layoff disclosures, and follow source-backed research on how AI is reshaping work."
 };
 
 export default async function HomePage() {
