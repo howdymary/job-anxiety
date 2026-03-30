@@ -5,31 +5,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { SearchIcon } from "@/components/site-icons";
-import { careerNotes, insightArticles } from "@/lib/editorial-content";
-import { companies, jobs } from "@/lib/market-data";
 
 type SearchCommandProps = {
   open: boolean;
   onClose: () => void;
-};
-
-type OccupationSearchResult = {
-  soc_code: string;
-  title: string;
-  employment_2024: number;
-};
-
-type LiveFeedJob = {
-  id: string;
-  slug: string;
-  title: string;
-  company: string;
-  companySlug: string;
-  location: string;
-  postedAt: string;
-  applyUrl: string;
-  salaryMin: number | null;
-  salaryMax: number | null;
 };
 
 type SearchEntry = {
@@ -45,6 +24,12 @@ type SearchEntry = {
 type SearchSection = {
   title: string;
   items: SearchEntry[];
+};
+
+type SearchApiResponse = {
+  query: string;
+  count: number;
+  sections: SearchSection[];
 };
 
 const quickLinks: SearchEntry[] = [
@@ -63,56 +48,20 @@ const quickLinks: SearchEntry[] = [
   { id: "quick-methodology", href: "/methodology", label: "Methodology", meta: "Trust", summary: "How the site is sourced", kind: "page" }
 ];
 
-const pageEntries: SearchEntry[] = [
-  { id: "page-home", href: "/", label: "Home", meta: "Page", summary: "Market pulse and latest openings", kind: "page" },
-  { id: "page-jobs", href: "/jobs", label: "Jobs", meta: "Page", summary: "Live postings across tracked companies", kind: "page" },
-  { id: "page-companies", href: "/companies", label: "Companies", meta: "Page", summary: "Tracked employers and current boards", kind: "page" },
-  { id: "page-layoffs", href: "/layoffs", label: "Layoffs", meta: "Page", summary: "Confirmed workforce disclosures", kind: "page" },
-  { id: "page-trends", href: "/trends", label: "Trends", meta: "Page", summary: "Live hiring signals", kind: "page" },
-  { id: "page-research", href: "/research", label: "Research", meta: "Page", summary: "BLS occupation brief", kind: "page" },
-  { id: "page-methodology", href: "/methodology", label: "Methodology", meta: "Trust", summary: "Sourcing and limits", kind: "page" },
-  { id: "page-corrections", href: "/corrections", label: "Corrections", meta: "Trust", summary: "Public corrections log", kind: "page" },
-  { id: "page-press", href: "/press", label: "Press", meta: "Resources", summary: "Embeds and citation formats", kind: "page" },
-  { id: "page-api", href: "/api", label: "API", meta: "Developers", summary: "Endpoint documentation", kind: "page" },
-  { id: "page-newsletter", href: "/newsletter", label: "Newsletter", meta: "Page", summary: "Subscribe to updates", kind: "page" }
-];
-
-function formatSalary(job: Pick<(typeof jobs)[number], "salaryMin" | "salaryMax"> | Pick<LiveFeedJob, "salaryMin" | "salaryMax">) {
-  if (job.salaryMin == null || job.salaryMax == null) {
-    return "Salary not listed";
-  }
-
-  const minimum = job.salaryMin / 1000;
-  const maximum = job.salaryMax / 1000;
-  return `$${minimum.toFixed(0)}K–$${maximum.toFixed(0)}K`;
-}
-
-function matchesQuery(text: string, query: string) {
-  return text.toLowerCase().includes(query);
-}
-
-function buildOccupationUrl(socCode: string) {
-  return `/check-your-occupation?soc=${encodeURIComponent(socCode)}`;
-}
-
 export function SearchCommand({ open, onClose }: SearchCommandProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
-  const [occupationResults, setOccupationResults] = useState<OccupationSearchResult[]>([]);
-  const [liveJobs, setLiveJobs] = useState<LiveFeedJob[]>([]);
-  const [loadingOccupations, setLoadingOccupations] = useState(false);
-  const [loadingJobs, setLoadingJobs] = useState(false);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+  const [fetchedSections, setFetchedSections] = useState<SearchSection[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const normalized = query.trim().toLowerCase();
 
   useEffect(() => {
     if (!open) {
       setQuery("");
-      setOccupationResults([]);
-      setLiveJobs([]);
-      setLoadingOccupations(false);
-      setLoadingJobs(false);
+      setFetchedSections([]);
+      setLoadingSearch(false);
       setSelectedIndex(0);
       return;
     }
@@ -146,94 +95,33 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
       return;
     }
 
-    let cancelled = false;
-
-    const loadLiveJobs = async () => {
-      setLoadingJobs(true);
-
-      try {
-        const response = await fetch("/api/homepage-feed", { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error(`Homepage feed returned ${response.status}`);
-        }
-
-        const payload = (await response.json()) as {
-          newestJobs?: LiveFeedJob[];
-          trendingJobs?: LiveFeedJob[];
-        };
-
-        const combined = [...(payload.newestJobs ?? []), ...(payload.trendingJobs ?? [])];
-        const deduped = combined.filter((job, index, array) => array.findIndex((candidate) => candidate.id === job.id) === index);
-
-        if (!cancelled) {
-          setLiveJobs(deduped);
-        }
-      } catch {
-        if (!cancelled) {
-          const fallback = jobs.slice(0, 12).map((job) => ({
-            id: job.slug,
-            slug: job.slug,
-            title: job.title,
-            company: job.company,
-            companySlug: job.companySlug,
-            location: job.location,
-            postedAt: job.postedAt,
-            applyUrl: job.applyUrl,
-            salaryMin: job.salaryMin,
-            salaryMax: job.salaryMax
-          }));
-          setLiveJobs(fallback);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoadingJobs(false);
-        }
-      }
-    };
-
-    void loadLiveJobs();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const normalized = query.trim().toLowerCase();
     if (normalized.length < 2) {
-      setOccupationResults([]);
-      setLoadingOccupations(false);
+      setFetchedSections([]);
+      setLoadingSearch(false);
       return;
     }
 
     let cancelled = false;
     const timeout = window.setTimeout(async () => {
-      setLoadingOccupations(true);
+      setLoadingSearch(true);
 
       try {
-        const response = await fetch(`/api/occupations/search?q=${encodeURIComponent(normalized)}`, { cache: "no-store" });
+        const response = await fetch(`/api/search?q=${encodeURIComponent(normalized)}`, { cache: "no-store" });
         if (!response.ok) {
-          throw new Error(`Occupation search returned ${response.status}`);
+          throw new Error(`Search returned ${response.status}`);
         }
 
-        const payload = (await response.json()) as {
-          results?: OccupationSearchResult[];
-        };
-
+        const payload = (await response.json()) as SearchApiResponse;
         if (!cancelled) {
-          setOccupationResults(payload.results ?? []);
+          setFetchedSections(payload.sections ?? []);
         }
       } catch {
         if (!cancelled) {
-          setOccupationResults([]);
+          setFetchedSections([]);
         }
       } finally {
         if (!cancelled) {
-          setLoadingOccupations(false);
+          setLoadingSearch(false);
         }
       }
     }, 200);
@@ -242,159 +130,13 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [open, query]);
+  }, [normalized, open]);
 
   useEffect(() => {
     setSelectedIndex(0);
   }, [normalized]);
 
   const sections = useMemo<SearchSection[]>(() => {
-    const quickSection = {
-      title: "Quick Links",
-      items: quickLinks.map((item) => ({ ...item }))
-    };
-
-    const pageMatches = pageEntries
-      .filter((item) => {
-        if (!normalized) {
-          return false;
-        }
-
-        return matchesQuery(item.label, normalized) || matchesQuery(item.meta, normalized) || matchesQuery(item.summary ?? "", normalized);
-      })
-      .map((item) => ({ ...item }));
-
-    const liveCompanies = Array.from(
-      new Map(
-        liveJobs.map((job) => [
-          job.companySlug,
-          {
-            slug: job.companySlug,
-            name: job.company,
-            description: job.title,
-            hiringFocus: job.location,
-            headquarters: job.location
-          }
-        ])
-      ).values()
-    );
-
-    const companyPool = liveCompanies.length > 0 ? liveCompanies : companies;
-
-    const companyMatches = companyPool
-      .filter((company) => {
-        if (!normalized) {
-          return false;
-        }
-
-        return (
-          matchesQuery(company.name, normalized) ||
-          matchesQuery(company.description, normalized) ||
-          matchesQuery(company.hiringFocus, normalized) ||
-          matchesQuery(company.headquarters, normalized)
-        );
-      })
-      .map((company) => ({
-        id: `company-${company.slug}`,
-        href: `/companies/${company.slug}`,
-        label: company.name,
-        meta: "Company",
-        summary: company.hiringFocus,
-        kind: "page" as const
-      }));
-
-    const pageSection = {
-      title: "Pages",
-      items: [...pageMatches, ...companyMatches].slice(0, 10)
-    };
-
-    const jobPool = liveJobs.length > 0
-      ? liveJobs
-      : jobs.slice(0, 24).map((job) => ({
-          id: job.slug,
-          slug: job.slug,
-          title: job.title,
-          company: job.company,
-          companySlug: job.companySlug,
-          location: job.location,
-          postedAt: job.postedAt,
-          applyUrl: job.applyUrl,
-          salaryMin: job.salaryMin,
-          salaryMax: job.salaryMax
-        }));
-
-    const jobMatches = jobPool
-      .filter((job) => {
-        if (!normalized) {
-          return false;
-        }
-
-        return (
-          matchesQuery(job.title, normalized) ||
-          matchesQuery(job.company, normalized) ||
-          matchesQuery(job.location, normalized)
-        );
-      })
-      .slice(0, 8)
-      .map((job) => ({
-        id: `job-${job.id}`,
-        href: `/jobs/${job.slug}`,
-        label: job.title,
-        meta: job.company,
-        summary: `${job.location} · ${formatSalary(job)}`,
-        kind: "job" as const
-      }));
-
-    const occupationMatches = occupationResults
-      .map((occupation) => ({
-        id: `occupation-${occupation.soc_code}`,
-        href: buildOccupationUrl(occupation.soc_code),
-        label: occupation.title,
-        meta: occupation.soc_code,
-        summary: `${occupation.employment_2024.toLocaleString("en-US")} employed`,
-        kind: "occupation" as const
-      }))
-      .slice(0, 8);
-
-    const guideMatches = [...careerNotes, ...insightArticles]
-      .filter((item) => {
-        if (!normalized) {
-          return false;
-        }
-
-        const haystack = [
-          item.title,
-          "subtitle" in item ? item.subtitle : "",
-          "description" in item ? item.description : "",
-          "cardDescription" in item ? item.cardDescription : "",
-          "role" in item ? item.role : ""
-        ]
-          .join(" ")
-          .toLowerCase();
-
-        return haystack.includes(normalized);
-      })
-      .slice(0, 10)
-      .map((item) =>
-        "publishedAt" in item
-          ? {
-              id: `insight-${item.slug}`,
-              href: `/insights/${item.slug}`,
-              label: item.title,
-              meta: item.readTime,
-              summary: item.description,
-              kind: "guide" as const
-            }
-          : {
-              id: `career-note-${item.slug}`,
-              href: `/career-notes/${item.slug}`,
-              label: item.title,
-              meta: "Career guide",
-              summary: item.subtitle,
-              kind: "guide" as const
-            }
-      );
-
     const indexedSections: SearchSection[] = [];
     let cursor = 0;
 
@@ -405,18 +147,25 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
         return next;
       });
 
-    indexedSections.push({ title: quickSection.title, items: addIndexes(quickSection.items) });
-    indexedSections.push({ title: pageSection.title, items: addIndexes(pageSection.items) });
-    indexedSections.push({ title: "Jobs", items: addIndexes(jobMatches) });
-    indexedSections.push({ title: "Occupations", items: addIndexes(occupationMatches) });
-    indexedSections.push({ title: "Guides", items: addIndexes(guideMatches) });
+    indexedSections.push({
+      title: "Quick Links",
+      items: addIndexes(quickLinks.map((item) => ({ ...item })))
+    });
+
+    for (const section of fetchedSections) {
+      indexedSections.push({
+        title: section.title,
+        items: addIndexes(section.items)
+      });
+    }
+
     return indexedSections;
-  }, [liveJobs, occupationResults, normalized]);
+  }, [fetchedSections]);
 
   const selectableItems = useMemo(() => sections.flatMap((section) => section.items), [sections]);
-  const hasSearchResults = sections.slice(1).some((section) => section.items.length > 0);
-  const queryActive = normalized.length >= 2;
   const quickLinkCount = sections[0]?.items.length ?? 0;
+  const queryActive = normalized.length >= 2;
+  const hasSearchResults = sections.slice(1).some((section) => section.items.length > 0);
   const activeItem = selectableItems[selectedIndex] ?? null;
 
   useEffect(() => {
@@ -547,8 +296,7 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
             onSelect={navigateTo}
           />
 
-          {queryActive && loadingJobs ? <StatusLine>Refreshing live jobs feed…</StatusLine> : null}
-          {queryActive && loadingOccupations ? <StatusLine>Looking up occupations…</StatusLine> : null}
+          {queryActive && loadingSearch ? <StatusLine>Searching jobs, occupations, guides, and pages…</StatusLine> : null}
 
           {queryActive && hasSearchResults ? (
             <div className="grid gap-5">
@@ -567,7 +315,7 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
             </div>
           ) : null}
 
-          {queryActive && !hasSearchResults ? (
+          {queryActive && !loadingSearch && !hasSearchResults ? (
             <div className="rounded-[var(--ja-radius-md)] border border-dashed border-[var(--ja-fog)] bg-[var(--ja-cloud)] px-4 py-6 text-center">
               <p className="eyebrow">No results</p>
               <p className="body-copy muted-copy mt-3">
@@ -586,7 +334,7 @@ function Section({
   items,
   selectedIndex,
   onHover,
-  onSelect,
+  onSelect
 }: {
   title: string;
   items: SearchEntry[];
