@@ -93,3 +93,22 @@ export function SearchIcon() {
     </BaseIcon>
   );
 }
+
+export function MenuIcon() {
+  return (
+    <BaseIcon>
+      <path d="M4.5 7.5h15" />
+      <path d="M4.5 12h15" />
+      <path d="M4.5 16.5h15" />
+    </BaseIcon>
+  );
+}
+
+export function CloseIcon() {
+  return (
+    <BaseIcon>
+      <path d="m6.5 6.5 11 11" />
+      <path d="m17.5 6.5-11 11" />
+    </BaseIcon>
+  );
+}

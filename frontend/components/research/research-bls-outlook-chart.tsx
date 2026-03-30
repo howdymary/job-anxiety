@@ -10,6 +10,8 @@ type ResearchBlsOutlookChartProps = {
 };
 
 export function ResearchBlsOutlookChart({ data }: ResearchBlsOutlookChartProps) {
+  const hasData = data.length > 0;
+
   return (
     <ResearchChartFrame
       eyebrow="BLS occupation outlook"
@@ -25,45 +27,56 @@ export function ResearchBlsOutlookChart({ data }: ResearchBlsOutlookChartProps) 
       ]}
     >
       <div className="h-[24rem]" role="img" aria-label="Scatter plot comparing BLS projected growth and median annual pay across selected occupations.">
-        <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
-            <CartesianGrid stroke="rgba(74, 80, 96, 0.12)" />
-            <XAxis
-              type="number"
-              dataKey="projectedGrowthPct"
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value: number) => `${value}%`}
-              tick={{ fill: "#6B7280", fontSize: 12 }}
-              label={{
-                value: "Projected growth, 2024–2034",
-                position: "insideBottom",
-                offset: -4,
-                fill: "#4A5060",
-                fontSize: 12
-              }}
-            />
-            <YAxis
-              type="number"
-              dataKey="medianWage2024"
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value: number) => `$${Math.round(value / 1000)}k`}
-              width={64}
-              tick={{ fill: "#6B7280", fontSize: 12 }}
-              label={{
-                value: "Median annual pay, 2024",
-                angle: -90,
-                position: "insideLeft",
-                fill: "#4A5060",
-                fontSize: 12
-              }}
-            />
-            <ZAxis type="number" dataKey="employment2024" range={[90, 420]} />
-            <Tooltip content={<BlsOutlookTooltip />} />
-            <Scatter data={data} shape={<BlsOutlookDot />} />
-          </ScatterChart>
-        </ResponsiveContainer>
+        {hasData ? (
+          <ResponsiveContainer width="100%" height="100%" debounce={150}>
+            <ScatterChart margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
+              <CartesianGrid stroke="rgba(74, 80, 96, 0.12)" />
+              <XAxis
+                type="number"
+                dataKey="projectedGrowthPct"
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value: number) => `${value}%`}
+                tick={{ fill: "#6B7280", fontSize: 12 }}
+                label={{
+                  value: "Projected growth, 2024–2034",
+                  position: "insideBottom",
+                  offset: -4,
+                  fill: "#4A5060",
+                  fontSize: 12
+                }}
+              />
+              <YAxis
+                type="number"
+                dataKey="medianWage2024"
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value: number) => `$${Math.round(value / 1000)}k`}
+                width={64}
+                tick={{ fill: "#6B7280", fontSize: 12 }}
+                label={{
+                  value: "Median annual pay, 2024",
+                  angle: -90,
+                  position: "insideLeft",
+                  fill: "#4A5060",
+                  fontSize: 12
+                }}
+              />
+              <ZAxis type="number" dataKey="employment2024" range={[90, 420]} />
+              <Tooltip content={<BlsOutlookTooltip />} />
+              <Scatter data={data} shape={<BlsOutlookDot />} />
+            </ScatterChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex h-full items-center justify-center rounded-[var(--ja-radius-md)] border border-dashed border-[var(--ja-fog)] bg-[var(--ja-cloud)] px-6 text-center">
+            <div className="max-w-md">
+              <p className="eyebrow">No selected occupations</p>
+              <p className="body-copy muted-copy mt-3">
+                The comparison chart needs a current BLS set before it can plot growth against pay.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </ResearchChartFrame>
   );

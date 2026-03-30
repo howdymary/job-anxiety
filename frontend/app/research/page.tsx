@@ -130,10 +130,10 @@ export default async function ResearchPage() {
 
 function StatCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <article className="editorial-card p-5">
+    <article className="editorial-card min-w-0 p-5">
       <p className="eyebrow">{label}</p>
-      <p className="mt-3 font-[var(--ja-font-data)] text-[2rem] leading-tight text-[var(--ja-ink)]">{value}</p>
-      <p className="fine-print mt-3">{note}</p>
+      <p className="mt-3 font-[var(--ja-font-data)] text-[2rem] leading-tight tracking-[-0.02em] text-[var(--ja-ink)]">{value}</p>
+      <p className="fine-print mt-3 text-pretty">{note}</p>
     </article>
   );
 }

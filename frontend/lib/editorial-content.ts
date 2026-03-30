@@ -8,14 +8,14 @@ export const careerNotes: CareerNote[] = [
     slug: "ai-engineer",
     role: "AI Engineer",
     title: "AI Engineer: The Complete Guide",
-    subtitle: "The most-hired technical role in AI, with 143% job growth in the past year.",
+    subtitle: "An applied engineering role centered on retrieval, evaluation, orchestration, and production reliability.",
     salaryRange: "$145K – $350K",
     growth: "143% growth",
     updatedAt: "Mar 2026",
     experienceBand: "Mid to Senior",
-    cardDescription: "The most-hired technical role in AI, sitting between infrastructure and product delivery.",
-    mustHave: ["Python or TypeScript", "API integration fluency", "Prompt and evaluation basics"],
-    niceToHave: ["Fine-tuning familiarity", "Vector databases", "Observability for AI systems"],
+    cardDescription: "Applied engineers who turn model capability into stable product behavior under cost, latency, and safety constraints.",
+    mustHave: ["Python or TypeScript in production", "Model API integration and evaluation", "Retrieval, tracing, and failure handling"],
+    niceToHave: ["Fine-tuning and model serving", "Vector search and ranking", "Observability for quality, latency, and spend"],
     hiringByTier: [
       { tier: "Fortune 500", companies: ["Google", "Microsoft", "Amazon", "Meta", "NVIDIA", "JPMorgan"] },
       { tier: "VC-backed startup", companies: ["Anthropic", "OpenAI", "Cohere", "Perplexity", "Cursor", "Glean"] },
@@ -26,53 +26,56 @@ export const careerNotes: CareerNote[] = [
         id: "what-the-role-is",
         title: "What the role is",
         paragraphs: [
-          "An AI Engineer builds and deploys AI systems that work in production. Unlike a research scientist publishing papers, an AI Engineer takes a foundation model and makes it do something useful, reliably, at scale.",
-          "The role exploded because every company wants to integrate AI, but very few people know how to do it well. Calling an API is easy. Building a system that handles edge cases, fails gracefully, stays within cost budgets, and improves the user experience is engineering."
+          "Most teams use this title for the person who takes a model that looks good in a demo and makes it hold up in production. The work usually sits between backend engineering, product engineering, search, and evaluation.",
+          "A strong AI Engineer is rarely hired for prompt cleverness alone. The value is in building a service that retrieves the right context, evaluates output quality, handles failure paths, and stays inside latency and budget constraints."
         ]
       },
       {
         id: "day-to-day",
         title: "What you actually do day-to-day",
         paragraphs: [
-          "Mornings often start with monitoring dashboards. Did latency spike overnight. Did costs drift. Did a prompt chain start producing brittle outputs for a slice of users that looked fine in test.",
-          "Mid-morning is implementation time: retrieval systems, evals, prompt scaffolding, guardrails, service wrappers, and the unglamorous interface between model output and the rest of the product.",
-          "Afternoons are cross-functional. Product managers ask what is feasible. Designers want to understand where latency or uncertainty should show up. Backend teams need model inference to behave like a dependable service, not a demo."
+          "The work starts in dashboards more often than whiteboards. Teams check latency, hallucination rates, fallback volume, token spend, and whether yesterday's prompt change quietly broke a narrow but important workflow.",
+          "The implementation work is usually unglamorous in the best sense: retrieval tuning, ranking, prompt orchestration, eval harnesses, guardrails, model routing, and service wrappers around third-party APIs.",
+          "Interview loops reflect that reality. Expect a live exercise where you wire a model API into a small product flow, explain tradeoffs around retrieval and evaluation, and talk through how you would catch silent quality regressions after launch."
         ]
       },
       {
         id: "whos-hiring",
         title: "Who's hiring",
         paragraphs: [
-          "The hiring market splits into three buckets. Frontier labs want people close to model capability. Enterprise companies want AI Engineers who can slot models into mature systems. High-revenue software businesses need people who can turn promising experiments into repeatable product features."
+          "Demand clusters into three buckets. Labs hire close to capability and infrastructure, venture-backed product companies hire for shipping customer-facing features quickly, and larger software businesses hire to retrofit AI into existing workflows without destabilizing the product.",
+          "The strongest postings are explicit about the stack: model providers, orchestration layer, eval tooling, and production environment. A vague description that promises ownership of 'all AI initiatives' usually means the team has not decided whether it needs an engineer, a researcher, or a product manager."
         ]
       },
       {
         id: "what-you-need",
         title: "What you need to know",
         paragraphs: [
-          "Must-haves are less glamorous than most beginners expect: API integration, service thinking, prompt and evaluation discipline, and the ability to debug systems whose behavior is partly probabilistic. Nice-to-haves include fine-tuning, vector databases, and model-serving fluency."
+          "Teams notice engineers who can separate a model problem from an application problem. Knowing when the issue is retrieval quality, when it is poor prompt structure, and when the workflow itself is under-specified matters more than saying you 'build with AI.'",
+          "The most useful tool fluency today usually includes Python, TypeScript, Postgres, embeddings or reranking systems, OpenAI or Anthropic APIs, and at least one observability path for cost and quality. Fine-tuning helps in some teams, but shipping discipline is what gets candidates through the screen."
         ]
       },
       {
         id: "what-it-pays",
         title: "What it pays",
         paragraphs: [
-          "Compensation is strong because the role sits at the point where companies can convert model capability into revenue, product differentiation, or internal leverage."
+          "Compensation is strongest when the role sits near revenue or platform leverage. Series B and Series C startups often have more room on equity than on base salary, while larger companies usually hold a firmer line on stock bands but can offer clearer scope and steadier support."
         ]
       },
       {
         id: "how-to-break-in",
         title: "How to break in",
         paragraphs: [
-          "If you are already a software engineer, you are closer than you think. The shortest path is to learn evaluation, retrieval, inference constraints, and the difference between a cool prototype and a production system.",
-          "A good first project is not a chatbot clone. It is a narrow tool with clear inputs, measurable outputs, and explicit failure cases. Fine-tune a small model, deploy it as an API, instrument it, and write about the tradeoffs you discovered."
+          "The shortest path from software engineering is to build one narrow system end to end. A good portfolio project has a retrieval layer, an explicit evaluation rubric, observability, and a written postmortem about what broke.",
+          "The communities that help most are the technical ones where people share implementation detail instead of broad opinion: LangChain or LlamaIndex community channels, OpenAI and Anthropic developer forums, and engineering meetups where people discuss evals, tracing, and real product failures."
         ]
       },
       {
         id: "where-its-headed",
         title: "Where this role is headed",
         paragraphs: [
-          "The title will probably fragment. Some AI Engineers will drift toward infrastructure and MLOps. Others will become product-side application specialists. The common thread will remain the same: making AI systems useful under real constraints."
+          "The title is already splitting. Some teams want infrastructure-heavy engineers who own serving and reliability; others want product engineers who can ship AI features without slowing the roadmap.",
+          "The common thread is not model mystique. It is judgment under probabilistic behavior, and that skill is likely to stay expensive."
         ]
       }
     ],
@@ -88,14 +91,14 @@ export const careerNotes: CareerNote[] = [
     slug: "gtm-engineer",
     role: "GTM Engineer",
     title: "GTM Engineer: The Complete Guide",
-    subtitle: "The hybrid role replacing five SDRs and quietly paying $220K.",
+    subtitle: "A revenue-systems role for operators who can automate targeting, enrichment, routing, and outbound with code.",
     salaryRange: "$130K – $310K",
     growth: "205% growth",
     updatedAt: "Mar 2026",
     experienceBand: "Entry to Senior",
-    cardDescription: "The revenue systems role built on automation, signal, and product-minded code.",
-    mustHave: ["Outbound system thinking", "Workflow automation", "Experiment design"],
-    niceToHave: ["Clay or Apollo", "Lead scoring", "Light application scripting"],
+    cardDescription: "A hybrid commercial and technical role built around pipeline generation, workflow automation, and measurable revenue lift.",
+    mustHave: ["CRM and outbound workflow literacy", "Automation and enrichment tooling", "Experiment design tied to pipeline metrics"],
+    niceToHave: ["Clay, Apollo, HubSpot, or Salesforce depth", "Light scripting in Python or JavaScript", "Data hygiene and attribution instincts"],
     hiringByTier: [
       { tier: "VC-backed startup", companies: ["Clay", "Apollo", "Ramp", "Notion", "Linear", "Vercel"] },
       { tier: "High-revenue business", companies: ["Datadog", "Snowflake", "MongoDB", "Confluent"] },
@@ -106,52 +109,54 @@ export const careerNotes: CareerNote[] = [
         id: "what-the-role-is",
         title: "What the role is",
         paragraphs: [
-          "A GTM Engineer builds and automates revenue-generating systems using AI and code. The role sits between engineering, sales, and marketing. It is neither traditional RevOps nor classic software engineering.",
-          "The reason it pays so well is simple: one good GTM Engineer can create measurable pipeline. The work is attached to revenue, not just internal efficiency."
+          "The title usually means one person owns the machinery behind modern outbound and demand generation. That includes enrichment, segmentation, routing, message generation, testing, and the messy connective tissue between CRM, data vendors, and workflow tools.",
+          "This is not classic sales engineering and it is not standard RevOps. The job is measured by whether the system produces better pipeline, not whether the dashboard looks tidy."
         ]
       },
       {
         id: "day-to-day",
         title: "What you actually do day-to-day",
         paragraphs: [
-          "Mornings start with dashboards and workflow checks: lead volume, response rates, enrichment failures, and whether the signal model is still finding the right accounts.",
-          "The rest of the day is a mix of no-code and code. You tweak Clay workflows, build custom scoring logic, connect CRM systems, and test whether a small change in targeting or message structure changes revenue outcomes."
+          "The day starts with failure checking: enrichment breaks, stale fields, routing mistakes, CRM sync problems, and whether the targeting logic is producing garbage with confidence. A strong GTM Engineer trusts numbers only after checking how they were produced.",
+          "Expect live build exercises in interviews. Hiring managers often ask candidates to sketch how they would enrich a target-account list, score it, push it into Salesforce or HubSpot, and measure whether the workflow changed meetings booked instead of simply increasing activity."
         ]
       },
       {
         id: "whos-hiring",
         title: "Who's hiring",
         paragraphs: [
-          "The cleanest demand is in SaaS startups with ambitious growth goals, but the title is also spreading into larger businesses under softer names like Revenue Operations Engineer or Growth Systems Engineer."
+          "The cleanest demand is inside venture-backed SaaS companies with aggressive pipeline targets and lean headcount. In larger companies the same work often appears under titles like Growth Systems Engineer, Revenue Systems Engineer, or Technical RevOps.",
+          "The best postings are explicit about ownership and metrics. If the listing promises 'full-funnel impact' without naming the systems, data sources, or reporting line, expect the role to become a bucket for every commercial fire drill."
         ]
       },
       {
         id: "what-you-need",
         title: "What you need to know",
         paragraphs: [
-          "You need enough code to build or repair internal tools, enough data sense to trust or distrust your own funnel numbers, and enough commercial taste to know whether a workflow is creating real demand or just more motion."
+          "Candidates who break in fastest usually come from SDR, AE, RevOps, or growth backgrounds and then get technically dangerous enough to automate their own playbook. SQL helps. Basic scripting helps more than most people expect.",
+          "The tools named most often are Clay, Apollo, Salesforce, HubSpot, Segment, n8n, Zapier, and internal scripts that clean or enrich data before it hits the rep. The common pattern is not tool worship. It is knowing which layer is worth automating and which still needs a human."
         ]
       },
       {
         id: "what-it-pays",
         title: "What it pays",
         paragraphs: [
-          "Compensation is often structured around base plus OTE, which makes sense because the work sits close to pipeline and revenue."
+          "Compensation often mixes a strong base with a lighter variable component than a pure sales role. Startups usually have more freedom on equity than base, especially if the role reports close to a revenue leader and can be tied to pipeline creation within one or two quarters."
         ]
       },
       {
         id: "how-to-break-in",
         title: "How to break in",
         paragraphs: [
-          "This is one of the most realistic transitions for ambitious SDRs, AEs, and RevOps operators with technical appetite. Learn Python, learn Clay, build a workflow that enriches leads and writes usable personalization, then show a real sales leader what it produces.",
-          "The portfolio piece matters more than a perfect resume. Demonstrate a system that turns signal into meetings."
+          "The most believable entry path is a portfolio that solves one painful revenue workflow well. Build a system that enriches accounts, prioritizes them, drafts outreach with guardrails, and reports what happened after the sequence ran.",
+          "Public communities around Clay, RevGenius, Pavilion, and operator-led growth groups matter because they show how teams actually talk about these problems. Certifications rarely move the needle here; working systems do."
         ]
       },
       {
         id: "where-its-headed",
         title: "Where this role is headed",
         paragraphs: [
-          "The best GTM Engineers will likely become mini-general managers. Once you can write code that creates revenue, the next question is usually not whether you can automate more. It is whether you can own a number."
+          "The strongest GTM Engineers tend to grow into a revenue-platform seat or a broader commercial strategy role. Once a company trusts someone to build the machinery that creates pipeline, the next step is usually ownership of a number, not another dashboard."
         ]
       }
     ],
@@ -166,27 +171,73 @@ export const careerNotes: CareerNote[] = [
     slug: "vibe-coder",
     role: "Vibe Coder",
     title: "Vibe Coder: The Complete Guide",
-    subtitle: "The AI-native developer role that proves you do not need to write every line by hand.",
+    subtitle: "A loose hiring label for developers who build quickly with AI assistance without handing judgment over to the model.",
     salaryRange: "$70K – $351K",
     growth: "372+ explicit listings",
     updatedAt: "Mar 2026",
     experienceBand: "Entry to Lead",
-    cardDescription: "The role category formed around AI-assisted development as a first-class workflow.",
-    mustHave: ["Prompt-driven development", "Debugging judgment", "Architecture taste"],
-    niceToHave: ["Product instinct", "Design sensitivity", "Testing discipline"],
+    cardDescription: "A developer workflow built around AI-assisted implementation, rigorous review, and unusually strong editing instincts.",
+    mustHave: ["Fast prototyping with guardrails", "Debugging and review discipline", "Good taste in architecture and scope"],
+    niceToHave: ["Product sense", "Frontend polish", "Strong testing habits"],
     hiringByTier: [
       { tier: "VC-backed startup", companies: ["Cursor", "Replit", "Vercel", "Linear"] },
       { tier: "High-revenue business", companies: ["Stripe", "Notion", "Figma"] },
       { tier: "Fortune 500", companies: ["Microsoft", "Salesforce"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["A vibe coder is an AI-native developer who treats coding tools as collaborators, not novelties. The work is less about typing and more about steering: architecture, constraints, review, and taste."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["The rhythm is fast: sketch the architecture, push implementation through AI-assisted loops, then spend your real time on review, refactoring, and edge cases."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["The clearest demand is inside product-driven software companies that value speed and are honest about how modern teams now build."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["You need to know when the tool is helping and when it is hallucinating confidence. Strong vibe coders are good editors of generated code."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Pay varies widely because the title spans startups, agencies, and more established product teams."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["Build in public. Show how you use AI tools to ship meaningful work, not toy demos. A portfolio with good judgment beats discourse about whether the workflow is legitimate."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["Over time the title may disappear because the workflow will become normal. But the underlying skill, guiding AI tools without losing rigor, is likely to stay valuable."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "Most companies do not use this title formally, but the hiring pattern is real. They want developers who can prototype, ship, and revise quickly with tools like Cursor, Claude, or Copilot while still owning code quality.",
+          "The serious version of the role is not 'let the model do everything.' It is closer to creative direction plus hard-nosed review."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "The work is front-loaded with specification. Good AI-assisted developers write clearer tickets, tighter prompts, and smaller components because loose instructions create expensive messes.",
+          "Interviews often expose the difference quickly. Expect a timed build where the evaluator watches how you steer the tool, inspect generated code, tighten types, and recover when the first answer looks plausible but wrong."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "The clearest demand is in product-focused startups, internal tools teams, and small companies that value shipping speed over ritual. The strongest employers are candid about how they use AI in the dev loop instead of pretending every line is still handwritten."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "Strong vibe coders are usually good software engineers first. They know how to test, how to refactor, and how to spot when generated code drifts from the actual architecture of the system.",
+          "The named tools matter less than the habits: fast iteration, ruthless review, and the ability to explain why the generated code should or should not survive."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Compensation varies because the title covers everything from contract-heavy build shops to well-funded product teams. The premium shows up when speed clearly translates into shipped product rather than just faster demos."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "A portfolio matters more than a position on the discourse. Show one or two products that were built with AI assistance, then document the review process, the mistakes the model made, and the fixes you applied.",
+          "That record of judgment is what hiring managers look for. Anyone can claim they move fast; fewer people can prove they know when to slow down."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "The label may not last. The workflow probably will. As AI-assisted development becomes ordinary, the candidates who stand out will be the ones who can ship quickly without leaving a codebase full of deferred damage."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Entry", base: "$70K–$110K", total: "$80K–$125K" },
@@ -200,27 +251,72 @@ export const careerNotes: CareerNote[] = [
     slug: "prompt-engineer",
     role: "Prompt Engineer",
     title: "Prompt Engineer: The Complete Guide",
-    subtitle: "A role built around evaluation, optimization, and model behavior rather than clever one-liners.",
+    subtitle: "A role built around evaluation, rubric design, and model behavior under real workflow constraints.",
     salaryRange: "$90K – $200K",
     growth: "135.8% growth",
     updatedAt: "Mar 2026",
     experienceBand: "Entry to Senior",
-    cardDescription: "Prompt engineering is becoming a discipline of evaluation, workflow design, and behavioral tuning.",
-    mustHave: ["Systematic testing", "Evaluation loops", "Clear language"],
-    niceToHave: ["Dataset curation", "Prompt versioning", "Customer workflow literacy"],
+    cardDescription: "A discipline of prompt systems, evaluation loops, and behavioral tuning rather than clever wording tricks.",
+    mustHave: ["Systematic prompt testing", "Evaluation design", "Clear written reasoning"],
+    niceToHave: ["Dataset curation", "Prompt versioning discipline", "Domain or workflow expertise"],
     hiringByTier: [
       { tier: "VC-backed startup", companies: ["Anthropic", "Scale AI", "Harvey", "Perplexity"] },
       { tier: "High-revenue business", companies: ["Datadog", "Snowflake"] },
       { tier: "Fortune 500", companies: ["Accenture", "Microsoft"] }
     ],
     sections: [
-      { id: "what-the-role-is", title: "What the role is", paragraphs: ["Prompt Engineer used to sound flimsy. The serious version of the role is not about magic words. It is about repeatable prompt systems, evaluation, and behavior tuning."] },
-      { id: "day-to-day", title: "What you actually do day-to-day", paragraphs: ["Expect side-by-side testing, prompt revisions, rubric design, and the unglamorous work of measuring whether outputs are actually improving."] },
-      { id: "whos-hiring", title: "Who's hiring", paragraphs: ["Labs, services firms, and enterprises with large internal AI rollouts are the main buyers."] },
-      { id: "what-you-need", title: "What you need to know", paragraphs: ["You need language precision, rigorous testing habits, and enough domain knowledge to know what a good answer should look like."] },
-      { id: "what-it-pays", title: "What it pays", paragraphs: ["Comp is solid but increasingly tied to whether the role is paired with evaluation, customer operations, or product delivery."] },
-      { id: "how-to-break-in", title: "How to break in", paragraphs: ["Create prompt experiments around a real workflow, show before-and-after quality, and publish the evaluation method with the result."] },
-      { id: "where-its-headed", title: "Where this role is headed", paragraphs: ["The role is likely to merge into AI product, AI engineering, and evaluation roles over time."] }
+      {
+        id: "what-the-role-is",
+        title: "What the role is",
+        paragraphs: [
+          "The serious version of this role is closer to evaluation engineer or model-behavior specialist than internet meme. Teams hire for prompt engineering when they need reliable outputs in a narrow workflow and do not yet want a full model-training organization."
+        ]
+      },
+      {
+        id: "day-to-day",
+        title: "What you actually do day-to-day",
+        paragraphs: [
+          "Most of the work is comparative testing. Candidates should expect interview cases where they are given a messy workflow, asked to improve a prompt or chain, then explain how they would score quality instead of declaring victory after one good output.",
+          "Rubric design matters here. A prompt engineer who cannot define what good, acceptable, and unacceptable output looks like usually tops out quickly."
+        ]
+      },
+      {
+        id: "whos-hiring",
+        title: "Who's hiring",
+        paragraphs: [
+          "The clearest demand comes from AI vendors, legal and support automation companies, and enterprises running large internal copilots. In many companies the title is temporary; the underlying work later folds into product, operations, or AI engineering."
+        ]
+      },
+      {
+        id: "what-you-need",
+        title: "What you need to know",
+        paragraphs: [
+          "Language precision helps, but workflow knowledge matters more. The candidates who stand out can explain how an output fails a business process, not just how it misses a stylistic preference.",
+          "Useful tools include prompt versioning systems, spreadsheet-based evaluation sets, lightweight annotation flows, and reproducible test harnesses."
+        ]
+      },
+      {
+        id: "what-it-pays",
+        title: "What it pays",
+        paragraphs: [
+          "Compensation is strongest when the role sits inside revenue-critical or compliance-sensitive workflows. A standalone 'prompt engineer' title with no product or operations tie often pays less and can disappear faster."
+        ]
+      },
+      {
+        id: "how-to-break-in",
+        title: "How to break in",
+        paragraphs: [
+          "A credible portfolio looks like an evaluation project, not a list of prompts. Build a real workflow, publish the prompt set, show the scoring rubric, then document where the system still fails.",
+          "That is far more persuasive than posting screenshots of a model doing something impressive once."
+        ]
+      },
+      {
+        id: "where-its-headed",
+        title: "Where this role is headed",
+        paragraphs: [
+          "The title is already blending into AI product, evaluation, and applied AI operations. The durable skill is not clever phrasing. It is knowing how to make model behavior measurable and improve it methodically."
+        ]
+      }
     ],
     salaryRows: [
       { experience: "Entry", base: "$90K–$120K", total: "$100K–$135K" },
