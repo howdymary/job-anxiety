@@ -1,7 +1,8 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 
+import { ChartSurface } from "@/components/charts/chart-surface";
 import { ResearchChartFrame } from "@/components/research/research-chart-frame";
 import type { LiveWeeklyOpeningsPoint } from "@/lib/live-market-analytics";
 
@@ -38,21 +39,23 @@ export function ResearchLiveOpeningsChart({ data, source }: ResearchLiveOpenings
       <div className="mt-5 h-[22rem] overflow-hidden">
         {hasData ? (
           <div role="img" aria-label="Area chart showing the current open-role inventory bucketed by original posting week across tracked company career boards." className="h-full">
-            <ResponsiveContainer width="100%" height="100%" debounce={150}>
-              <AreaChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="live-openings-fill" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="5%" stopColor="var(--ja-teal)" stopOpacity={0.22} />
-                    <stop offset="95%" stopColor="var(--ja-teal)" stopOpacity={0.04} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid vertical={false} stroke="rgba(74, 80, 96, 0.12)" />
-                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
-                <YAxis tickLine={false} axisLine={false} width={60} tick={{ fill: "#6B7280", fontSize: 12 }} />
-                <Tooltip />
-                <Area type="monotone" dataKey="openings" stroke="var(--ja-teal)" strokeWidth={2.5} fill="url(#live-openings-fill)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            <ChartSurface>
+              {({ width, height }) => (
+                <AreaChart width={width} height={height} data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="live-openings-fill" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="5%" stopColor="var(--ja-teal)" stopOpacity={0.22} />
+                      <stop offset="95%" stopColor="var(--ja-teal)" stopOpacity={0.04} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} stroke="rgba(74, 80, 96, 0.12)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
+                  <YAxis tickLine={false} axisLine={false} width={60} tick={{ fill: "#6B7280", fontSize: 12 }} />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="openings" stroke="var(--ja-teal)" strokeWidth={2.5} fill="url(#live-openings-fill)" />
+                </AreaChart>
+              )}
+            </ChartSurface>
           </div>
         ) : (
           <div className="flex h-full items-center justify-center rounded-[var(--ja-radius-md)] border border-dashed border-[var(--ja-fog)] bg-[var(--ja-cloud)] px-6 text-center">

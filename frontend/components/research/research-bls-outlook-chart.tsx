@@ -1,7 +1,8 @@
 "use client";
 
-import { CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis } from "recharts";
 
+import { ChartSurface } from "@/components/charts/chart-surface";
 import { ResearchChartFrame } from "@/components/research/research-chart-frame";
 import type { VerifiedOccupationOutlook } from "@/lib/types";
 
@@ -11,6 +12,13 @@ type ResearchBlsOutlookChartProps = {
 
 export function ResearchBlsOutlookChart({ data }: ResearchBlsOutlookChartProps) {
   const hasData = data.length > 0;
+  const chartData = [...data].sort((left, right) => right.projectedGrowthPct - left.projectedGrowthPct);
+  const growthDomain = hasData
+    ? [
+        Math.min(...data.map((point) => point.projectedGrowthPct)) - 5,
+        Math.max(...data.map((point) => point.projectedGrowthPct)) + 5
+      ]
+    : [-10, 10];
 
   return (
     <ResearchChartFrame
@@ -28,46 +36,52 @@ export function ResearchBlsOutlookChart({ data }: ResearchBlsOutlookChartProps) 
     >
       <div className="h-[24rem]">
         {hasData ? (
-          <div role="img" aria-label="Scatter plot comparing BLS projected growth and median annual pay across selected occupations." className="h-full">
-            <ResponsiveContainer width="100%" height="100%" debounce={150}>
-              <ScatterChart margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
-                <CartesianGrid stroke="rgba(74, 80, 96, 0.12)" />
-                <XAxis
-                  type="number"
-                  dataKey="projectedGrowthPct"
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value: number) => `${value}%`}
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
-                  label={{
-                    value: "Projected growth, 2024–2034",
-                    position: "insideBottom",
-                    offset: -4,
-                    fill: "#4A5060",
-                    fontSize: 12
-                  }}
-                />
-                <YAxis
-                  type="number"
-                  dataKey="medianWage2024"
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value: number) => `$${Math.round(value / 1000)}k`}
-                  width={64}
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
-                  label={{
-                    value: "Median annual pay, 2024",
-                    angle: -90,
-                    position: "insideLeft",
-                    fill: "#4A5060",
-                    fontSize: 12
-                  }}
-                />
-                <ZAxis type="number" dataKey="employment2024" range={[90, 420]} />
-                <Tooltip content={<BlsOutlookTooltip />} />
-                <Scatter data={data} shape={<BlsOutlookDot />} />
-              </ScatterChart>
-            </ResponsiveContainer>
+          <div
+            role="img"
+            aria-label="Horizontal bar chart showing BLS projected growth across selected occupations, paired with median pay details below."
+            className="h-full"
+          >
+            <ChartSurface>
+              {({ width, height }) => (
+                <BarChart width={width} height={height} data={chartData} layout="vertical" margin={{ top: 8, right: 12, left: 24, bottom: 0 }}>
+                  <CartesianGrid horizontal={false} stroke="rgba(74, 80, 96, 0.12)" />
+                  <XAxis
+                    type="number"
+                    dataKey="projectedGrowthPct"
+                    domain={growthDomain}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value: number) => `${value}%`}
+                    tick={{ fill: "#6B7280", fontSize: 12 }}
+                    label={{
+                      value: "Projected growth, 2024–2034",
+                      position: "insideBottom",
+                      offset: -4,
+                      fill: "#4A5060",
+                      fontSize: 12
+                    }}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="occupation"
+                    tickLine={false}
+                    axisLine={false}
+                    width={112}
+                    tick={{ fill: "#6B7280", fontSize: 12 }}
+                    tickFormatter={(value: string) => shortenOccupation(value)}
+                  />
+                  <Tooltip content={<BlsOutlookTooltip />} />
+                  <Bar dataKey="projectedGrowthPct">
+                    {chartData.map((point) => (
+                      <Cell
+                        key={point.socCode}
+                        fill={point.projectedGrowthPct < 0 ? "#DC2626" : "#0D9488"}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              )}
+            </ChartSurface>
           </div>
         ) : (
           <div className="flex h-full items-center justify-center rounded-[var(--ja-radius-md)] border border-dashed border-[var(--ja-fog)] bg-[var(--ja-cloud)] px-6 text-center">
@@ -80,32 +94,40 @@ export function ResearchBlsOutlookChart({ data }: ResearchBlsOutlookChartProps) 
           </div>
         )}
       </div>
+
+      {hasData ? (
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          {data.map((point) => (
+            <div
+              key={point.socCode}
+              className="flex items-start gap-3 rounded-[var(--ja-radius-md)] border border-[var(--ja-fog)] bg-[var(--ja-paper)] p-3"
+            >
+              <span
+                aria-hidden="true"
+                className="mt-1 inline-flex h-3 w-3 shrink-0 rounded-full"
+                style={{ backgroundColor: point.projectedGrowthPct < 0 ? "#DC2626" : "#0D9488" }}
+              />
+              <div>
+                <p className="text-[var(--ja-text-sm)] font-semibold text-[var(--ja-ink)]">{point.occupation}</p>
+                <p className="fine-print mt-1">
+                  {point.projectedGrowthPct > 0 ? "+" : ""}
+                  {point.projectedGrowthPct}% growth · ${Math.round(point.medianWage2024 / 1000)}k median pay
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </ResearchChartFrame>
   );
 }
 
-function BlsOutlookDot(props: {
-  cx?: number;
-  cy?: number;
-  payload?: VerifiedOccupationOutlook;
-}) {
-  const { cx = 0, cy = 0, payload } = props;
-
-  if (!payload) {
-    return null;
+function shortenOccupation(value: string) {
+  if (value.length <= 18) {
+    return value;
   }
 
-  const fill = payload.projectedGrowthPct < 0 ? "var(--ja-coral)" : "var(--ja-teal)";
-  const radius = Math.max(6, Math.min(14, Math.sqrt(payload.employment2024 / 16000)));
-
-  return (
-    <g>
-      <circle cx={cx} cy={cy} r={radius} fill={fill} fillOpacity={0.9} stroke="rgba(250,250,249,0.95)" strokeWidth={1.5} />
-      <text x={cx + radius + 4} y={cy - radius - 2} fontSize="11" fontFamily="var(--ja-font-body)" fill="var(--ja-slate)">
-        {payload.occupation}
-      </text>
-    </g>
-  );
+  return `${value.slice(0, 16)}…`;
 }
 
 function BlsOutlookTooltip({
