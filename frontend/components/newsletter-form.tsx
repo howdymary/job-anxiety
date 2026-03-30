@@ -5,8 +5,6 @@ import { useState, useTransition } from "react";
 type FormState = {
   status: "idle" | "success" | "error";
   message: string;
-  linkHref?: string;
-  linkLabel?: string;
 };
 
 const initialState: FormState = {
@@ -39,7 +37,6 @@ export function NewsletterForm() {
           error?: string;
           provider?: string;
           code?: string;
-          hostedSignupUrl?: string;
         };
 
         if (!response.ok) {
@@ -47,10 +44,8 @@ export function NewsletterForm() {
             status: "error",
             message:
               payload.code === "NEWSLETTER_NOT_CONFIGURED"
-                ? "Signups are live through our Beehiiv hosted page while the on-site integration is being finalized."
-                : payload.error ?? "Our data is taking longer than usual to load. Please try again in a few seconds.",
-            linkHref: payload.hostedSignupUrl,
-            linkLabel: payload.hostedSignupUrl ? "Open hosted signup" : undefined
+                ? "Subscriber storage is not configured yet. Please try again after the database is connected."
+                : payload.error ?? "Our data is taking longer than usual to load. Please try again in a few seconds."
           });
           return;
         }
@@ -95,14 +90,6 @@ export function NewsletterForm() {
         className={`fine-print sm:col-span-2 ${state.status === "error" ? "text-[var(--ja-coral)]" : state.status === "success" ? "text-[var(--ja-emerald)]" : ""}`}
       >
         {state.message}
-        {state.linkHref && state.linkLabel ? (
-          <>
-            {" "}
-            <a className="inline-link" href={state.linkHref} target="_blank" rel="noreferrer">
-              {state.linkLabel}
-            </a>
-          </>
-        ) : null}
       </p>
     </form>
   );
@@ -113,8 +100,8 @@ function getSuccessMessage(status: string | undefined, email: string, provider?:
     return `Check your email to confirm. We sent a verification link to ${email}. Check spam if you do not see it.`;
   }
 
-  if (status === "active" && (provider === "beehiiv" || provider === "beehiiv_hosted")) {
-    return "You're in. Your email has been added to the weekly brief, and the next issue will go out on the next weekly send.";
+  if (status === "active" && provider === "database") {
+    return "You're in. Your email has been saved for the weekly brief, and the next issue will go out on the next weekly send.";
   }
 
   return "You're in. Your first Market Brief arrives on the next weekly send.";

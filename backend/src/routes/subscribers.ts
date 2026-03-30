@@ -5,7 +5,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { createRateLimitMiddleware } from "../middleware/rateLimit";
-import { subscribeToNewsletter } from "../lib/buttondown";
+import { subscribeToNewsletter } from "../lib/newsletter";
 import { subscriberConfirmSchema, subscriberCreateSchema } from "../lib/validation";
 
 export const subscribersRoutes = new Hono();
@@ -16,11 +16,16 @@ subscribersRoutes.post("/", zValidator("json", subscriberCreateSchema), async (c
   const payload = c.req.valid("json");
   const forwardedFor = c.req.header("x-forwarded-for");
   const ipAddress = c.req.header("cf-connecting-ip") ?? forwardedFor?.split(",")[0]?.trim() ?? null;
+  const userAgent = c.req.header("user-agent") ?? null;
+  const referer = c.req.header("referer") ?? null;
 
   try {
     const result = await subscribeToNewsletter({
       email: payload.email,
-      ipAddress
+      ipAddress,
+      userAgent,
+      source: referer,
+      preferences: payload.preferences
     });
 
     if (result.provider === "stub") {
@@ -28,9 +33,8 @@ subscribersRoutes.post("/", zValidator("json", subscriberCreateSchema), async (c
         {
           error: {
             code: "NEWSLETTER_NOT_CONFIGURED",
-            message: "Newsletter signup is not configured on the API yet."
-          },
-          hostedSignupUrl: "https://jobanxiety.beehiiv.com/?modal=signup"
+            message: "Newsletter subscriber storage is not configured on the API yet."
+          }
         },
         503
       );
@@ -40,6 +44,7 @@ subscribersRoutes.post("/", zValidator("json", subscriberCreateSchema), async (c
       {
         accepted: result.accepted,
         email: payload.email,
+        provider: result.provider,
         status: result.status
       },
       201

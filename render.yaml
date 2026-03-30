@@ -35,6 +35,10 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jobanxiety-db
+          property: connectionString
       - key: ALLOWED_ORIGINS
         value: https://jobanxiety.ai,https://www.jobanxiety.ai,http://localhost:3000,http://127.0.0.1:3000
     buildFilter:
@@ -42,3 +46,11 @@ services:
         - backend/**
         - shared/**
         - render.yaml
+
+databases:
+  - name: jobanxiety-db
+    databaseName: jobanxiety
+    user: jobanxiety
+    plan: free
+    postgresMajorVersion: "18"
+    ipAllowList: []
