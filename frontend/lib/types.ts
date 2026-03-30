@@ -71,6 +71,68 @@ export type TrendStat = {
   context: string;
 };
 
+export type PulseStat = {
+  label: string;
+  value: string;
+  context: string;
+  href: string;
+};
+
+export type LayoffConfidence = "Confirmed" | "Reported" | "Rumored";
+
+export type LayoffAiSignal = "Cited" | "Contextual" | "Not cited";
+
+export type LayoffEvent = {
+  slug: string;
+  company: string;
+  companySlug?: string;
+  announcedDate: string;
+  affectedCount: number;
+  affectedPercent?: number;
+  confidence: LayoffConfidence;
+  aiSignal: LayoffAiSignal;
+  sourceType: string;
+  sourceLabel: string;
+  sourceUrl: string;
+  secondarySources?: string[];
+  departments?: string[];
+  macroContext: string;
+  aiAttribution?: string;
+};
+
+export type DisplacementPoint = {
+  label: string;
+  jobsCreated: number;
+  aiLayoffs: number;
+};
+
+export type MethodologySection = {
+  title: string;
+  body: string[];
+  bullets?: string[];
+};
+
+export type CorrectionEntry = {
+  date: string;
+  title: string;
+  body: string;
+  status: string;
+};
+
+export type PressResource = {
+  title: string;
+  description: string;
+  href: string;
+  format: string;
+};
+
+export type ApiEndpointDoc = {
+  method: string;
+  path: string;
+  description: string;
+  auth: string;
+};
+
 export type CareerNoteSection = {
   id: string;
   title: string;

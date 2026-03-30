@@ -10,6 +10,6 @@ export default defineConfig({
   out: "./src/db/migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? "postgresql://reframe:reframe_password@localhost:5432/reframe"
+    url: process.env.DATABASE_URL ?? "postgresql://job_anxiety:job_anxiety_password@localhost:5432/job_anxiety"
   }
 });

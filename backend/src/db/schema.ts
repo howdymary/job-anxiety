@@ -1,5 +1,5 @@
 /**
- * Reframe Drizzle schema.
+ * Job Anxiety Drizzle schema.
  * Mirrors the first-pass PostgreSQL contract for companies, jobs, subscribers, and scraper runs.
  */
 

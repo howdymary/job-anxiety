@@ -1,6 +1,6 @@
-# Reframe
+# Job Anxiety
 
-Reframe is a full-stack platform for people anxious about AI job displacement. It surfaces the job categories AI is creating, explains how to break into them, and keeps the data fresh through a scraper + enrichment pipeline.
+Job Anxiety is a full-stack platform for people anxious about AI job displacement. It surfaces the job categories AI is creating, explains how to break into them, and keeps the data fresh through a scraper + enrichment pipeline.
 
 ## Stack
 
@@ -47,3 +47,42 @@ docker compose up --build
 ## CI
 
 GitHub Actions runs the root checks and then validates the frontend, backend, and scraper packages when those workspaces are present.
+
+## Deploying To Render
+
+This repo includes a Render Blueprint at `render.yaml`.
+
+### Services
+
+- `jobanxiety-web`: Next.js frontend from `frontend/`
+- `jobanxiety-api`: Hono backend from `backend/`
+
+The frontend talks to the backend over Render's private network via `JOBANXIETY_API_HOSTPORT`, so you do not need a public API domain for the current stack.
+
+### Render Setup
+
+1. Push this repo to GitHub.
+2. In Render, create a new Blueprint and point it at the repo.
+3. Let Render create both web services from `render.yaml`.
+4. Wait for the first deploy to finish.
+5. Open `jobanxiety-web` in Render and confirm the custom domain listed there is `jobanxiety.ai`.
+
+### Cloudflare DNS
+
+Create these DNS records in the `jobanxiety.ai` zone:
+
+- `CNAME` `@` → the `jobanxiety-web` Render hostname
+- `CNAME` `www` → the same `jobanxiety-web` Render hostname
+
+Cloudflare supports apex-domain CNAME flattening, so using `@` is valid.
+
+For first verification, set both records to `DNS only`. After Render issues the TLS certificate and the domain is live, you can switch them back to `Proxied` if you want Cloudflare in front.
+
+### Recommended Cloudflare SSL Setting
+
+- SSL/TLS mode: `Full`
+
+### Current Production Notes
+
+- The backend is still backed by mock data, so no Postgres or Redis service is required for this first production deploy.
+- Newsletter signup currently returns a pending confirmation response but does not yet send email. The UI handles this gracefully.

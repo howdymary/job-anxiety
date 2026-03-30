@@ -7,7 +7,7 @@ import { companies, jobCategories, jobs } from "@/lib/market-data";
 
 export const metadata: Metadata = {
   title: "AI Job Board — AI Engineer, GTM Engineer, Vibe Coder & More",
-  description: "Search AI-created jobs at Anthropic, OpenAI, Google, and more. Filter by salary, location, and experience."
+  description: "Search AI-created jobs at Anthropic, OpenAI, Google, and more. Filter by salary, location, and experience without doomscrolling the market."
 };
 
 export default function JobsPage() {
@@ -15,8 +15,8 @@ export default function JobsPage() {
     <div className="page-grid-wide">
       <SectionHeading
         eyebrow="Jobs"
-        title="A cleaner view of the AI jobs market"
-        description="Filter by role, company type, salary, location, and recency. The point is speed: what is hiring, where, and for how much."
+        title="The AI jobs market, without the doomscroll"
+        description="Filter by role, company type, salary, location, and recency. The point is calm specificity: what is hiring, where, and for how much."
       />
       <div className="mt-10">
         <Suspense fallback={<JobsBoardFallback />}>

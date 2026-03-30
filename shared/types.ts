@@ -1,5 +1,5 @@
 /**
- * Shared domain types and constants for the Reframe monorepo.
+ * Shared domain types and constants for the Job Anxiety monorepo.
  * Frontend, backend, and tooling should import from here for stable contracts.
  */
 

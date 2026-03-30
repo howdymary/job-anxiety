@@ -94,7 +94,7 @@ async def _run_async() -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run the Reframe scraper pipeline.")
+    parser = argparse.ArgumentParser(description="Run the Job Anxiety scraper pipeline.")
     parser.add_argument("--demo", action="store_true", help="Run the demo pipeline.")
     args = parser.parse_args(argv)
     return asyncio.run(_run_async())

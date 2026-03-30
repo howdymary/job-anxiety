@@ -1,12 +1,12 @@
-# Reframe Scraper
+# Job Anxiety Scraper
 
-Ethical, API-first job collection and enrichment pipeline for Reframe.
+Ethical, API-first job collection and enrichment pipeline for Job Anxiety.
 
 ## Quick Start
 
 ```bash
-cd /Users/maryliu/reframe/scraper
-python -m reframe_scraper --help
+cd /Users/maryliu/job-anxiety/scraper
+python -m job_anxiety_scraper --help
 ```
 
 ## Design Notes
@@ -14,4 +14,3 @@ python -m reframe_scraper --help
 - Prefer public ATS APIs before HTML parsing.
 - Respect `robots.txt` and rate limit per domain.
 - Keep scrapers isolated so one source failure does not stop the pipeline.
-

@@ -2,8 +2,8 @@ import { SectionHeading } from "@/components/section-heading";
 
 const principles = [
   {
-    title: "Editorial restraint",
-    copy: "The site should feel like reporting. If a sentence sounds inflated, it gets cut. If a layout looks like a template, it gets redone."
+    title: "Signal over panic",
+    copy: "The job market is already stressful enough. The work here is to reduce noise, name what is actually changing, and avoid turning fear into a content strategy."
   },
   {
     title: "Transparent collection",
@@ -11,7 +11,7 @@ const principles = [
   },
   {
     title: "Useful optimism",
-    copy: "Reframe is not interested in panic as a growth strategy. The product exists to make the market more legible, not more frightening."
+    copy: "jobanxiety.ai is not interested in panic as a growth strategy. The goal is to make the market more legible, not more frightening."
   }
 ];
 
@@ -20,15 +20,15 @@ export default function AboutPage() {
     <div className="page-grid grid gap-10">
       <SectionHeading
         eyebrow="About"
-        title="A jobs platform built more like an editorial desk"
-        description="Reframe exists for people who are tired of reading AI hype and still want a clear answer to a practical question: what work is actually being created right now?"
+        title="A jobs platform built like a calmer newsroom"
+        description="jobanxiety.ai exists for people tired of AI panic headlines who still want a practical answer to one question: what work is actually being created right now?"
       />
 
       <section className="editorial-card p-6">
         <div className="grid gap-8 md:grid-cols-[1.15fr_0.85fr]">
           <div>
             <p className="body-copy">
-              The jobs AI eliminates are yesterday&apos;s jobs. The jobs AI creates are tomorrow&apos;s careers. Reframe turns that line into something more useful than a slogan: a living map of the companies hiring, the categories emerging, and the compensation attached to them.
+              AI job anxiety is real. So is the hiring happening under unfamiliar titles. jobanxiety.ai turns that tension into something useful: a living map of the companies hiring, the categories emerging, and the compensation attached to them.
             </p>
           </div>
           <div className="border-l border-[var(--color-border)] pl-6">

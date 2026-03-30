@@ -1,0 +1,67 @@
+.text-editorial {
+  font-family: var(--ja-font-editorial), Georgia, "Times New Roman", serif;
+}
+
+.text-body {
+  font-family: var(--ja-font-body), -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.text-data {
+  font-family: var(--ja-font-data), "SFMono-Regular", Consolas, monospace;
+}
+
+.text-xs {
+  font-size: var(--ja-text-xs);
+}
+
+.text-sm {
+  font-size: var(--ja-text-sm);
+}
+
+.text-base {
+  font-size: var(--ja-text-base);
+}
+
+.text-lg {
+  font-size: var(--ja-text-lg);
+}
+
+.text-xl {
+  font-size: var(--ja-text-xl);
+}
+
+.text-2xl {
+  font-size: var(--ja-text-2xl);
+}
+
+.text-3xl {
+  font-size: var(--ja-text-3xl);
+}
+
+.text-4xl {
+  font-size: var(--ja-text-4xl);
+}
+
+.text-5xl {
+  font-size: var(--ja-text-5xl);
+}
+
+.text-6xl {
+  font-size: var(--ja-text-6xl);
+}
+
+.leading-tight {
+  line-height: var(--ja-leading-tight);
+}
+
+.leading-snug {
+  line-height: var(--ja-leading-snug);
+}
+
+.leading-normal {
+  line-height: var(--ja-leading-normal);
+}
+
+.leading-relaxed {
+  line-height: var(--ja-leading-relaxed);
+}

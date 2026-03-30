@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 
+import { ContextPanel } from "@/components/context-panel";
+import { DisplacementRatioChart } from "@/components/displacement-ratio-chart";
 import { TrendChart } from "@/components/market/trend-chart";
 import { SectionHeading } from "@/components/section-heading";
 import { landingStats, topHiringCompanies, trendPoints } from "@/lib/market-data";
+import { displacementRatioPoints, methodologyMeta } from "@/lib/platform-data";
 
 export const metadata: Metadata = {
   title: "Trends",
@@ -41,6 +44,20 @@ export default function TrendsPage() {
             ))}
           </div>
         </section>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(20rem,0.7fr)]">
+        <DisplacementRatioChart data={displacementRatioPoints} />
+        <ContextPanel
+          title="How to read the ratio"
+          body={
+            <>
+              <p>This is not a claim that one line cancels out the other. Jobs created and layoffs announced are different market events with different lags, industries, and confidence levels.</p>
+              <p>The chart is useful because it keeps both sides of the story in view at once. It becomes misleading when people force it into a single verdict about whether AI is good or bad for work.</p>
+              <p className="fine-print">Methodology {methodologyMeta.version}. Current frontend data is still a curated sample.</p>
+            </>
+          }
+        />
       </div>
     </div>
   );

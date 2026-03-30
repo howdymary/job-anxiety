@@ -1,5 +1,5 @@
-from reframe_scraper.models import JobCategory, ParsedJob
-from reframe_scraper.scrapers.base import BaseScraper
+from job_anxiety_scraper.models import JobCategory, ParsedJob
+from job_anxiety_scraper.scrapers.base import BaseScraper
 
 
 class DummyScraper(BaseScraper):
@@ -35,4 +35,3 @@ def test_dedupe_jobs_by_fingerprint() -> None:
 
     unique = scraper.dedupe_jobs([job_one, job_two])
     assert len(unique) == 1
-

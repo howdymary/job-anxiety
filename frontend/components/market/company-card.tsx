@@ -21,7 +21,7 @@ export function CompanyCard({ company, openRoles }: CompanyCardProps) {
       <div className="grid gap-2 text-[0.86rem] text-[var(--color-text-muted)]">
         <p>{company.headquarters}</p>
         <p>{company.hiringFocus}</p>
-        <p className="data-copy text-[0.76rem] uppercase text-[var(--color-text-faint)]">{openRoles} open roles in Reframe</p>
+        <p className="data-copy text-[0.76rem] uppercase text-[var(--color-text-faint)]">{openRoles} open roles tracked</p>
       </div>
     </Link>
   );

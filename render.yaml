@@ -1,0 +1,43 @@
+services:
+  - type: web
+    runtime: node
+    name: jobanxiety-web
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    domains:
+      - jobanxiety.ai
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JOBANXIETY_API_HOSTPORT
+        fromService:
+          type: web
+          name: jobanxiety-api
+          property: hostport
+    buildFilter:
+      paths:
+        - frontend/**
+        - render.yaml
+
+  - type: web
+    runtime: node
+    name: jobanxiety-api
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: ALLOWED_ORIGINS
+        value: https://jobanxiety.ai,https://www.jobanxiety.ai,http://localhost:3000,http://127.0.0.1:3000
+    buildFilter:
+      paths:
+        - backend/**
+        - shared/**
+        - render.yaml

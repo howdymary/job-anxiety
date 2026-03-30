@@ -1,4 +1,4 @@
-"""Reframe scraper package."""
+"""Job Anxiety scraper package."""
 
 from .models import (
     CompanyRecord,
@@ -19,4 +19,3 @@ __all__ = [
     "RawJob",
     "ScraperRun",
 ]
-

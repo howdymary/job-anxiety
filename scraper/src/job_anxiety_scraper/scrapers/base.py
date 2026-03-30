@@ -26,7 +26,7 @@ class RobotsCacheEntry:
 class BaseScraper(ABC):
     """All scrapers should be polite, rate-limited, and source-specific."""
 
-    USER_AGENT = "ReframeBot/1.0 (+https://reframe.jobs/bot; jobs@reframe.jobs)"
+    USER_AGENT = "JobAnxietyBot/1.0 (+https://jobanxiety.ai/bot; jobs@jobanxiety.ai)"
     MIN_DELAY_SECONDS = 1.0
     MAX_DELAY_SECONDS = 3.0
     ROBOTS_TTL_SECONDS = 24 * 60 * 60

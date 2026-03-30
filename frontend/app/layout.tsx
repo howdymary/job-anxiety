@@ -1,44 +1,41 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Newsreader, Public_Sans, Source_Serif_4 } from "next/font/google";
+import { DM_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
+import "../styles/tokens.css";
+import "../styles/typography.css";
 import "./globals.css";
 
-const fontDisplay = Newsreader({
+const fontEditorial = Instrument_Serif({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-display"
+  weight: ["400"],
+  style: ["normal", "italic"],
+  variable: "--ja-font-editorial"
 });
 
-const fontBody = Source_Serif_4({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-body"
-});
-
-const fontUi = Public_Sans({
+const fontBody = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-ui"
+  variable: "--ja-font-body"
 });
 
-const fontData = IBM_Plex_Mono({
+const fontData = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-data"
+  variable: "--ja-font-data"
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://reframe.work"),
+  metadataBase: new URL("https://jobanxiety.ai"),
   title: {
-    default: "Reframe — AI Jobs That Didn't Exist Two Years Ago",
-    template: "%s | Reframe"
+    default: "JobAnxiety.ai — AI Job Market & Layoff Tracker",
+    template: "%s | JobAnxiety.ai"
   },
   description:
-    "Discover new careers created by AI. Browse thousands of roles at Fortune 500 companies and VC-backed startups. Updated daily."
+    "Track AI job openings, layoffs, and labor market trends with source-verified data. Updated daily. Career guides for workers navigating AI-era change."
 };
 
 type RootLayoutProps = {
@@ -47,7 +44,7 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={`${fontDisplay.variable} ${fontBody.variable} ${fontUi.variable} ${fontData.variable}`}>
+    <html lang="en" className={`${fontEditorial.variable} ${fontBody.variable} ${fontData.variable}`}>
       <body>
         <a className="skip-link" href="#main-content">
           Skip to content

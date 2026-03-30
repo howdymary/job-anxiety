@@ -4,8 +4,24 @@ import { careerNotes, insightArticles } from "@/lib/editorial-content";
 import { companies, jobs } from "@/lib/market-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://reframe.work";
-  const staticRoutes = ["", "/jobs", "/companies", "/career-notes", "/insights", "/trends", "/about", "/newsletter"];
+  const baseUrl = "https://jobanxiety.ai";
+  const staticRoutes = [
+    "",
+    "/jobs",
+    "/layoffs",
+    "/companies",
+    "/career-notes",
+    "/insights",
+    "/trends",
+    "/about",
+    "/newsletter",
+    "/methodology",
+    "/press",
+    "/corrections",
+    "/privacy",
+    "/terms",
+    "/api"
+  ];
 
   return [
     ...staticRoutes.map((path) => ({

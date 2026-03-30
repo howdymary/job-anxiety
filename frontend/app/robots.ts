@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/"]
       }
     ],
-    sitemap: "https://reframe.work/sitemap.xml"
+    sitemap: "https://jobanxiety.ai/sitemap.xml"
   };
 }

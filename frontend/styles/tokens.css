@@ -1,0 +1,130 @@
+:root {
+  --ja-ink: #1a1d23;
+  --ja-charcoal: #2d3039;
+  --ja-slate: #4a5060;
+  --ja-steel: #6b7280;
+  --ja-mist: #9ca3af;
+
+  --ja-paper: #fafaf9;
+  --ja-cloud: #f3f4f6;
+  --ja-fog: #e5e7eb;
+
+  --ja-teal: #0d9488;
+  --ja-teal-light: #ccfbf1;
+  --ja-teal-dark: #0f766e;
+  --ja-coral: #dc2626;
+  --ja-coral-light: #fee2e2;
+  --ja-amber: #d97706;
+  --ja-amber-light: #fef3c7;
+  --ja-emerald: #059669;
+  --ja-emerald-light: #d1fae5;
+
+  --ja-chart-1: #0d9488;
+  --ja-chart-2: #6366f1;
+  --ja-chart-3: #f59e0b;
+  --ja-chart-4: #ec4899;
+  --ja-chart-5: #8b5cf6;
+  --ja-chart-6: #14b8a6;
+
+  --ja-text-xs: 0.75rem;
+  --ja-text-sm: 0.875rem;
+  --ja-text-base: 1rem;
+  --ja-text-lg: 1.125rem;
+  --ja-text-xl: 1.25rem;
+  --ja-text-2xl: 1.5rem;
+  --ja-text-3xl: 1.875rem;
+  --ja-text-4xl: 2.25rem;
+  --ja-text-5xl: 3rem;
+  --ja-text-6xl: 3.75rem;
+
+  --ja-leading-tight: 1.2;
+  --ja-leading-snug: 1.35;
+  --ja-leading-normal: 1.6;
+  --ja-leading-relaxed: 1.75;
+  --ja-leading-data: 1.4;
+
+  --ja-space-1: 0.25rem;
+  --ja-space-2: 0.5rem;
+  --ja-space-3: 0.75rem;
+  --ja-space-4: 1rem;
+  --ja-space-5: 1.25rem;
+  --ja-space-6: 1.5rem;
+  --ja-space-8: 2rem;
+  --ja-space-10: 2.5rem;
+  --ja-space-12: 3rem;
+  --ja-space-16: 4rem;
+  --ja-space-20: 5rem;
+  --ja-space-24: 6rem;
+
+  --ja-shadow-sm: 0 1px 2px rgba(26, 29, 35, 0.05);
+  --ja-shadow-md: 0 2px 8px rgba(26, 29, 35, 0.08);
+  --ja-shadow-lg: 0 4px 16px rgba(26, 29, 35, 0.1);
+  --ja-shadow-xl: 0 8px 32px rgba(26, 29, 35, 0.12);
+
+  --ja-border: 1px solid var(--ja-fog);
+  --ja-border-focus: 2px solid var(--ja-teal);
+
+  --ja-radius-sm: 4px;
+  --ja-radius-md: 8px;
+  --ja-radius-lg: 12px;
+  --ja-radius-xl: 16px;
+  --ja-radius-full: 9999px;
+
+  --ja-container-sm: 640px;
+  --ja-container-md: 768px;
+  --ja-container-lg: 1024px;
+  --ja-container-xl: 1280px;
+  --ja-gutter: 24px;
+
+  --ja-duration-fast: 150ms;
+  --ja-duration-normal: 300ms;
+  --ja-duration-slow: 600ms;
+  --ja-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ja-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ja-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --color-bg: var(--ja-paper);
+  --color-bg-elevated: rgba(250, 250, 249, 0.96);
+  --color-bg-sunken: var(--ja-cloud);
+  --color-bg-inverse: var(--ja-charcoal);
+  --color-text: var(--ja-ink);
+  --color-text-muted: var(--ja-slate);
+  --color-text-faint: var(--ja-steel);
+  --color-text-inverse: #ffffff;
+  --color-accent: var(--ja-teal);
+  --color-accent-hover: var(--ja-teal-dark);
+  --color-green: var(--ja-emerald);
+  --color-amber: var(--ja-amber);
+  --color-red: var(--ja-coral);
+  --color-border: var(--ja-fog);
+  --color-border-hover: var(--ja-teal);
+  --color-border-focus: var(--ja-teal);
+  --shadow-sm: var(--ja-shadow-sm);
+  --shadow-md: var(--ja-shadow-md);
+  --shadow-lg: var(--ja-shadow-lg);
+  --radius-sm: var(--ja-radius-sm);
+  --radius-md: var(--ja-radius-md);
+  --radius-lg: var(--ja-radius-lg);
+  --space-1: var(--ja-space-1);
+  --space-2: var(--ja-space-2);
+  --space-3: var(--ja-space-3);
+  --space-4: var(--ja-space-4);
+  --space-6: var(--ja-space-6);
+  --space-8: var(--ja-space-8);
+  --space-12: var(--ja-space-12);
+  --space-16: var(--ja-space-16);
+  --space-24: var(--ja-space-24);
+  --max-w-prose: 45rem;
+  --max-w-content: 72rem;
+  --max-w-wide: 80rem;
+  --max-w-page: var(--ja-container-xl);
+  --duration-fast: var(--ja-duration-fast);
+  --duration-normal: var(--ja-duration-normal);
+  --duration-slow: var(--ja-duration-slow);
+  --ease-out: var(--ja-ease-out);
+  --ease-in-out: var(--ja-ease-in-out);
+  --font-display: var(--ja-font-editorial);
+  --font-body: var(--ja-font-body);
+  --font-ui: var(--ja-font-body);
+  --font-data: var(--ja-font-data);
+}

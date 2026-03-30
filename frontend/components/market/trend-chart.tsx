@@ -19,7 +19,7 @@ export function TrendChart({ data }: TrendChartProps) {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
-              <linearGradient id="reframe-chart-fill" x1="0" x2="0" y1="0" y2="1">
+              <linearGradient id="market-chart-fill" x1="0" x2="0" y1="0" y2="1">
                 <stop offset="5%" stopColor="#1A56DB" stopOpacity={0.18} />
                 <stop offset="95%" stopColor="#1A56DB" stopOpacity={0} />
               </linearGradient>
@@ -28,7 +28,7 @@ export function TrendChart({ data }: TrendChartProps) {
             <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#6B6B64", fontSize: 12 }} />
             <YAxis tickLine={false} axisLine={false} tick={{ fill: "#6B6B64", fontSize: 12 }} />
             <Tooltip />
-            <Area type="monotone" dataKey="roles" stroke="#1A56DB" fill="url(#reframe-chart-fill)" strokeWidth={2} />
+            <Area type="monotone" dataKey="roles" stroke="#1A56DB" fill="url(#market-chart-fill)" strokeWidth={2} />
           </AreaChart>
         </ResponsiveContainer>
       </div>

@@ -2,39 +2,51 @@ import Link from "next/link";
 
 const navigation = [
   { href: "/jobs", label: "Jobs" },
-  { href: "/career-notes", label: "Career Notes" },
-  { href: "/companies", label: "Companies" },
+  { href: "/layoffs", label: "Layoffs" },
   { href: "/trends", label: "Trends" },
-  { href: "/about", label: "About" }
+  { href: "/career-notes", label: "Career Guides" },
+  { href: "/companies", label: "Companies" }
 ];
 
 const resources = [
-  { href: "/insights", label: "Insights" },
   { href: "/newsletter", label: "Newsletter" },
-  { href: "/career-notes/ai-engineer", label: "AI Engineer guide" },
-  { href: "/career-notes/gtm-engineer", label: "GTM Engineer guide" }
+  { href: "/methodology", label: "Methodology" },
+  { href: "/press", label: "Press" },
+  { href: "/api", label: "API" }
 ];
 
 const legal = [
-  { href: "/about", label: "Editorial policy" },
-  { href: "/about", label: "Privacy" },
-  { href: "/about", label: "Terms" }
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
+  { href: "/corrections", label: "Corrections" }
 ];
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-[var(--color-border)] bg-[var(--color-bg-elevated)]">
-      <div className="mx-auto grid w-[min(var(--max-w-page),calc(100vw-2rem))] gap-10 py-14 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
-        <div className="max-w-[20rem]">
-          <p className="font-[var(--font-display)] text-[1.8rem] tracking-[-0.03em]">Reframe</p>
-          <p className="body-copy muted-copy mt-4">
-            Editorial field notes, market data, and job discovery for people trying to understand where AI work is actually going.
+    <footer className="mt-[var(--ja-space-20)] border-t border-white/10 bg-[var(--ja-charcoal)] text-white">
+      <div className="mx-auto grid w-[min(var(--max-w-page),calc(100vw-2rem))] gap-8 py-[var(--ja-space-16)]">
+        <div className="rounded-[var(--ja-radius-lg)] border border-white/10 bg-white/4 px-[var(--ja-space-6)] py-[var(--ja-space-5)]">
+          <p className="text-center text-[var(--ja-text-sm)] leading-[1.7] text-white/78">
+            JobAnxiety.ai is an independent platform. We do not sell recruitment ads or sponsored job placements. Our data
+            methodology is open and versioned. All sources are linked. Corrections are public.
           </p>
-          <p className="fine-print mt-6">Set in Newsreader and Source Serif 4. Built with Next.js.</p>
         </div>
-        <FooterColumn title="Navigation" items={navigation} />
-        <FooterColumn title="Resources" items={resources} />
-        <FooterColumn title="Legal" items={legal} />
+
+        <div className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
+          <div className="max-w-[22rem]">
+            <p className="font-[var(--ja-font-editorial)] text-[2rem] leading-none tracking-[-0.03em] text-white">
+              JobAnxiety<span className="text-[var(--ja-teal-light)]">.ai</span>
+            </p>
+            <p className="mt-4 text-[var(--ja-text-base)] leading-[1.7] text-white/78">
+              Source-verified reporting on AI jobs, layoffs, and career transitions for people who want the signal, not the
+              spin.
+            </p>
+            <p className="mt-6 text-[var(--ja-text-xs)] uppercase tracking-[0.08em] text-white/52">Updated for workers, researchers, and journalists.</p>
+          </div>
+          <FooterColumn title="Navigation" items={navigation} />
+          <FooterColumn title="Resources" items={resources} />
+          <FooterColumn title="Legal" items={legal} />
+        </div>
       </div>
     </footer>
   );
@@ -52,11 +64,11 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <p className="eyebrow">{title}</p>
+      <p className="text-[var(--ja-text-xs)] font-semibold uppercase tracking-[0.08em] text-white/52">{title}</p>
       <ul className="mt-4 grid gap-3">
         {items.map((item) => (
           <li key={`${title}-${item.label}`}>
-            <Link href={item.href} className="body-copy muted-copy inline-link">
+            <Link href={item.href} className="text-[var(--ja-text-sm)] text-white/78 transition hover:text-white">
               {item.label}
             </Link>
           </li>

@@ -5,7 +5,7 @@ import { SectionHeading } from "@/components/section-heading";
 
 export const metadata: Metadata = {
   title: "Newsletter",
-  description: "Subscribe to the weekly brief on what is hiring, what is paying, and what is new."
+  description: "Subscribe to the weekly brief on what is hiring, what is paying, and what changed in the AI labor market."
 };
 
 export default function NewsletterPage() {
@@ -14,7 +14,7 @@ export default function NewsletterPage() {
       <SectionHeading
         eyebrow="Newsletter"
         title="Get the weekly brief"
-        description="What is hiring, what is paying, and which new job categories are starting to matter."
+        description="A weekly note on what is hiring, what is paying, and which parts of the AI labor market are actually moving."
       />
       <NewsletterForm />
     </div>

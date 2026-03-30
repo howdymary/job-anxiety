@@ -1,5 +1,5 @@
 /**
- * Reframe backend entrypoint.
+ * Job Anxiety backend entrypoint.
  * Wires the Hono application, core middleware, and versioned route modules.
  */
 
@@ -20,7 +20,7 @@ app.use("/api/*", corsMiddleware);
 app.get("/health", (c) =>
   c.json({
     ok: true,
-    service: "reframe-backend",
+    service: "job-anxiety-backend",
     version: "0.1.0"
   })
 );
@@ -43,7 +43,7 @@ app.notFound((c) => {
 });
 
 app.onError((error, c) => {
-  console.error("[reframe-backend]", error);
+  console.error("[job-anxiety-backend]", error);
 
   return c.json(
     {
@@ -64,6 +64,6 @@ serve(
     port
   },
   () => {
-    console.log(`[reframe-backend] listening on http://localhost:${port}`);
+    console.log(`[job-anxiety-backend] listening on http://localhost:${port}`);
   }
 );

@@ -10,10 +10,15 @@ type SearchCommandProps = {
 
 const items = [
   { href: "/jobs", label: "All jobs", meta: "Market" },
+  { href: "/layoffs", label: "Layoff tracker", meta: "Market" },
   { href: "/career-notes", label: "Career Notes", meta: "Guides" },
   { href: "/companies", label: "Companies", meta: "Directory" },
   { href: "/insights", label: "Insights", meta: "Editorial" },
   { href: "/trends", label: "Trends", meta: "Data" },
+  { href: "/methodology", label: "Methodology", meta: "Trust" },
+  { href: "/press", label: "Press", meta: "Resources" },
+  { href: "/api", label: "API docs", meta: "Developers" },
+  { href: "/corrections", label: "Corrections", meta: "Trust" },
   { href: "/career-notes/ai-engineer", label: "AI Engineer guide", meta: "Career note" },
   { href: "/career-notes/gtm-engineer", label: "GTM Engineer guide", meta: "Career note" },
   { href: "/insights/will-ai-take-my-job", label: "Will AI take my job?", meta: "Insight" }
@@ -63,7 +68,7 @@ export function SearchCommand({ open, onClose }: SearchCommandProps) {
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label="Search Reframe"
+        aria-label="Search jobanxiety.ai"
       >
         <div className="border-b border-[var(--color-border)] px-5 py-4">
           <input

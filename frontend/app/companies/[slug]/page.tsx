@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { JobCard } from "@/components/market/job-row";
 import { SectionHeading } from "@/components/section-heading";
 import { companies, jobs } from "@/lib/market-data";
+import { layoffEvents } from "@/lib/platform-data";
 
 type CompanyPageProps = {
   params: {
@@ -33,6 +34,7 @@ export default function CompanyPage({ params }: CompanyPageProps) {
   }
 
   const companyJobs = jobs.filter((job) => job.companySlug === company.slug);
+  const companyLayoffs = layoffEvents.filter((event) => event.companySlug === company.slug);
 
   return (
     <div className="page-grid-wide grid gap-10">
@@ -47,6 +49,24 @@ export default function CompanyPage({ params }: CompanyPageProps) {
             {companyJobs.map((job) => (
               <JobCard key={job.slug} job={job} />
             ))}
+          </div>
+          <div className="editorial-card p-5">
+            <p className="eyebrow">Layoff history</p>
+            {companyLayoffs.length ? (
+              <div className="mt-4 grid gap-4">
+                {companyLayoffs.map((event) => (
+                  <div key={event.slug} className="border-b border-[var(--color-border)] pb-4 last:border-b-0 last:pb-0">
+                    <p className="section-title text-[1.1rem]">
+                      {new Date(event.announcedDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                    </p>
+                    <p className="body-copy mt-2">{event.affectedCount.toLocaleString()} affected · {event.confidence} · {event.aiSignal}</p>
+                    <p className="fine-print mt-2">{event.macroContext}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="body-copy muted-copy mt-4">No layoff events are attached to this company in the current sample set.</p>
+            )}
           </div>
         </section>
 

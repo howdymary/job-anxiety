@@ -40,7 +40,7 @@ export default function CareerNotePage({ params }: CareerNotePageProps) {
     datePublished: "2026-03-25",
     author: {
       "@type": "Organization",
-      name: "Reframe"
+      name: "jobanxiety.ai"
     }
   };
 

@@ -75,6 +75,16 @@ export function TrendsIcon() {
   );
 }
 
+export function LayoffIcon() {
+  return (
+    <BaseIcon>
+      <path d="M12 5.25v7.5" />
+      <path d="M12 16.5h.01" />
+      <path d="M10.2 3.75h3.6l6.45 11.1-1.8 3.15H5.55l-1.8-3.15Z" />
+    </BaseIcon>
+  );
+}
+
 export function SearchIcon() {
   return (
     <BaseIcon>
