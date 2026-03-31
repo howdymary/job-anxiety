@@ -108,7 +108,7 @@ export default async function LayoffsPage() {
             title="How this page is constrained"
             body={
               <>
-                <p>Confirmed events still require a filing-grade or direct company source. Reported events can appear only when the report comes from a trusted reporting outlet such as Reuters, Bloomberg, The Wall Street Journal, Financial Times, or The Information and stays clearly labeled as Reported.</p>
+                <p>Confirmed events still require a filing-grade or direct company source. Reported events can appear only when the report comes from a trusted reporting outlet such as Reuters, Bloomberg, The Wall Street Journal, Financial Times, The Information, or the Associated Press and stays clearly labeled as Reported.</p>
                 <p>The monitor is broader than it was before, but it is still not a comprehensive market census. Every published figure still traces back to a still-live tracked source.</p>
               </>
             }

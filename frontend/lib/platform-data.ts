@@ -105,12 +105,12 @@ export const methodologySections: MethodologySection[] = [
     title: "How layoff confidence works",
     body: [
       "The live layoff page publishes filing-grade or official company disclosures that can still be fetched from their source URLs. Those entries are marked Confirmed and remain intentionally narrower than the full market while the broader provenance pipeline is being audited.",
-      "A smaller set of Reported entries may appear when a trusted outlet such as Reuters, Bloomberg, The Wall Street Journal, Financial Times, or The Information reports a layoff before the primary company document becomes public. Those events stay labeled Reported and do not roll into confirmed totals until a stronger source appears.",
+      "A smaller set of Reported entries may appear when a trusted outlet such as Reuters, Bloomberg, The Wall Street Journal, Financial Times, The Information, or the Associated Press reports a layoff before the primary company document becomes public. Those events stay labeled Reported and do not roll into confirmed totals until a stronger source appears.",
       "AI context is kept separate from the fact of the workforce reduction. A company may be investing in AI while cutting staff without saying AI caused the event."
     ],
     bullets: [
       "Confirmed: SEC filing, annual report, WARN notice, or direct company investor-relations statement.",
-      "Reported: trusted financial or wire reporting, including Reuters, Bloomberg, The Wall Street Journal, Financial Times, or The Information, that has not yet been matched to a public primary document.",
+      "Reported: trusted financial or wire reporting, including Reuters, Bloomberg, The Wall Street Journal, Financial Times, The Information, or the Associated Press, that has not yet been matched to a public primary document.",
       "AI cited: the source text itself names AI as an investment priority, restructuring factor, or explicit driver.",
       "Not cited: the source documents the cut but does not attribute it to AI."
     ]
@@ -128,7 +128,7 @@ export const sourceHierarchy = [
   "SEC filings, annual reports, and formal investor-relations disclosures",
   "WARN Act notices and equivalent government notices",
   "Direct company newsroom or investor-relations releases",
-  "Trusted reporting outlets such as Reuters, Bloomberg, The Wall Street Journal, Financial Times, and The Information",
+  "Trusted reporting outlets such as Reuters, Bloomberg, The Wall Street Journal, Financial Times, The Information, and the Associated Press",
   "Current BLS and other official federal labor data",
   "Major research institutions and peer-reviewed or institutionally reviewed studies",
   "Secondary reporting only when the primary document is unavailable and the claim is clearly attributed"

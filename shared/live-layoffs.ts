@@ -1,11 +1,19 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
 
 export type LayoffFeedStatus = "live" | "cached" | "failed";
 export type LayoffAiSignal = "Cited" | "Not cited";
 export type LayoffConfidence = "Confirmed" | "Reported";
-export const TRUSTED_REPORTED_OUTLETS = ["Reuters", "Bloomberg", "The Wall Street Journal", "Financial Times", "The Information"] as const;
+export const TRUSTED_REPORTED_OUTLETS = [
+  "Reuters",
+  "Bloomberg",
+  "The Wall Street Journal",
+  "Financial Times",
+  "The Information",
+  "Associated Press"
+] as const;
 
 export type OfficialLayoffEvent = {
   slug: string;
@@ -65,6 +73,7 @@ type SourceMonitor = {
   countUnit: "positions" | "employees";
   confidence: LayoffConfidence;
   summaryContext?: string;
+  loadText?: () => Promise<RetryOutcome<string>>;
   parser: (plainText: string) => ParsedLayoff | null;
 };
 
@@ -89,6 +98,19 @@ type StoredLayoffSourceResult = {
   event: OfficialLayoffEvent | null;
   sourceHealth: LayoffSourceHealth;
   error: string | null;
+};
+
+type XlsxModule = {
+  read: (data: Buffer, options: { type: "buffer" }) => { Sheets: Record<string, unknown> };
+  utils: {
+    sheet_to_json: (
+      sheet: unknown,
+      options: {
+        header: 1;
+        raw: true;
+      }
+    ) => Array<Array<string | number | null>>;
+  };
 };
 
 const LAYOFF_CACHE_VERSION = 1;
@@ -433,6 +455,44 @@ const MONITORED_SOURCES: SourceMonitor[] = [
     }
   },
   {
+    key: "meta-2026-03",
+    company: "Meta",
+    companySlug: "meta",
+    announcedAt: "2026-03-20T00:00:00.000Z",
+    announcedLabel: "March 20, 2026",
+    sourceType: "California WARN report",
+    sourceLabel: "California EDD WARN report — Meta rows effective March 20, 2026",
+    sourceUrl: "https://edd.ca.gov/siteassets/files/jobs_and_training/warn/warn_report1.xlsx",
+    countUnit: "employees",
+    confidence: "Confirmed",
+    summaryContext:
+      "The current EDD workbook groups the March 20 California reductions across Burlingame, Playa Vista, Sunnyvale, and Menlo Park sites.",
+    loadText: () =>
+      fetchCaliforniaWarnSummary({
+        sourceUrl: "https://edd.ca.gov/siteassets/files/jobs_and_training/warn/warn_report1.xlsx",
+        companyPattern: /^Meta Platforms, Inc/i,
+        effectiveDateSerial: 46101
+      }),
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(/warn rows show\s+([\d,]+)\s+employees affected across\s+([\d,]+)\s+locations/i);
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedCount = parseWholeNumber(layoffMatch[1]);
+
+      if (affectedCount == null) {
+        return null;
+      }
+
+      return {
+        affectedCount,
+        aiSignal: "Not cited"
+      };
+    }
+  },
+  {
     key: "oracle-2026-03",
     company: "Oracle",
     companySlug: "oracle",
@@ -472,6 +532,43 @@ const MONITORED_SOURCES: SourceMonitor[] = [
             : undefined
       };
     }
+  },
+  {
+    key: "block-2026-02",
+    company: "Block",
+    companySlug: "block",
+    announcedAt: "2026-02-27T05:47:45.000Z",
+    announcedLabel: "February 27, 2026",
+    sourceType: "Associated Press report",
+    sourceLabel: "Associated Press report on Block layoffs",
+    sourceUrl: "https://apnews.com/article/block-dorsey-layoffs-ai-jobs-18e00a0b278977b0a87893f55e3db7bb",
+    reportingOutlet: "Associated Press",
+    countUnit: "employees",
+    confidence: "Reported",
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(/Block lays off\s+([\d,]+)\s+of its\s+([\d,]+)\s+staff,\s+citing gains from AI/i);
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedCount = parseWholeNumber(layoffMatch[1]);
+      const staffCount = parseWholeNumber(layoffMatch[2]);
+
+      if (affectedCount == null) {
+        return null;
+      }
+
+      return {
+        affectedCount,
+        affectedPercent:
+          affectedCount != null && staffCount != null && staffCount > 0
+            ? Math.round((affectedCount / staffCount) * 1000) / 10
+            : undefined,
+        aiSignal: "Cited",
+        aiAttribution: "The Associated Press report says Block laid off 4,000 staff while citing gains from AI."
+      };
+    }
   }
 ];
 
@@ -485,6 +582,11 @@ function parseWholeNumber(value: string) {
 function parsePercent(value: string) {
   const normalized = Number.parseFloat(value);
   return Number.isNaN(normalized) ? undefined : normalized;
+}
+
+function extractCityFromAddress(address: string) {
+  const match = address.match(/\s([A-Za-z .'-]+)\sCA\s\d{5}(?:-\d{4})?$/);
+  return match ? match[1].trim() : null;
 }
 
 function latestIso(values: Array<string | null | undefined>) {
@@ -595,6 +697,89 @@ async function fetchWithRetries(url: string, attempts = 3): Promise<RetryOutcome
   return { ok: false, error: lastError };
 }
 
+async function fetchArrayBufferWithRetries(url: string, attempts = 3): Promise<RetryOutcome<ArrayBuffer>> {
+  let lastError = "Unknown source error";
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: requestHeaders,
+        signal: AbortSignal.timeout(12_000)
+      });
+
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
+
+      return { ok: true, value: await response.arrayBuffer() };
+    } catch (error) {
+      lastError = normalizeError(error);
+      if (attempt < attempts) {
+        await sleep(1000 * 2 ** (attempt - 1));
+      }
+    }
+  }
+
+  return { ok: false, error: lastError };
+}
+
+async function fetchCaliforniaWarnSummary({
+  sourceUrl,
+  companyPattern,
+  effectiveDateSerial
+}: {
+  sourceUrl: string;
+  companyPattern: RegExp;
+  effectiveDateSerial: number;
+}): Promise<RetryOutcome<string>> {
+  const workbookResponse = await fetchArrayBufferWithRetries(sourceUrl);
+
+  if (!workbookResponse.ok) {
+    return workbookResponse;
+  }
+
+  try {
+    const require = createRequire(path.join(process.cwd(), "package.json"));
+    const xlsx = require(require.resolve("xlsx", { paths: [process.cwd()] })) as XlsxModule;
+    const workbook = xlsx.read(Buffer.from(workbookResponse.value), { type: "buffer" });
+    const detailedSheetName = Object.keys(workbook.Sheets).find((name) => name.trim() === "Detailed WARN Report");
+    const worksheet = detailedSheetName ? workbook.Sheets[detailedSheetName] : null;
+
+    if (!worksheet) {
+      return { ok: false, error: "Detailed WARN report sheet not found in workbook." };
+    }
+
+    const rows = xlsx.utils.sheet_to_json(worksheet, {
+      header: 1,
+      raw: true
+    });
+
+    const matchedRows = rows
+      .slice(2)
+      .filter((row: Array<string | number | null>) => companyPattern.test(String(row[4] ?? "")))
+      .filter((row: Array<string | number | null>) => String(row[5] ?? "").toLowerCase().includes("layoff"))
+      .filter((row: Array<string | number | null>) => Number(row[3] ?? 0) === effectiveDateSerial);
+
+    if (!matchedRows.length) {
+      return { ok: false, error: "WARN workbook did not contain matching layoff rows." };
+    }
+
+    const affectedCount = matchedRows.reduce((sum: number, row: Array<string | number | null>) => sum + Number(row[6] ?? 0), 0);
+    const cities = [
+      ...new Set(matchedRows.map((row: Array<string | number | null>) => extractCityFromAddress(String(row[7] ?? ""))).filter(Boolean))
+    ];
+
+    return {
+      ok: true,
+      value: `California WARN rows show ${affectedCount} employees affected across ${matchedRows.length} locations effective on March 20, 2026. Cities: ${cities.join(
+        ", "
+      )}.`
+    };
+  } catch (error) {
+    return { ok: false, error: normalizeError(error) };
+  }
+}
+
 function buildAffectedCountLabel(count: number, unit: SourceMonitor["countUnit"], isApproximate?: boolean) {
   const formatted = count.toLocaleString("en-US");
   const noun = unit === "positions" ? "positions" : "employees";
@@ -614,7 +799,7 @@ function mapStoredResults(snapshot: StoredLayoffSnapshot | null) {
 
 async function loadLayoffSource(source: SourceMonitor, cachedResult: StoredLayoffSourceResult | null) {
   const attemptedAt = new Date().toISOString();
-  const response = await fetchWithRetries(source.sourceUrl);
+  const response = source.loadText ? await source.loadText() : await fetchWithRetries(source.sourceUrl);
 
   if (!response.ok) {
     const cachedEvent = cachedResult?.event ?? null;
