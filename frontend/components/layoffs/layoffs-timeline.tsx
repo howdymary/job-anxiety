@@ -32,6 +32,7 @@ type TimelineFilter = "all" | "confirmed" | "reported" | "ai-cited";
 
 type TimelinePoint = TimelineLayoffEvent & {
   timestamp: number;
+  monthKey: string;
 };
 
 type TimelineBar = {
@@ -41,6 +42,12 @@ type TimelineBar = {
   width: number;
   height: number;
   fill: string;
+};
+
+type TimelineMonth = {
+  key: string;
+  timestamp: number;
+  label: string;
 };
 
 const filterOptions: Array<{ key: TimelineFilter; label: string }> = [
@@ -57,8 +64,7 @@ const tooltipDateFormatter = new Intl.DateTimeFormat("en-US", {
 });
 
 const monthTickFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  year: "2-digit"
+  month: "short"
 });
 
 const workerNumberFormatter = new Intl.NumberFormat("en-US");
@@ -89,12 +95,13 @@ export function LayoffsTimeline({ events, generatedAt }: LayoffsTimelineProps) {
       .map(
         (event): TimelinePoint => ({
           ...event,
-          timestamp: new Date(event.announcedAt).getTime()
+          timestamp: new Date(event.announcedAt).getTime(),
+          monthKey: getMonthKey(new Date(event.announcedAt))
         })
       );
   }, [events, filter]);
 
-  const domain = useMemo(() => getTimelineDomain(filteredEvents), [filteredEvents]);
+  const timelineMonths = useMemo(() => buildTimelineMonths(filteredEvents), [filteredEvents]);
   const yMax = useMemo(() => getNiceMax(filteredEvents), [filteredEvents]);
 
   return (
@@ -155,10 +162,8 @@ export function LayoffsTimeline({ events, generatedAt }: LayoffsTimelineProps) {
         <div className="mt-5 h-[22rem] md:h-[24rem] lg:h-[26rem]">
           <ChartSurface>
             {({ width, height }) => {
-              const layout = buildChartLayout(filteredEvents, width, height, domain, yMax);
-              const hoveredBar =
-                layout.bars.find((bar) => bar.event.slug === hoveredSlug) ??
-                (layout.bars.length === 1 ? layout.bars[0] : null);
+              const layout = buildChartLayout(filteredEvents, timelineMonths, width, height, yMax);
+              const hoveredBar = layout.bars.find((bar) => bar.event.slug === hoveredSlug) ?? null;
               const tooltipWidth = Math.min(304, Math.max(width - 24, 220));
               const tooltipLeft = hoveredBar ? clamp(hoveredBar.x + 18, 12, width - tooltipWidth - 12) : 0;
               const tooltipTop = hoveredBar ? clamp(hoveredBar.y - 22, 8, height - 220) : 0;
@@ -166,7 +171,7 @@ export function LayoffsTimeline({ events, generatedAt }: LayoffsTimelineProps) {
               return (
                 <div className="relative h-full w-full">
                   <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Layoff timeline chart">
-                    <AxisLayer width={width} height={height} yMax={yMax} domain={domain} />
+                    <AxisLayer width={width} height={height} yMax={yMax} timelineMonths={timelineMonths} />
 
                     {layout.bars.map((bar) => {
                       const isHovered = hoveredBar?.event.slug === bar.event.slug;
@@ -233,18 +238,18 @@ function AxisLayer({
   width,
   height,
   yMax,
-  domain
+  timelineMonths
 }: {
   width: number;
   height: number;
   yMax: number;
-  domain: [number, number];
+  timelineMonths: TimelineMonth[];
 }) {
   const plotWidth = Math.max(width - MARGINS.left - MARGINS.right, 1);
   const plotHeight = Math.max(height - MARGINS.top - MARGINS.bottom, 1);
   const baselineY = MARGINS.top + plotHeight;
   const yTicks = buildYTicks(yMax);
-  const monthTicks = buildMonthTicks(domain);
+  const monthTicks = selectVisibleMonthTicks(timelineMonths);
 
   return (
     <g>
@@ -275,10 +280,10 @@ function AxisLayer({
       })}
 
       {monthTicks.map((tick) => {
-        const x = timeToX(tick.timestamp, domain, plotWidth);
+        const x = monthIndexToX(tick.index, timelineMonths.length, plotWidth);
 
         return (
-          <g key={tick.timestamp} transform={`translate(${x} 0)`}>
+          <g key={tick.key} transform={`translate(${x} 0)`}>
             <line x1={0} x2={0} y1={MARGINS.top} y2={baselineY} stroke="rgba(26,26,24,0.05)" strokeDasharray="3 5" />
             <text
               x={0}
@@ -299,7 +304,7 @@ function AxisLayer({
         className="fill-[var(--ja-slate)] text-[11px]"
         style={{ fontFamily: "var(--ja-font-body)" }}
       >
-        Workers affected
+        Impacted workers
       </text>
     </g>
   );
@@ -341,22 +346,28 @@ function LayoffsTimelineTooltip({ event }: { event: TimelinePoint }) {
 
 function buildChartLayout(
   events: TimelinePoint[],
+  timelineMonths: TimelineMonth[],
   width: number,
   height: number,
-  domain: [number, number],
   yMax: number
 ) {
   const plotWidth = Math.max(width - MARGINS.left - MARGINS.right, 1);
   const plotHeight = Math.max(height - MARGINS.top - MARGINS.bottom, 1);
   const baselineY = MARGINS.top + plotHeight;
-  const baseBarWidth = clamp(plotWidth / Math.max(events.length * 3, 18), 18, 30);
+  const monthCount = Math.max(timelineMonths.length, 1);
+  const monthSlotWidth = plotWidth / monthCount;
+  const maxEventsPerMonth = getMaxEventsPerMonth(events);
+  const baseBarWidth = clamp(monthSlotWidth / Math.max(maxEventsPerMonth + 1, 2), 12, 28);
+  const monthIndexByKey = new Map(timelineMonths.map((month, index) => [month.key, index]));
 
   const rawBars = events.map((event) => {
-    const x = timeToX(event.timestamp, domain, plotWidth);
+    const monthIndex = monthIndexByKey.get(event.monthKey) ?? 0;
+    const x = monthIndexToX(monthIndex, monthCount, plotWidth);
     const y = valueToY(event.affectedCount, yMax, plotHeight);
 
     return {
       event,
+      monthIndex,
       baseX: x,
       y,
       height: Math.max(baselineY - y, 4)
@@ -366,8 +377,6 @@ function buildChartLayout(
   const bars: TimelineBar[] = [];
   const minCenter = MARGINS.left + baseBarWidth / 2;
   const maxCenter = width - MARGINS.right - baseBarWidth / 2;
-  const clusterGap = baseBarWidth + 6;
-
   let cluster: typeof rawBars = [];
 
   const flushCluster = () => {
@@ -395,7 +404,7 @@ function buildChartLayout(
   rawBars.forEach((bar) => {
     const previous = cluster[cluster.length - 1];
 
-    if (!previous || bar.baseX - previous.baseX <= clusterGap) {
+    if (!previous || bar.monthIndex === previous.monthIndex) {
       cluster.push(bar);
       return;
     }
@@ -409,48 +418,50 @@ function buildChartLayout(
   return { bars };
 }
 
-function getTimelineDomain(events: TimelinePoint[]): [number, number] {
-  if (!events.length) {
-    const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth() - 2, 1).getTime();
-    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
-
-    return [start, end];
-  }
-
-  const first = new Date(events[0].timestamp);
-  const last = new Date(events[events.length - 1].timestamp);
-  const start = new Date(first.getFullYear(), first.getMonth() - 1, 1).getTime();
-  const end = new Date(last.getFullYear(), last.getMonth() + 2, 0, 23, 59, 59, 999).getTime();
-
-  return [start, end];
-}
-
-function buildMonthTicks(domain: [number, number]) {
-  const start = new Date(domain[0]);
-  const end = new Date(domain[1]);
-  const totalMonths = Math.max(1, monthDifference(start, end) + 1);
-  const step = Math.max(1, Math.ceil(totalMonths / 7));
-  const ticks: Array<{ timestamp: number; label: string }> = [];
-
-  const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
-
-  while (cursor <= end) {
-    ticks.push({
-      timestamp: cursor.getTime(),
-      label: monthTickFormatter.format(cursor)
-    });
-
-    cursor.setMonth(cursor.getMonth() + step);
-  }
-
-  return ticks;
-}
-
 function buildYTicks(yMax: number) {
   const step = yMax / 4;
 
   return [0, step, step * 2, step * 3, yMax];
+}
+
+function buildTimelineMonths(events: TimelinePoint[]) {
+  if (!events.length) {
+    const now = new Date();
+
+    return [
+      {
+        key: getMonthKey(now),
+        timestamp: new Date(now.getFullYear(), now.getMonth(), 1).getTime(),
+        label: monthTickFormatter.format(now)
+      }
+    ];
+  }
+
+  const first = new Date(events[0].timestamp);
+  const last = new Date(events[events.length - 1].timestamp);
+  const cursor = new Date(first.getFullYear(), first.getMonth(), 1);
+  const end = new Date(last.getFullYear(), last.getMonth(), 1);
+  const months: TimelineMonth[] = [];
+
+  while (cursor <= end) {
+    months.push({
+      key: getMonthKey(cursor),
+      timestamp: cursor.getTime(),
+      label: monthTickFormatter.format(cursor)
+    });
+
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+
+  return months;
+}
+
+function selectVisibleMonthTicks(timelineMonths: TimelineMonth[]) {
+  const step = Math.max(1, Math.ceil(timelineMonths.length / 8));
+
+  return timelineMonths
+    .map((month, index) => ({ ...month, index }))
+    .filter((month, index, months) => index % step === 0 || index === months.length - 1);
 }
 
 function getNiceMax(events: TimelinePoint[]) {
@@ -463,9 +474,8 @@ function getNiceMax(events: TimelinePoint[]) {
   return niceFactor * magnitude * 4;
 }
 
-function timeToX(timestamp: number, domain: [number, number], plotWidth: number) {
-  const [min, max] = domain;
-  const progress = (timestamp - min) / Math.max(max - min, 1);
+function monthIndexToX(monthIndex: number, monthCount: number, plotWidth: number) {
+  const progress = (monthIndex + 0.5) / Math.max(monthCount, 1);
 
   return MARGINS.left + progress * plotWidth;
 }
@@ -485,8 +495,18 @@ function getBarColor(event: TimelinePoint) {
   return event.aiSignal === "Cited" ? "var(--color-red)" : "var(--ja-slate)";
 }
 
-function monthDifference(start: Date, end: Date) {
-  return end.getMonth() - start.getMonth() + 12 * (end.getFullYear() - start.getFullYear());
+function getMonthKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function getMaxEventsPerMonth(events: TimelinePoint[]) {
+  const counts = new Map<string, number>();
+
+  events.forEach((event) => {
+    counts.set(event.monthKey, (counts.get(event.monthKey) ?? 0) + 1);
+  });
+
+  return Math.max(...counts.values(), 1);
 }
 
 function clamp(value: number, min: number, max: number) {
