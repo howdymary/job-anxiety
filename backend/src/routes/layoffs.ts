@@ -36,8 +36,11 @@ layoffsRoutes.get("/", zValidator("query", layoffsQuerySchema), async (c) => {
     generatedAt: feed.generatedAt,
     lastSuccessfulRefreshAt: feed.lastSuccessfulRefreshAt,
     stats: {
-      confirmedDisclosures: filteredEvents.length,
-      totalAffected: filteredEvents.reduce((sum, event) => sum + event.affectedCount, 0),
+      confirmedDisclosures: filteredEvents.filter((event) => event.confidence === "Confirmed").length,
+      reportedDisclosures: filteredEvents.filter((event) => event.confidence === "Reported").length,
+      totalAffected: filteredEvents
+        .filter((event) => event.confidence === "Confirmed")
+        .reduce((sum, event) => sum + event.affectedCount, 0),
       aiCitedEvents: filteredEvents.filter((event) => event.aiSignal === "Cited").length
     },
     events: filteredEvents,

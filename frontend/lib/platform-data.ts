@@ -7,10 +7,10 @@ import type {
 } from "@/lib/types";
 
 export const methodologyMeta = {
-  version: "v1.1",
-  updatedAt: "March 30, 2026",
+  version: "v1.2",
+  updatedAt: "March 31, 2026",
   status:
-    "Public data pages now publish only source-backed BLS values, live ATS board aggregates, and a monitored official-source layoff feed. Modeled series stay off public pages until the provenance pipeline is fully audited."
+    "Public data pages now publish source-backed BLS values, live ATS board aggregates, confirmed layoff disclosures from primary documents, and a small set of clearly labeled high-confidence reported layoff events when a primary document has not surfaced yet. Modeled series stay off public pages until the provenance pipeline is fully audited."
 };
 
 export const verifiedOccupationOutlook: VerifiedOccupationOutlook[] = [
@@ -93,22 +93,24 @@ export const methodologySections: MethodologySection[] = [
     title: "What is currently published",
     body: [
       "The public site now limits itself to three source classes: current BLS occupation pages, live public ATS job boards, and primary-source layoff disclosures such as SEC filings or company investor-relations releases.",
-      "If a data series cannot yet be reproduced from those source classes, it stays off the public charts and off the public page copy."
+      "If a data series cannot yet be reproduced from those source classes, it stays off the public charts and off the public page copy, except for a small set of clearly labeled high-confidence layoff reports."
     ],
     bullets: [
       "BLS Occupational Outlook Handbook pages for employment, wage, and projection fields.",
       "Live Greenhouse and Ashby boards for current role counts, company counts, and posting recency.",
-      "Monitored official-source layoff disclosures only, with explicit AI-signal labeling."
+      "Monitored layoff disclosures from primary documents, plus clearly labeled high-confidence reported events when official documents are not yet public."
     ]
   },
   {
     title: "How layoff confidence works",
     body: [
-      "The live layoff page now publishes only filing-grade or official company disclosures that can still be fetched from their source URLs. Those entries are marked Confirmed and remain intentionally narrow while the broader provenance pipeline is being audited.",
+      "The live layoff page publishes filing-grade or official company disclosures that can still be fetched from their source URLs. Those entries are marked Confirmed and remain intentionally narrower than the full market while the broader provenance pipeline is being audited.",
+      "A smaller set of Reported entries may appear when a trusted outlet such as Reuters, Bloomberg, The Wall Street Journal, Financial Times, or The Information reports a layoff before the primary company document becomes public. Those events stay labeled Reported and do not roll into confirmed totals until a stronger source appears.",
       "AI context is kept separate from the fact of the workforce reduction. A company may be investing in AI while cutting staff without saying AI caused the event."
     ],
     bullets: [
       "Confirmed: SEC filing, annual report, WARN notice, or direct company investor-relations statement.",
+      "Reported: trusted financial or wire reporting, including Reuters, Bloomberg, The Wall Street Journal, Financial Times, or The Information, that has not yet been matched to a public primary document.",
       "AI cited: the source text itself names AI as an investment priority, restructuring factor, or explicit driver.",
       "Not cited: the source documents the cut but does not attribute it to AI."
     ]
@@ -126,12 +128,27 @@ export const sourceHierarchy = [
   "SEC filings, annual reports, and formal investor-relations disclosures",
   "WARN Act notices and equivalent government notices",
   "Direct company newsroom or investor-relations releases",
+  "Trusted reporting outlets such as Reuters, Bloomberg, The Wall Street Journal, Financial Times, and The Information",
   "Current BLS and other official federal labor data",
   "Major research institutions and peer-reviewed or institutionally reviewed studies",
   "Secondary reporting only when the primary document is unavailable and the claim is clearly attributed"
 ];
 
 export const correctionEntries: CorrectionEntry[] = [
+  {
+    date: "March 31, 2026",
+    title: "Expanded the official-source layoff monitor",
+    body:
+      "The public layoff tracker now monitors a broader set of still-live SEC filings, investor-relations releases, and direct company statements, expanding the official-source timeline without lowering the publication bar.",
+    status: "Resolved"
+  },
+  {
+    date: "March 31, 2026",
+    title: "Added clearly labeled reported layoff entries",
+    body:
+      "The layoff tracker can now ingest high-confidence reported events, such as Reuters- or Bloomberg-sourced layoff reports, while keeping them visibly separate from confirmed primary-document disclosures and excluding them from confirmed totals.",
+    status: "Resolved"
+  },
   {
     date: "March 30, 2026",
     title: "Removed sample layoff and research datasets from public pages",

@@ -4,6 +4,8 @@ import path from "node:path";
 
 export type LayoffFeedStatus = "live" | "cached" | "failed";
 export type LayoffAiSignal = "Cited" | "Not cited";
+export type LayoffConfidence = "Confirmed" | "Reported";
+export const TRUSTED_REPORTED_OUTLETS = ["Reuters", "Bloomberg", "The Wall Street Journal", "Financial Times", "The Information"] as const;
 
 export type OfficialLayoffEvent = {
   slug: string;
@@ -15,11 +17,12 @@ export type OfficialLayoffEvent = {
   affectedCountLabel: string;
   affectedPercent?: number;
   isApproximate?: boolean;
-  confidence: "Confirmed";
+  confidence: LayoffConfidence;
   aiSignal: LayoffAiSignal;
   sourceType: string;
   sourceLabel: string;
   sourceUrl: string;
+  reportingOutlet?: string;
   summary: string;
   aiAttribution?: string;
 };
@@ -42,6 +45,7 @@ export type LiveLayoffsFeed = {
   sourceHealth: LayoffSourceHealth[];
   stats: {
     confirmedDisclosures: number;
+    reportedDisclosures: number;
     totalAffected: number;
     aiCitedEvents: number;
   };
@@ -57,13 +61,16 @@ type SourceMonitor = {
   sourceType: string;
   sourceLabel: string;
   sourceUrl: string;
+  reportingOutlet?: string;
   countUnit: "positions" | "employees";
+  confidence: LayoffConfidence;
   summaryContext?: string;
   parser: (plainText: string) => ParsedLayoff | null;
 };
 
 type ParsedLayoff = {
   affectedCount: number;
+  affectedCountLabel?: string;
   affectedPercent?: number;
   isApproximate?: boolean;
   aiSignal: LayoffAiSignal;
@@ -103,6 +110,7 @@ const MONITORED_SOURCES: SourceMonitor[] = [
     sourceLabel: "Workday Exhibit 99.1 filed with the SEC",
     sourceUrl: "https://www.sec.gov/Archives/edgar/data/1327811/000132781125000030/wday-020525x991.htm",
     countUnit: "positions",
+    confidence: "Confirmed",
     parser: (plainText) => {
       const layoffMatch = plainText.match(
         /eliminate approximately\s+([\d,]+)\s+positions,\s+or\s+([\d.]+)% of our current workforce/i
@@ -141,6 +149,7 @@ const MONITORED_SOURCES: SourceMonitor[] = [
     sourceLabel: "Recruit Holdings newsroom release",
     sourceUrl: "https://recruit-holdings.com/en/newsroom/20250711_0001/",
     countUnit: "employees",
+    confidence: "Confirmed",
     summaryContext: "The release covers Recruit's HR Technology segment, which includes Indeed and Glassdoor.",
     parser: (plainText) => {
       const layoffMatch = plainText.match(
@@ -163,6 +172,304 @@ const MONITORED_SOURCES: SourceMonitor[] = [
         affectedPercent,
         isApproximate: true,
         aiSignal: "Not cited"
+      };
+    }
+  },
+  {
+    key: "autodesk-2026-01",
+    company: "Autodesk",
+    companySlug: "autodesk",
+    announcedAt: "2026-01-22T13:55:00.000Z",
+    announcedLabel: "January 22, 2026",
+    sourceType: "SEC exhibit",
+    sourceLabel: "Autodesk CEO workforce update filed with the SEC",
+    sourceUrl: "https://www.sec.gov/Archives/edgar/data/769397/000076939726000006/ceoemlfinal.htm",
+    countUnit: "positions",
+    confidence: "Confirmed",
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(
+        /reduce the size of Autodesk(?:'s)? workforce by approximately\s+([\d.]+)% globally\s+\(around\s+([\d,]+)\s+roles\)/i
+      );
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedPercent = parsePercent(layoffMatch[1]);
+      const affectedCount = parseWholeNumber(layoffMatch[2]);
+
+      if (affectedCount == null) {
+        return null;
+      }
+
+      const aiSignal = /strong foundation across our industry cloud, platform, and AI/i.test(plainText) ? "Cited" : "Not cited";
+
+      return {
+        affectedCount,
+        affectedPercent,
+        isApproximate: true,
+        aiSignal,
+        aiAttribution:
+          aiSignal === "Cited"
+            ? "The same SEC-filed employee note says Autodesk is reallocating toward platform, industry cloud, and AI priorities."
+            : undefined
+      };
+    }
+  },
+  {
+    key: "bumble-2025-06",
+    company: "Bumble",
+    companySlug: "bumble",
+    announcedAt: "2025-06-23T00:00:00.000Z",
+    announcedLabel: "June 23, 2025",
+    sourceType: "SEC filing",
+    sourceLabel: "Bumble current report filed with the SEC",
+    sourceUrl: "https://www.sec.gov/Archives/edgar/data/1830043/000119312525146199/d915271d8k.htm",
+    countUnit: "positions",
+    confidence: "Confirmed",
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(
+        /global workforce by approximately\s+([\d,]+)\s+roles,\s+representing approximately\s+([\d.]+)% of the Company(?:'s)? employees/i
+      );
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedCount = parseWholeNumber(layoffMatch[1]);
+      const affectedPercent = parsePercent(layoffMatch[2]);
+
+      if (affectedCount == null) {
+        return null;
+      }
+
+      return {
+        affectedCount,
+        affectedPercent,
+        isApproximate: true,
+        aiSignal: "Not cited"
+      };
+    }
+  },
+  {
+    key: "intel-2024-08",
+    company: "Intel",
+    companySlug: "intel",
+    announcedAt: "2024-08-01T00:00:00.000Z",
+    announcedLabel: "August 1, 2024",
+    sourceType: "Company investor-relations release",
+    sourceLabel: "Intel press release on cost actions and restructuring",
+    sourceUrl: "https://www.intc.com/news-events/press-releases/detail/1712/actions-to-accelerate-our-progress",
+    countUnit: "positions",
+    confidence: "Confirmed",
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(/head count by roughly\s+([\d,]+)\s+roles,\s+or\s+([\d.]+)% of our workforce/i);
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedCount = parseWholeNumber(layoffMatch[1]);
+      const affectedPercent = parsePercent(layoffMatch[2]);
+
+      if (affectedCount == null) {
+        return null;
+      }
+
+      const aiSignal = /fully benefit from powerful trends, like AI/i.test(plainText) ? "Cited" : "Not cited";
+
+      return {
+        affectedCount,
+        affectedPercent,
+        isApproximate: true,
+        aiSignal,
+        aiAttribution:
+          aiSignal === "Cited" ? "Intel's release says the company has not yet fully benefited from trends like AI." : undefined
+      };
+    }
+  },
+  {
+    key: "unity-2024-01",
+    company: "Unity",
+    companySlug: "unity",
+    announcedAt: "2024-01-08T00:00:00.000Z",
+    announcedLabel: "January 8, 2024",
+    sourceType: "SEC filing",
+    sourceLabel: "Unity current report filed with the SEC",
+    sourceUrl: "https://www.sec.gov/Archives/edgar/data/1810806/000181080624000006/unity-20240108.htm",
+    countUnit: "positions",
+    confidence: "Confirmed",
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(
+        /reduce approximately\s+([\d,]+)\s+employee roles,\s+or approximately\s+([\d.]+)% of its current workforce/i
+      );
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedCount = parseWholeNumber(layoffMatch[1]);
+      const affectedPercent = parsePercent(layoffMatch[2]);
+
+      if (affectedCount == null) {
+        return null;
+      }
+
+      return {
+        affectedCount,
+        affectedPercent,
+        isApproximate: true,
+        aiSignal: "Not cited"
+      };
+    }
+  },
+  {
+    key: "irobot-2024-01",
+    company: "iRobot",
+    companySlug: "irobot",
+    announcedAt: "2024-01-29T00:00:00.000Z",
+    announcedLabel: "January 29, 2024",
+    sourceType: "SEC exhibit",
+    sourceLabel: "iRobot restructuring release filed with the SEC",
+    sourceUrl: "https://www.sec.gov/Archives/edgar/data/1159167/000119312524017523/d741198dex992.htm",
+    countUnit: "employees",
+    confidence: "Confirmed",
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(
+        /reduction of approximately\s+([\d,]+)\s+employees,\s+which represents\s+([\d.]+)\s+percent of the Company(?:'s)? workforce/i
+      );
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedCount = parseWholeNumber(layoffMatch[1]);
+      const affectedPercent = parsePercent(layoffMatch[2]);
+
+      if (affectedCount == null) {
+        return null;
+      }
+
+      return {
+        affectedCount,
+        affectedPercent,
+        isApproximate: true,
+        aiSignal: "Not cited"
+      };
+    }
+  },
+  {
+    key: "ebay-2024-01",
+    company: "eBay",
+    companySlug: "ebay",
+    announcedAt: "2024-01-23T00:00:00.000Z",
+    announcedLabel: "January 23, 2024",
+    sourceType: "Company newsroom release",
+    sourceLabel: "eBay leadership note on workforce reduction",
+    sourceUrl: "https://www.ebayinc.com/stories/news/ensuring-ebays-long-term-success/",
+    countUnit: "positions",
+    confidence: "Confirmed",
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(
+        /reduce our current workforce by approximately\s+([\d,]+)\s+roles\s+or an estimated\s+([\d.]+)% of full-time employees/i
+      );
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedCount = parseWholeNumber(layoffMatch[1]);
+      const affectedPercent = parsePercent(layoffMatch[2]);
+
+      if (affectedCount == null) {
+        return null;
+      }
+
+      return {
+        affectedCount,
+        affectedPercent,
+        isApproximate: true,
+        aiSignal: "Not cited"
+      };
+    }
+  },
+  {
+    key: "dropbox-2023-04",
+    company: "Dropbox",
+    companySlug: "dropbox",
+    announcedAt: "2023-04-27T00:00:00.000Z",
+    announcedLabel: "April 27, 2023",
+    sourceType: "Company investor-relations release",
+    sourceLabel: "Dropbox CEO note published on the company site",
+    sourceUrl: "https://blog.dropbox.com/topics/company/a-message-from-drew",
+    countUnit: "employees",
+    confidence: "Confirmed",
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(
+        /reduce our global workforce by about\s+([\d.]+)%,\s+or\s+([\d,]+)\s+Dropboxers/i
+      );
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedPercent = parsePercent(layoffMatch[1]);
+      const affectedCount = parseWholeNumber(layoffMatch[2]);
+
+      if (affectedCount == null) {
+        return null;
+      }
+
+      const aiSignal = /AI era of computing has finally arrived/i.test(plainText) ? "Cited" : "Not cited";
+
+      return {
+        affectedCount,
+        affectedPercent,
+        isApproximate: true,
+        aiSignal,
+        aiAttribution:
+          aiSignal === "Cited" ? "Dropbox's CEO note says the company is orienting itself around the AI era of computing." : undefined
+      };
+    }
+  },
+  {
+    key: "oracle-2026-03",
+    company: "Oracle",
+    companySlug: "oracle",
+    announcedAt: "2026-03-31T00:00:00.000Z",
+    announcedLabel: "March 31, 2026",
+    sourceType: "Reuters-cited report",
+    sourceLabel: "News.az report citing Reuters on Oracle layoffs",
+    sourceUrl: "https://news.az/news/employees-stunned-as-oracle-announces-major-global-job-cuts",
+    reportingOutlet: "Reuters",
+    countUnit: "employees",
+    confidence: "Reported",
+    parser: (plainText) => {
+      const layoffMatch = plainText.match(/cuts could hit\s+([\d,]+)\s+to\s+([\d,]+)\s+employees/i);
+
+      if (!layoffMatch) {
+        return null;
+      }
+
+      const affectedCountMin = parseWholeNumber(layoffMatch[1]);
+      const affectedCountMax = parseWholeNumber(layoffMatch[2]);
+
+      if (affectedCountMin == null || affectedCountMax == null) {
+        return null;
+      }
+
+      const midpoint = Math.round((affectedCountMin + affectedCountMax) / 2);
+      const aiSignal = /AI data centres|AI data centers|artificial intelligence/i.test(plainText) ? "Cited" : "Not cited";
+
+      return {
+        affectedCount: midpoint,
+        affectedCountLabel: `Estimated ${affectedCountMin.toLocaleString("en-US")} to ${affectedCountMax.toLocaleString("en-US")} employees`,
+        isApproximate: true,
+        aiSignal,
+        aiAttribution:
+          aiSignal === "Cited"
+            ? "The Reuters-sourced report says the layoffs are tied to Oracle's AI data-center spending and financing pressure."
+            : undefined
       };
     }
   }
@@ -207,7 +514,11 @@ function decodeHtmlEntities(value: string) {
     .replace(/&gt;/g, ">")
     .replace(/&nbsp;/g, " ")
     .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(Number.parseInt(hex, 16)))
-    .replace(/&#(\d+);/g, (_, decimal) => String.fromCodePoint(Number.parseInt(decimal, 10)));
+    .replace(/&#(\d+);/g, (_, decimal) => String.fromCodePoint(Number.parseInt(decimal, 10)))
+    .replace(/[\u0091\u0092\u2018\u2019]/g, "'")
+    .replace(/[\u0093\u0094\u201c\u201d]/g, '"')
+    .replace(/[\u0096\u0097\u2013\u2014]/g, "-")
+    .replace(/\u2022/g, " ");
 }
 
 function stripMarkup(value: string) {
@@ -291,7 +602,7 @@ function buildAffectedCountLabel(count: number, unit: SourceMonitor["countUnit"]
 }
 
 function buildSummary(source: SourceMonitor, parsed: ParsedLayoff) {
-  const countLabel = buildAffectedCountLabel(parsed.affectedCount, source.countUnit, parsed.isApproximate).toLowerCase();
+  const countLabel = (parsed.affectedCountLabel ?? buildAffectedCountLabel(parsed.affectedCount, source.countUnit, parsed.isApproximate)).toLowerCase();
   const percentLabel = typeof parsed.affectedPercent === "number" ? `, or ${parsed.affectedPercent}% of the relevant workforce,` : "";
   const contextLabel = source.summaryContext ? ` ${source.summaryContext}` : "";
   return `${source.sourceLabel} says ${countLabel}${percentLabel} were affected.${contextLabel}`.replace(/\s+/g, " ").trim();
@@ -356,14 +667,15 @@ async function loadLayoffSource(source: SourceMonitor, cachedResult: StoredLayof
     announcedAt: source.announcedAt,
     announcedLabel: source.announcedLabel,
     affectedCount: parsed.affectedCount,
-    affectedCountLabel: buildAffectedCountLabel(parsed.affectedCount, source.countUnit, parsed.isApproximate),
+    affectedCountLabel: parsed.affectedCountLabel ?? buildAffectedCountLabel(parsed.affectedCount, source.countUnit, parsed.isApproximate),
     affectedPercent: parsed.affectedPercent,
     isApproximate: parsed.isApproximate,
-    confidence: "Confirmed",
+    confidence: source.confidence,
     aiSignal: parsed.aiSignal,
     sourceType: source.sourceType,
     sourceLabel: source.sourceLabel,
     sourceUrl: source.sourceUrl,
+    reportingOutlet: source.reportingOutlet,
     summary: buildSummary(source, parsed),
     aiAttribution: parsed.aiAttribution
   };
@@ -420,8 +732,9 @@ export async function getLiveLayoffsFeed(): Promise<LiveLayoffsFeed> {
     events,
     sourceHealth,
     stats: {
-      confirmedDisclosures: events.length,
-      totalAffected: events.reduce((sum, event) => sum + event.affectedCount, 0),
+      confirmedDisclosures: events.filter((event) => event.confidence === "Confirmed").length,
+      reportedDisclosures: events.filter((event) => event.confidence === "Reported").length,
+      totalAffected: events.filter((event) => event.confidence === "Confirmed").reduce((sum, event) => sum + event.affectedCount, 0),
       aiCitedEvents: events.filter((event) => event.aiSignal === "Cited").length
     },
     errors

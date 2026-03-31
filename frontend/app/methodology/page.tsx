@@ -80,8 +80,9 @@ Methodology: https://jobanxiety.ai/methodology (${methodologyMeta.version}).`}
         <h2 className="section-title text-[1.5rem]">Publication rule</h2>
         <div className="prose-block mt-5">
           <p>
-            The public research, trends, and layoff pages publish BLS occupation values, live ATS aggregates, and
-            confirmed layoff disclosures from official company or SEC documents. If a series cannot clear that bar yet,
+            The public research and trends pages publish BLS occupation values and live ATS aggregates. The layoff page
+            publishes confirmed disclosures from official company or SEC documents, plus a small number of clearly labeled
+            high-confidence reported events when a primary document has not surfaced yet. If a series cannot clear that bar,
             it is removed from the charts rather than published with a weaker standard.
           </p>
           <p>

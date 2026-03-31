@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { ContextPanel } from "@/components/context-panel";
 import { LayoffConfidenceBadge } from "@/components/layoff-confidence-badge";
+import { LayoffsTimeline } from "@/components/layoffs/layoffs-timeline";
 import { SectionHeading } from "@/components/section-heading";
 import { getPublishedLayoffsFeed } from "@/lib/layoffs-api";
 import { methodologyMeta } from "@/lib/platform-data";
@@ -10,7 +11,7 @@ import { methodologyMeta } from "@/lib/platform-data";
 export const metadata: Metadata = {
   title: "Layoff Log",
   description:
-    "Official-source layoff disclosures tracked by jobanxiety.ai. This page publishes only confirmed company or SEC documents.",
+    "Tracked layoff disclosures and high-confidence reports monitored by jobanxiety.ai, with clear confidence labeling and source links.",
   robots: {
     index: false,
     follow: true
@@ -20,21 +21,22 @@ export const metadata: Metadata = {
 export default async function LayoffsPage() {
   const feed = await getPublishedLayoffsFeed();
   const totalAffected = feed.stats.totalAffected;
-  const aiCitedEvents = feed.stats.aiCitedEvents;
 
   return (
     <div className="page-grid-wide grid gap-12">
       <SectionHeading
         eyebrow="Layoffs"
-        title="Official-source workforce reductions"
-        description="This public page now publishes only confirmed disclosures from SEC filings or official company investor-relations releases that can still be fetched from their original source URLs."
+        title="Tracked workforce reductions"
+        description="This page publishes confirmed disclosures from SEC filings or official company investor-relations releases, plus clearly labeled high-confidence reported events when a primary document has not surfaced yet. The timeline below lets you inspect the current tracked record at a glance."
       />
 
       <section className="grid gap-4 md:grid-cols-3">
-        <SummaryCard label="Confirmed disclosures" value={feed.stats.confirmedDisclosures.toString()} note="Current monitored entries on the public page" />
-        <SummaryCard label="Workers affected" value={totalAffected.toLocaleString("en-US")} note="Counts come from the source documents; some disclosures use approximate language" />
-        <SummaryCard label="AI cited in source text" value={aiCitedEvents.toString()} note="Events where the primary source itself mentions AI in the restructuring context" />
+        <SummaryCard label="Confirmed disclosures" value={feed.stats.confirmedDisclosures.toString()} note="Entries backed by a filing-grade or direct company source" />
+        <SummaryCard label="Workers affected" value={totalAffected.toLocaleString("en-US")} note="Confirmed-source totals only; approximate language stays labeled" />
+        <SummaryCard label="Reported events" value={feed.stats.reportedDisclosures.toString()} note="High-confidence media reports awaiting a primary company or SEC document" />
       </section>
+
+      <LayoffsTimeline events={feed.events} generatedAt={feed.generatedAt} />
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
         <section className="grid gap-4">
@@ -64,13 +66,22 @@ export default async function LayoffsPage() {
                       {event.aiAttribution
                         ? event.aiAttribution
                         : event.aiSignal === "Cited"
-                          ? "AI appears in the source text."
-                          : "The primary source does not attribute the cut to AI."}
+                          ? "AI appears in the tracked source text."
+                          : event.confidence === "Reported"
+                            ? "The tracked report does not explicitly attribute the cut to AI."
+                            : "The primary source does not attribute the cut to AI."}
                     </p>
+                    {event.confidence === "Reported" ? (
+                      <p className="body-copy muted-copy">
+                        This entry is sourced to a trusted reporting outlet and stays separate from the confirmed totals until a
+                        filing, WARN notice, or direct company release appears.
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="grid gap-3">
-                    <p className="eyebrow">Primary source</p>
+                    <p className="eyebrow">{event.confidence === "Confirmed" ? "Primary source" : "Tracked report"}</p>
+                    {event.reportingOutlet ? <p className="fine-print">Trusted outlet: {event.reportingOutlet}</p> : null}
                     <a href={event.sourceUrl} target="_blank" rel="noreferrer" className="inline-link body-copy">
                       {event.sourceLabel}
                     </a>
@@ -84,7 +95,7 @@ export default async function LayoffsPage() {
             ))
           ) : (
             <article className="editorial-card p-5">
-              <p className="section-title text-[1.25rem]">No confirmed official-source disclosures were fetchable in this refresh.</p>
+              <p className="section-title text-[1.25rem]">No tracked layoff events were fetchable in this refresh.</p>
               <p className="body-copy muted-copy mt-3">
                 The page does not backfill with synthetic events. Try again later or use the methodology page to review the publication rules.
               </p>
@@ -97,8 +108,8 @@ export default async function LayoffsPage() {
             title="How this page is constrained"
             body={
               <>
-                <p>Only confirmed official-source disclosures are published here right now. If an event depends on a generic roundup, an unattributed report, or a weak source chain, it stays off the page.</p>
-                <p>That keeps the public counts narrow, but it also means every published figure traces back to a still-live original document.</p>
+                <p>Confirmed events still require a filing-grade or direct company source. Reported events can appear only when the report comes from a trusted reporting outlet such as Reuters, Bloomberg, The Wall Street Journal, Financial Times, or The Information and stays clearly labeled as Reported.</p>
+                <p>The monitor is broader than it was before, but it is still not a comprehensive market census. Every published figure still traces back to a still-live tracked source.</p>
               </>
             }
             footer={
@@ -115,7 +126,7 @@ export default async function LayoffsPage() {
               <>
                 <p>{methodologyMeta.status}</p>
                 <p>
-                  {feed.sourceHealth.filter((item) => item.status === "live").length} of {feed.sourceHealth.length} monitored official
+                  {feed.sourceHealth.filter((item) => item.status === "live").length} of {feed.sourceHealth.length} monitored tracked
                   sources responded live in this refresh.
                 </p>
                 <p>
@@ -131,7 +142,7 @@ export default async function LayoffsPage() {
                   .
                 </p>
                 {feed.errors.length ? <p>One or more monitored sources fell back to the last verified fetch.</p> : null}
-                <p>The broader layoff tracker remains intentionally narrower than the product brief until the full provenance pipeline is live.</p>
+                <p>The public tracker is still intentionally narrower than the full market. Confirmed entries clear the primary-document bar; reported entries stay labeled until a stronger document appears.</p>
               </>
             }
           />
