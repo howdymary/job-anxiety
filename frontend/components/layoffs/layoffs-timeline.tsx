@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CartesianGrid, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from "recharts";
 
 import { ChartSurface } from "@/components/charts/chart-surface";
 
@@ -33,7 +32,15 @@ type TimelineFilter = "all" | "confirmed" | "reported" | "ai-cited";
 
 type TimelinePoint = TimelineLayoffEvent & {
   timestamp: number;
-  dotSize: number;
+};
+
+type TimelineBar = {
+  event: TimelinePoint;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fill: string;
 };
 
 const filterOptions: Array<{ key: TimelineFilter; label: string }> = [
@@ -43,16 +50,29 @@ const filterOptions: Array<{ key: TimelineFilter; label: string }> = [
   { key: "ai-cited", label: "AI cited in source text" }
 ];
 
-const axisDateFormatter = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
-
 const tooltipDateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "long",
   day: "numeric",
   year: "numeric"
 });
 
+const monthTickFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  year: "2-digit"
+});
+
+const workerNumberFormatter = new Intl.NumberFormat("en-US");
+
+const MARGINS = {
+  top: 16,
+  right: 24,
+  bottom: 52,
+  left: 76
+};
+
 export function LayoffsTimeline({ events, generatedAt }: LayoffsTimelineProps) {
   const [filter, setFilter] = useState<TimelineFilter>("all");
+  const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
 
   const filteredEvents = useMemo(() => {
     const nextEvents =
@@ -69,38 +89,23 @@ export function LayoffsTimeline({ events, generatedAt }: LayoffsTimelineProps) {
       .map(
         (event): TimelinePoint => ({
           ...event,
-          timestamp: new Date(event.announcedAt).getTime(),
-          dotSize: 12 + Math.min(20, Math.sqrt(Math.max(event.affectedCount, 1)) / 4)
+          timestamp: new Date(event.announcedAt).getTime()
         })
       );
   }, [events, filter]);
 
-  const domain = useMemo(() => {
-    if (!filteredEvents.length) {
-      const now = Date.now();
-      const pad = 1000 * 60 * 60 * 24 * 7;
-      return [now - pad, now + pad] as [number, number];
-    }
-
-    const timestamps = filteredEvents.map((event) => event.timestamp);
-    const min = Math.min(...timestamps);
-    const max = Math.max(...timestamps);
-    const pad = Math.max(1000 * 60 * 60 * 24 * 7, Math.round((max - min || 0) * 0.2));
-
-    return [min - pad, max + pad] as [number, number];
-  }, [filteredEvents]);
-
-  const chartHeight = Math.max(320, filteredEvents.length * 78);
+  const domain = useMemo(() => getTimelineDomain(filteredEvents), [filteredEvents]);
+  const yMax = useMemo(() => getNiceMax(filteredEvents), [filteredEvents]);
 
   return (
     <article className="editorial-card p-5">
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[rgba(26,26,24,0.08)] pb-5">
-        <div className="max-w-[38rem]">
+        <div className="max-w-[40rem]">
           <p className="eyebrow">Interactive tracker</p>
           <h2 className="section-title mt-3 text-[1.55rem]">Layoff timeline</h2>
           <p className="body-copy muted-copy mt-3">
-            Hover a point to see which company disclosed or reported the cut, how many workers were affected, and whether AI
-            appeared in the tracked source text. Click a point to open the underlying filing, company release, or report.
+            Time runs left to right. Each bar marks a single disclosed or reported workforce reduction, and bar height shows
+            how many workers were affected. Hover a bar to see the company, date, source tier, and tracked AI language.
           </p>
         </div>
 
@@ -143,46 +148,72 @@ export function LayoffsTimeline({ events, generatedAt }: LayoffsTimelineProps) {
       <div className="mt-5 flex flex-wrap gap-4 text-[0.78rem] uppercase tracking-[0.08em] text-[var(--ja-slate)]">
         <LegendPill color="var(--color-red)" label="Confirmed event with AI cited" />
         <LegendPill color="var(--ja-slate)" label="Confirmed event without explicit AI citation" />
-        <LegendPill color="var(--color-amber)" label="High-confidence reported event" />
-        <LegendPill color="var(--ja-ink)" label="Point size tracks affected workers" />
+        <LegendPill color="var(--color-amber)" label="Trusted reported event" />
       </div>
 
       {filteredEvents.length ? (
-        <div className="mt-5 min-h-[20rem]" style={{ height: chartHeight }}>
+        <div className="mt-5 h-[22rem] md:h-[24rem] lg:h-[26rem]">
           <ChartSurface>
-            {({ width, height }) => (
-              <ScatterChart width={width} height={height} margin={{ top: 12, right: 16, bottom: 8, left: 8 }}>
-                <CartesianGrid vertical={false} stroke="rgba(26,26,24,0.08)" />
-                <XAxis
-                  type="number"
-                  dataKey="timestamp"
-                  domain={domain}
-                  tickFormatter={(value) => axisDateFormatter.format(new Date(value))}
-                  tickLine={false}
-                  axisLine={false}
-                  tick={{ fill: "#4A5060", fontSize: 12 }}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="company"
-                  width={160}
-                  tickLine={false}
-                  axisLine={false}
-                  tick={{ fill: "#4A5060", fontSize: 12 }}
-                  tickFormatter={(value) => truncateCompany(value)}
-                />
-                <Tooltip content={<LayoffsTimelineTooltip />} cursor={{ stroke: "rgba(26,26,24,0.14)", strokeDasharray: "3 3" }} />
-                <Scatter
-                  data={filteredEvents}
-                  shape={(shapeProps: { cx?: number; cy?: number; payload?: TimelinePoint }) => <TimelineDot {...shapeProps} />}
-                  onClick={(point) => {
-                    if (typeof window !== "undefined" && point && "sourceUrl" in point && typeof point.sourceUrl === "string") {
-                      window.open(point.sourceUrl, "_blank", "noopener,noreferrer");
-                    }
-                  }}
-                />
-              </ScatterChart>
-            )}
+            {({ width, height }) => {
+              const layout = buildChartLayout(filteredEvents, width, height, domain, yMax);
+              const hoveredBar =
+                layout.bars.find((bar) => bar.event.slug === hoveredSlug) ??
+                (layout.bars.length === 1 ? layout.bars[0] : null);
+              const tooltipWidth = Math.min(304, Math.max(width - 24, 220));
+              const tooltipLeft = hoveredBar ? clamp(hoveredBar.x + 18, 12, width - tooltipWidth - 12) : 0;
+              const tooltipTop = hoveredBar ? clamp(hoveredBar.y - 22, 8, height - 220) : 0;
+
+              return (
+                <div className="relative h-full w-full">
+                  <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Layoff timeline chart">
+                    <AxisLayer width={width} height={height} yMax={yMax} domain={domain} />
+
+                    {layout.bars.map((bar) => {
+                      const isHovered = hoveredBar?.event.slug === bar.event.slug;
+
+                      return (
+                        <g
+                          key={bar.event.slug}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`${bar.event.company}, ${bar.event.affectedCountLabel}, announced ${bar.event.announcedLabel}`}
+                          className="cursor-pointer outline-none"
+                          onMouseEnter={() => setHoveredSlug(bar.event.slug)}
+                          onMouseLeave={() => setHoveredSlug((current) => (current === bar.event.slug ? null : current))}
+                          onFocus={() => setHoveredSlug(bar.event.slug)}
+                          onBlur={() => setHoveredSlug((current) => (current === bar.event.slug ? null : current))}
+                          onClick={() => openSource(bar.event.sourceUrl)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              openSource(bar.event.sourceUrl);
+                            }
+                          }}
+                        >
+                          <rect
+                            x={bar.x - bar.width / 2}
+                            y={bar.y}
+                            width={bar.width}
+                            height={bar.height}
+                            rx={10}
+                            fill={bar.fill}
+                            stroke={isHovered ? "rgba(26,26,24,0.65)" : "rgba(26,26,24,0.12)"}
+                            strokeWidth={isHovered ? 2 : 1}
+                            opacity={isHovered ? 1 : 0.92}
+                          />
+                        </g>
+                      );
+                    })}
+                  </svg>
+
+                  {hoveredBar ? (
+                    <div className="pointer-events-none absolute z-10" style={{ left: tooltipLeft, top: tooltipTop, width: tooltipWidth }}>
+                      <LayoffsTimelineTooltip event={hoveredBar.event} />
+                    </div>
+                  ) : null}
+                </div>
+              );
+            }}
           </ChartSurface>
         </div>
       ) : (
@@ -198,8 +229,80 @@ export function LayoffsTimeline({ events, generatedAt }: LayoffsTimelineProps) {
   );
 }
 
-function truncateCompany(value: string) {
-  return value.length > 24 ? `${value.slice(0, 21)}…` : value;
+function AxisLayer({
+  width,
+  height,
+  yMax,
+  domain
+}: {
+  width: number;
+  height: number;
+  yMax: number;
+  domain: [number, number];
+}) {
+  const plotWidth = Math.max(width - MARGINS.left - MARGINS.right, 1);
+  const plotHeight = Math.max(height - MARGINS.top - MARGINS.bottom, 1);
+  const baselineY = MARGINS.top + plotHeight;
+  const yTicks = buildYTicks(yMax);
+  const monthTicks = buildMonthTicks(domain);
+
+  return (
+    <g>
+      {yTicks.map((tickValue) => {
+        const y = valueToY(tickValue, yMax, plotHeight);
+
+        return (
+          <g key={tickValue} transform={`translate(0 ${y})`}>
+            <line
+              x1={MARGINS.left}
+              x2={width - MARGINS.right}
+              y1={0}
+              y2={0}
+              stroke={tickValue === 0 ? "rgba(26,26,24,0.2)" : "rgba(26,26,24,0.08)"}
+              strokeWidth={tickValue === 0 ? 1.5 : 1}
+            />
+            <text
+              x={MARGINS.left - 14}
+              y={4}
+              textAnchor="end"
+              className="fill-[var(--ja-slate)] text-[11px]"
+              style={{ fontFamily: "var(--ja-font-data)" }}
+            >
+              {tickValue === 0 ? "0" : workerNumberFormatter.format(tickValue)}
+            </text>
+          </g>
+        );
+      })}
+
+      {monthTicks.map((tick) => {
+        const x = timeToX(tick.timestamp, domain, plotWidth);
+
+        return (
+          <g key={tick.timestamp} transform={`translate(${x} 0)`}>
+            <line x1={0} x2={0} y1={MARGINS.top} y2={baselineY} stroke="rgba(26,26,24,0.05)" strokeDasharray="3 5" />
+            <text
+              x={0}
+              y={baselineY + 24}
+              textAnchor="middle"
+              className="fill-[var(--ja-slate)] text-[11px]"
+              style={{ fontFamily: "var(--ja-font-body)" }}
+            >
+              {tick.label}
+            </text>
+          </g>
+        );
+      })}
+
+      <text
+        x={MARGINS.left}
+        y={MARGINS.top - 4}
+        className="fill-[var(--ja-slate)] text-[11px]"
+        style={{ fontFamily: "var(--ja-font-body)" }}
+      >
+        Workers affected
+      </text>
+    </g>
+  );
 }
 
 function LegendPill({ color, label }: { color: string; label: string }) {
@@ -211,53 +314,7 @@ function LegendPill({ color, label }: { color: string; label: string }) {
   );
 }
 
-function TimelineDot(props: {
-  cx?: number;
-  cy?: number;
-  payload?: TimelinePoint;
-}) {
-  if (typeof props.cx !== "number" || typeof props.cy !== "number" || !props.payload) {
-    return null;
-  }
-
-  const fill =
-    props.payload.confidence === "Reported"
-      ? "var(--color-amber)"
-      : props.payload.aiSignal === "Cited"
-        ? "var(--color-red)"
-        : "var(--ja-slate)";
-
-  return (
-    <circle
-      cx={props.cx}
-      cy={props.cy}
-      r={props.payload.dotSize}
-      fill={fill}
-      fillOpacity={0.9}
-      stroke="rgba(26,26,24,0.18)"
-      strokeWidth={1.5}
-      className="cursor-pointer transition-opacity hover:opacity-80"
-    />
-  );
-}
-
-function LayoffsTimelineTooltip({
-  active,
-  payload
-}: {
-  active?: boolean;
-  payload?: Array<{ payload: TimelinePoint }>;
-}) {
-  if (!active || !payload?.length) {
-    return null;
-  }
-
-  const event = payload[0]?.payload;
-
-  if (!event) {
-    return null;
-  }
-
+function LayoffsTimelineTooltip({ event }: { event: TimelinePoint }) {
   return (
     <div className="max-w-[19rem] rounded-[var(--ja-radius-md)] border border-[rgba(26,26,24,0.12)] bg-[var(--ja-paper)] p-4 shadow-[0_12px_40px_rgba(26,26,24,0.08)]">
       <p className="eyebrow">{event.sourceType}</p>
@@ -280,4 +337,164 @@ function LayoffsTimelineTooltip({
       <p className="fine-print mt-3">Click to open: {event.sourceLabel}</p>
     </div>
   );
+}
+
+function buildChartLayout(
+  events: TimelinePoint[],
+  width: number,
+  height: number,
+  domain: [number, number],
+  yMax: number
+) {
+  const plotWidth = Math.max(width - MARGINS.left - MARGINS.right, 1);
+  const plotHeight = Math.max(height - MARGINS.top - MARGINS.bottom, 1);
+  const baselineY = MARGINS.top + plotHeight;
+  const baseBarWidth = clamp(plotWidth / Math.max(events.length * 3, 18), 18, 30);
+
+  const rawBars = events.map((event) => {
+    const x = timeToX(event.timestamp, domain, plotWidth);
+    const y = valueToY(event.affectedCount, yMax, plotHeight);
+
+    return {
+      event,
+      baseX: x,
+      y,
+      height: Math.max(baselineY - y, 4)
+    };
+  });
+
+  const bars: TimelineBar[] = [];
+  const minCenter = MARGINS.left + baseBarWidth / 2;
+  const maxCenter = width - MARGINS.right - baseBarWidth / 2;
+  const clusterGap = baseBarWidth + 6;
+
+  let cluster: typeof rawBars = [];
+
+  const flushCluster = () => {
+    if (!cluster.length) {
+      return;
+    }
+
+    cluster.forEach((bar, index) => {
+      const offset = (index - (cluster.length - 1) / 2) * (baseBarWidth + 2);
+      const x = clamp(bar.baseX + offset, minCenter, maxCenter);
+
+      bars.push({
+        event: bar.event,
+        x,
+        y: bar.y,
+        width: baseBarWidth,
+        height: bar.height,
+        fill: getBarColor(bar.event)
+      });
+    });
+
+    cluster = [];
+  };
+
+  rawBars.forEach((bar) => {
+    const previous = cluster[cluster.length - 1];
+
+    if (!previous || bar.baseX - previous.baseX <= clusterGap) {
+      cluster.push(bar);
+      return;
+    }
+
+    flushCluster();
+    cluster.push(bar);
+  });
+
+  flushCluster();
+
+  return { bars };
+}
+
+function getTimelineDomain(events: TimelinePoint[]): [number, number] {
+  if (!events.length) {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - 2, 1).getTime();
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+
+    return [start, end];
+  }
+
+  const first = new Date(events[0].timestamp);
+  const last = new Date(events[events.length - 1].timestamp);
+  const start = new Date(first.getFullYear(), first.getMonth() - 1, 1).getTime();
+  const end = new Date(last.getFullYear(), last.getMonth() + 2, 0, 23, 59, 59, 999).getTime();
+
+  return [start, end];
+}
+
+function buildMonthTicks(domain: [number, number]) {
+  const start = new Date(domain[0]);
+  const end = new Date(domain[1]);
+  const totalMonths = Math.max(1, monthDifference(start, end) + 1);
+  const step = Math.max(1, Math.ceil(totalMonths / 7));
+  const ticks: Array<{ timestamp: number; label: string }> = [];
+
+  const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+
+  while (cursor <= end) {
+    ticks.push({
+      timestamp: cursor.getTime(),
+      label: monthTickFormatter.format(cursor)
+    });
+
+    cursor.setMonth(cursor.getMonth() + step);
+  }
+
+  return ticks;
+}
+
+function buildYTicks(yMax: number) {
+  const step = yMax / 4;
+
+  return [0, step, step * 2, step * 3, yMax];
+}
+
+function getNiceMax(events: TimelinePoint[]) {
+  const maxValue = Math.max(...events.map((event) => event.affectedCount), 1000);
+  const roughStep = maxValue / 4;
+  const magnitude = 10 ** Math.floor(Math.log10(roughStep || 1));
+  const normalized = roughStep / magnitude;
+  const niceFactor = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+
+  return niceFactor * magnitude * 4;
+}
+
+function timeToX(timestamp: number, domain: [number, number], plotWidth: number) {
+  const [min, max] = domain;
+  const progress = (timestamp - min) / Math.max(max - min, 1);
+
+  return MARGINS.left + progress * plotWidth;
+}
+
+function valueToY(value: number, yMax: number, plotHeight: number) {
+  const safeValue = Math.max(0, value);
+  const progress = safeValue / Math.max(yMax, 1);
+
+  return MARGINS.top + plotHeight - progress * plotHeight;
+}
+
+function getBarColor(event: TimelinePoint) {
+  if (event.confidence === "Reported") {
+    return "var(--color-amber)";
+  }
+
+  return event.aiSignal === "Cited" ? "var(--color-red)" : "var(--ja-slate)";
+}
+
+function monthDifference(start: Date, end: Date) {
+  return end.getMonth() - start.getMonth() + 12 * (end.getFullYear() - start.getFullYear());
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function openSource(url: string) {
+  if (typeof window !== "undefined") {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
 }
