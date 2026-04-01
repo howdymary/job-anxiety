@@ -111,8 +111,8 @@ export function LayoffsTimeline({ events, generatedAt }: LayoffsTimelineProps) {
           <p className="eyebrow">Interactive tracker</p>
           <h2 className="section-title mt-3 text-[1.55rem]">Layoff timeline</h2>
           <p className="body-copy muted-copy mt-3">
-            Time runs left to right. Each bar marks a single disclosed or reported workforce reduction, and bar height shows
-            how many workers were affected. Hover a bar to see the company, date, source tier, and tracked AI language.
+            Time runs left to right. Each month is a single stacked column, and total column height shows how many workers were
+            affected that month. Hover a segment to see which company made up that portion of the month&apos;s total.
           </p>
         </div>
 
@@ -200,7 +200,7 @@ export function LayoffsTimeline({ events, generatedAt }: LayoffsTimelineProps) {
                             y={bar.y}
                             width={bar.width}
                             height={bar.height}
-                            rx={10}
+                            rx={0}
                             fill={bar.fill}
                             stroke={isHovered ? "rgba(26,26,24,0.65)" : "rgba(26,26,24,0.12)"}
                             strokeWidth={isHovered ? 2 : 1}
@@ -356,64 +356,46 @@ function buildChartLayout(
   const baselineY = MARGINS.top + plotHeight;
   const monthCount = Math.max(timelineMonths.length, 1);
   const monthSlotWidth = plotWidth / monthCount;
-  const maxEventsPerMonth = getMaxEventsPerMonth(events);
-  const baseBarWidth = clamp(monthSlotWidth / Math.max(maxEventsPerMonth + 1, 2), 12, 28);
+  const baseBarWidth = clamp(monthSlotWidth * 0.48, 18, 40);
   const monthIndexByKey = new Map(timelineMonths.map((month, index) => [month.key, index]));
+  const bars: TimelineBar[] = [];
+  const monthlyGroups = new Map<number, TimelinePoint[]>();
 
-  const rawBars = events.map((event) => {
+  events.forEach((event) => {
     const monthIndex = monthIndexByKey.get(event.monthKey) ?? 0;
-    const x = monthIndexToX(monthIndex, monthCount, plotWidth);
-    const y = valueToY(event.affectedCount, yMax, plotHeight);
-
-    return {
-      event,
-      monthIndex,
-      baseX: x,
-      y,
-      height: Math.max(baselineY - y, 4)
-    };
+    const monthEvents = monthlyGroups.get(monthIndex) ?? [];
+    monthEvents.push(event);
+    monthlyGroups.set(monthIndex, monthEvents);
   });
 
-  const bars: TimelineBar[] = [];
-  const minCenter = MARGINS.left + baseBarWidth / 2;
-  const maxCenter = width - MARGINS.right - baseBarWidth / 2;
-  let cluster: typeof rawBars = [];
+  timelineMonths.forEach((_, monthIndex) => {
+    const monthEvents = monthlyGroups.get(monthIndex) ?? [];
 
-  const flushCluster = () => {
-    if (!cluster.length) {
+    if (!monthEvents.length) {
       return;
     }
 
-    cluster.forEach((bar, index) => {
-      const offset = (index - (cluster.length - 1) / 2) * (baseBarWidth + 2);
-      const x = clamp(bar.baseX + offset, minCenter, maxCenter);
+    const x = monthIndexToX(monthIndex, monthCount, plotWidth);
+    let runningTotal = 0;
+
+    monthEvents.forEach((event) => {
+      const stackStart = runningTotal;
+      const stackEnd = runningTotal + event.affectedCount;
+      const y = valueToY(stackEnd, yMax, plotHeight);
+      const bottomY = valueToY(stackStart, yMax, plotHeight);
 
       bars.push({
-        event: bar.event,
+        event,
         x,
-        y: bar.y,
+        y,
         width: baseBarWidth,
-        height: bar.height,
-        fill: getBarColor(bar.event)
+        height: Math.max(bottomY - y, 4),
+        fill: getBarColor(event)
       });
+
+      runningTotal = stackEnd;
     });
-
-    cluster = [];
-  };
-
-  rawBars.forEach((bar) => {
-    const previous = cluster[cluster.length - 1];
-
-    if (!previous || bar.monthIndex === previous.monthIndex) {
-      cluster.push(bar);
-      return;
-    }
-
-    flushCluster();
-    cluster.push(bar);
   });
-
-  flushCluster();
 
   return { bars };
 }
@@ -465,7 +447,13 @@ function selectVisibleMonthTicks(timelineMonths: TimelineMonth[]) {
 }
 
 function getNiceMax(events: TimelinePoint[]) {
-  const maxValue = Math.max(...events.map((event) => event.affectedCount), 1000);
+  const monthlyTotals = new Map<string, number>();
+
+  events.forEach((event) => {
+    monthlyTotals.set(event.monthKey, (monthlyTotals.get(event.monthKey) ?? 0) + event.affectedCount);
+  });
+
+  const maxValue = Math.max(...monthlyTotals.values(), 1000);
   const roughStep = maxValue / 4;
   const magnitude = 10 ** Math.floor(Math.log10(roughStep || 1));
   const normalized = roughStep / magnitude;
@@ -497,16 +485,6 @@ function getBarColor(event: TimelinePoint) {
 
 function getMonthKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-}
-
-function getMaxEventsPerMonth(events: TimelinePoint[]) {
-  const counts = new Map<string, number>();
-
-  events.forEach((event) => {
-    counts.set(event.monthKey, (counts.get(event.monthKey) ?? 0) + 1);
-  });
-
-  return Math.max(...counts.values(), 1);
 }
 
 function clamp(value: number, min: number, max: number) {
