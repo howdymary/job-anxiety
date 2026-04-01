@@ -1,0 +1,26 @@
+{
+  "name": "JobAnxiety.ai",
+  "short_name": "JobAnxiety",
+  "description": "Track live AI job openings, official-source layoff disclosures, and source-backed labor research.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f3ec",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -30,12 +30,40 @@ const fontData = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://jobanxiety.ai"),
+  applicationName: "JobAnxiety.ai",
   title: {
     default: "JobAnxiety.ai — AI Job Market & Layoff Tracker",
     template: "%s | JobAnxiety.ai"
   },
   description:
-    "Track live AI job openings, review official-source layoff disclosures, and read source-backed research on how AI is reshaping work."
+    "Track live AI job openings, review official-source layoff disclosures, and read source-backed research on how AI is reshaping work.",
+  manifest: "/manifest.webmanifest",
+  alternates: {
+    canonical: "/"
+  },
+  openGraph: {
+    type: "website",
+    url: "https://jobanxiety.ai",
+    siteName: "JobAnxiety.ai",
+    title: "JobAnxiety.ai — AI Job Market & Layoff Tracker",
+    description:
+      "Track live AI job openings, review official-source layoff disclosures, and read source-backed research on how AI is reshaping work.",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "JobAnxiety.ai"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "JobAnxiety.ai — AI Job Market & Layoff Tracker",
+    description:
+      "Track live AI job openings, review official-source layoff disclosures, and read source-backed research on how AI is reshaping work.",
+    images: ["/twitter-image.png"]
+  }
 };
 
 type RootLayoutProps = {
